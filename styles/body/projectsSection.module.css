@@ -1,0 +1,78 @@
+.check_out_my_portfolio{
+    display: flex;
+}
+
+.see_more{
+    background: #a7bcc7;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    transition : all .2s ease-in-out;
+    z-index: 5;
+    transform : scale(0.9);
+}
+
+.see_more:hover{
+    background: #81A3A7;
+    transform: scale(1);
+}
+
+.see_more:active{
+    transform : scale(0.8);
+}
+
+.description{
+    text-align: center;
+    padding : .5rem;
+}
+
+.title{
+    text-align : center;
+    padding : .5rem;
+    background: none;
+}
+
+.internship{
+    background-image: url('./../../public/pictures/photos_compress/internship.jpg');
+    background-size: cover;
+    opacity : 0.5;
+    transition : opacity .2s ease-in-out;
+}
+
+.kusmitea{
+    background-image: url('./../../public/pictures/photos_compress/KT.jpg');
+    background-size: cover;
+    opacity : 0.5;
+    transition : opacity .2s ease-in-out;
+}
+
+.webdev{
+    background-image: url('./../../public/pictures/photos_compress/WebDev.jpg');
+    background-size: cover;
+    opacity : 0.5;
+    transition : opacity .2s ease-in-out;
+}
+
+.ap{
+    background-image: url('./../../public/pictures/photos_compress/AP.jpg');
+    background-size: cover;
+    opacity : 0.5;
+    transition : opacity .2s ease-in-out;
+}
+
+.es{
+    background-image: url('./../../public/pictures/photos_compress/ES.jpg');
+    background-size: cover;
+    opacity : 0.5;
+    transition : opacity .2s ease-in-out;
+}
+
+.robotics{
+    background-image: url('./../../public/pictures/photos_compress/robotics.jpg');
+    background-size: cover;
+    opacity : 0.5;
+    transition : opacity .2s ease-in-out;
+}
+
+.fulldiv:hover > div{
+    opacity: 1;
+}
