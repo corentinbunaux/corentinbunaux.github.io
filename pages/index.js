@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from '../components/navbar'
 import Footer from '../components/footer'
 import ProfileSection from '../components/body/profileSection'
@@ -9,7 +9,7 @@ import AboutmeSection from '../components/body/aboutmeSection'
 
 export default function Website() {
   const [allTops ={profileTop : 0, portfolioTop : 0, aboutTop : 0}, setTop] = useState()
-    
+  
   const updateProfileTop = (topValue)=>{
     setTop(allTops.profileTop = topValue);
   };

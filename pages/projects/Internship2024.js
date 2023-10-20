@@ -2,7 +2,7 @@ import Link from 'next/link';
 import style from '../../styles/body/projectsSection.module.css'
 import { useEffect } from 'react';
 
-export default function Project(props){
+export default function Project(){
     return(
         <section className='project flex justify-center items-center'>
             <div className='container h-full flex flex-col'>
@@ -12,7 +12,7 @@ export default function Project(props){
                 </div>
                 <div className='p-5'>
                     <button className={style.see_more}>
-                        <Link href='../'>Go back to my portfolio</Link>
+                        <Link href='../' className='scroll_to_portfolio'>Go back to my portfolio</Link>
                     </button>
                 </div>
                 <div>
