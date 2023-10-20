@@ -632,33 +632,3 @@ p{
         transform: scale(0) rotate(180deg);
     }
 }
-
-.dimensions{
-    height : 100vh;
-}
-
-.wheel{
-    animation: wheel_animation 30s infinite linear ;
-}
-
-.wheel-title{
-    animation : wheel_title_animation 30s infinite linear;
-}
-
-@keyframes wheel_animation{
-    from{
-        transform: rotate(0deg);
-    }
-    to{
-        transform : rotate(360deg);
-    }
-}
-
-@keyframes wheel_title_animation{
-    from{
-        transform : rotate(0deg);
-    }
-    to{
-        transform : rotate(-360deg);
-    }
-}
