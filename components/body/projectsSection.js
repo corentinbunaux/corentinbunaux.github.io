@@ -1,8 +1,12 @@
 import React from 'react'
 import style from './../../styles/body/projectsSection.module.css'
 import Link from 'next/link';
+import { useEffect } from 'react';
 
-export default function ProjectsSection(){
+export default function ProjectsSection(props){
+    useEffect(()=>{
+        props.onValueChange(document.getElementById('portfolio').offsetHeight);
+      },[]);
     return(
         <section id='portfolio' className='flex justify-center items-center portfolio'>
             <div className='container h-5/6'>

@@ -4,7 +4,7 @@ import photo from './../../public/pictures/photos_compress/Photo_CV.jpg'
 import { Parallax, ParallaxLayer } from '@react-spring/parallax';
 import Link from 'next/link';
 
-export default function ProfileSection(){
+export default function ProfileSection(props){
     const parallax = useRef(null);
 
     const scroll = (to) => {
@@ -14,13 +14,14 @@ export default function ProfileSection(){
     };
 
     useEffect(() => {
+        props.onValueChange(document.getElementById('home').offsetHeight);
+
         const customParallax = document.querySelector('.custom-parallax');
     
         if (customParallax) {
           customParallax.style.overflow = 'hidden';
         }
-    });
-
+    },[]);
 
     return(
     <section id='home' className='home'>
@@ -79,7 +80,7 @@ function Photo(){
                     <Image src={photo} alt="photo" className='rounded-full h-auto w-auto p-5 md:h-auto md:w-full lg:p-32 md:ms-10 mt-10 md:mt-0'/>
                 </div>
                 <div className='h-1/2 sm:h-full hidden md:flex md:justify-end md:items-center'>
-                    <ul className='h-1/6 p-5 hidden lg:flex flex-col justify-between bg-my-blue'>
+                    <ul className='h-1/6 p-5 hidden lg:flex flex-col justify-between'>
                         <li>
                             <Link href="http://linkedin.com/in/corentin-bunaux" target="_blank" rel="noopener noreferrer">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 mr-2" viewBox="0 0 24 24">

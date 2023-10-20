@@ -1,25 +1,56 @@
-import React from 'react';
-import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
 
-function Navbar() {
+function Navbar(props) {
+
+  let [links,updateLinks] = useState()
+
+  useEffect(() => {
+    //récupère le top pour positionner la section profil
+    props.onValueChange(document.querySelector('nav').offsetHeight);
+
+    //scroll personnalisé
+    updateLinks(links = document.querySelectorAll('.cursor-pointer'))
+    links.forEach((element,index) => {
+      let goToTop = 0
+      element.addEventListener("click", ()=>{
+        switch(index){
+          case 0:
+            goToTop = props.allTops.profileTop
+            break;
+          case 1:
+            goToTop = props.allTops.portfolioTop
+            break;
+          case 2:
+            goToTop = props.allTops.aboutTop
+            break;
+        }
+        window.scroll({
+          top : goToTop,
+          left : 0,
+          behavior : "smooth",
+        })
+      })
+    });
+  }, []);
+
   return (
     <nav className="bg-my-green p-4 w-full sticky top-0 z-50">
       <div className="container mx-auto">
         <ul className="flex space-x-6 md:space-x-12 items-center md:justify-start justify-center">
           <li>
-            <Link href="#home" className="text-main-text">
+            <a className="text-main-text cursor-pointer">
               Home
-            </Link>
+            </a>
           </li>
           <li>
-            <Link href="#portfolio" className="text-main-text">
+            <a className="text-main-text cursor-pointer">
               Portfolio
-            </Link>
+            </a>
           </li>
           <li>
-            <Link href="#aboutme" className="text-main-text">
+            <a className="text-main-text cursor-pointer">
               About Me
-            </Link>
+            </a>
           </li>
         </ul>
       </div>

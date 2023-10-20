@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import style from '../../styles/body/projectsSection.module.css'
+import { useEffect } from 'react';
 
-export default function Project(){
+export default function Project(props){
     return(
         <section className='project flex justify-center items-center'>
             <div className='container h-full flex flex-col'>

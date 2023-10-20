@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import React from 'react'
+import React, { useState } from 'react'
 import Navbar from '../components/navbar'
 import Footer from '../components/footer'
 import ProfileSection from '../components/body/profileSection'
@@ -8,6 +8,18 @@ import ProjectsSection from '../components/body/projectsSection'
 import AboutmeSection from '../components/body/aboutmeSection'
 
 export default function Website() {
+  const [allTops ={profileTop : 0, portfolioTop : 0, aboutTop : 0}, setTop] = useState()
+    
+  const updateProfileTop = (topValue)=>{
+    setTop(allTops.profileTop = topValue);
+  };
+  const updatePortfolioTop = (topValue)=>{
+    setTop(allTops.portfolioTop = topValue + allTops.profileTop);
+  };
+  const updateAboutTop = (topValue)=>{
+    setTop(allTops.aboutTop = topValue + allTops.portfolioTop);
+  };
+
   return (
     <>
     <Head>
@@ -15,9 +27,9 @@ export default function Website() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
         <title>Portfolio Corentin BUNAUX</title>
     </Head>
-    <Navbar />
-    <ProfileSection/>
-    <ProjectsSection/>
+    <Navbar onValueChange={updateProfileTop} allTops={allTops}/>
+    <ProfileSection onValueChange={updatePortfolioTop}/>
+    <ProjectsSection onValueChange={updateAboutTop}/>
     <AboutmeSection/>
     <Footer />
     </>
