@@ -3,7 +3,7 @@ import style from './../../styles/body/projectsSection.module.css'
 import Link from 'next/link';
 import { useEffect } from 'react';
 
-export default function ProjectsSection(props){
+export default function ProjectsSection({ scroll, setScroll,...props }) {
     useEffect(()=>{
         props.onValueChange(document.getElementById('portfolio').offsetHeight);
       },[]);
@@ -19,7 +19,7 @@ export default function ProjectsSection(props){
                                 <h1 className={style.title}>Internship 2024</h1>
                                 <p className={`${style.description} text-main-text`}>From April 2024 to August 2024</p>
                                 <button className={style.see_more}>
-                                    <Link href='/projects/Internship2024'>See more</Link>
+                                    <Link href='/projects/Internship2024' onClick={()=>{setScroll(true)}}>See more</Link>
                                 </button>
                             </div>
                         </div>
@@ -29,7 +29,7 @@ export default function ProjectsSection(props){
                             <div className={`absolute h-full w-full rounded-lg ${style.kusmitea}`}></div>
                             <div className="flex flex-col justify-center items-center border border-second h-full rounded-lg w-full">
                                 <h1 className={style.title}>Kusmi Tea</h1>
-                                <p className={`${style.description} text-main-text`}>Internship 01/23 : discovery of IT tools & conception of a counting cell</p>
+                                <p className={`${style.description} text-main-text`}>Internship</p>
                                 <button className={style.see_more}>
                                     <Link href='/projects/KusmiTea'>See more</Link>
                                 </button>
@@ -53,7 +53,7 @@ export default function ProjectsSection(props){
                             <div className={`absolute h-full w-full rounded-lg ${style.ap}`}></div>
                                 <div className='flex flex-col justify-center items-center border border-second h-full rounded-lg w-full'>
                                     <h1 className={style.title}>Algorithms & Programming</h1>
-                                    <p className={`${style.description} text-main-text`}>A large variety of C / C++ / Python programs</p>
+                                    <p className={`${style.description} text-main-text`}>A variety of C & Python programs</p>
                                     <button className={style.see_more}>
                                         <Link href='/projects/A&P'>See more</Link>
                                     </button>
@@ -64,8 +64,8 @@ export default function ProjectsSection(props){
                         <div className={`relative h-full w-full ${style.fulldiv}`}>
                             <div className={`absolute h-full w-full rounded-lg ${style.es}`}></div>
                             <div className='flex flex-col justify-center items-center border border-second h-full rounded-lg w-full'>
-                                <h1 className={style.title}>Embeded Systems</h1>
-                                <p className={`${style.description} text-main-text`}>"Robot Project"</p>
+                                <h1 className={style.title}>Embedded Systems</h1>
+                                <p className={`${style.description} text-main-text`}>Robot Project</p>
                                 <button className={style.see_more}>
                                     <Link href='/projects/ES'>See more</Link>
                                 </button>

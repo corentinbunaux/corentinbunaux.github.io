@@ -21,6 +21,7 @@ module.exports = {
       'second-text' : '#999999',
       'blue-text': '#A7BCC7',
       'green-text' : "#81A3A7",
+      'black-text' : "#1A1A1A",
     },
     borderColor : {
       'main-border' : '#F5F5F5',

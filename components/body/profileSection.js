@@ -4,6 +4,7 @@ import photo from './../../public/pictures/photos_compress/Photo_CV.jpg'
 import { Parallax, ParallaxLayer } from '@react-spring/parallax';
 import Link from 'next/link';
 
+
 export default function ProfileSection(props){
     const parallax = useRef(null);
 
@@ -26,17 +27,20 @@ export default function ProfileSection(props){
     return(
     <section id='home' className='home'>
         <div className='h-full'>
-            <Parallax pages={3}>
-                <ParallaxLayer sticky={{start : 0, end :1}} speed={1.5} style={{height : '100vh'}}>
+            <Parallax pages={4}>
+                <ParallaxLayer sticky={{start : 0, end :1.1}} speed={1.5} style={{height : '100vh'}}>
                     <Photo/>
                 </ParallaxLayer>
-                <ParallaxLayer offset={0} speed={1.5} style={{height : '100vh'}}>
+                <ParallaxLayer offset={0} speed={1.5} style={{height : '100vh'}} onClick={scroll(1)}>
                     <Homepage/>
                 </ParallaxLayer>
-                <ParallaxLayer offset={1} speed={1.5} style={{height : '100vh'}}>
+                <ParallaxLayer offset={1} speed={1.5} style={{height : '100vh'}} onClick={scroll(2)}>
                     <Profile/>
                 </ParallaxLayer>
-                <ParallaxLayer offset={2} speed={1.5} style={{height : '100vh'}}>
+                <ParallaxLayer offset={2} speed={1.5} style={{height : '100vh'}} onClick={scroll(3)}>
+                    <Path/>
+                </ParallaxLayer>
+                <ParallaxLayer offset={3} speed={1.5} style={{height : '100vh'}} onClick={scroll(0)}>
                     <Abilities/>
                 </ParallaxLayer>
             </Parallax>
@@ -64,8 +68,8 @@ function Profile(){
             <div className='columns-1 sm:columns-2 h-full'>
                 <div className='h-1/2 sm:h-full'></div>
                 <div className='h-1/2 sm:h-full sm:me-60 md:me-10 lg:me-60'>
-                    <h1 className='text-blue-text'>Who am I ?</h1>
-                    <h2>An IT-Engineering Enthusiast</h2>
+                    <h1 className='hidden md:block'>Who am I ?</h1>
+                    <h2 className='text-blue-text'>An IT-Engineering Enthusiast</h2>
                     <p>As an IT-focused engineering student, I am a natural perfectionist with a keen sense of curiosity and perseverance. My academic path has enhanced my work capacity and adaptability, while my coursework has fostered autonomy, versatility, and a creative mindset.</p>
                 </div>
             </div>
@@ -77,7 +81,7 @@ function Photo(){
         <div className='container-fluid h-full'>
             <div className='columns-1 sm:columns-2 h-full'>
                 <div className='h-1/2 sm:h-full flex flex-col justify-center items-center md:w-5/6'>
-                    <Image src={photo} alt="photo" className='rounded-full h-auto w-auto p-5 md:h-auto md:w-full lg:p-32 md:ms-10 mt-10 md:mt-0'/>
+                    <Image src={photo} alt="photo" className='rounded-full h-auto w-auto max-h-full max-w-full md:w-1/2 lg:w-2/3 mt-10 sm:mt-0'/>
                 </div>
                 <div className='h-1/2 sm:h-full hidden md:flex md:justify-end md:items-center'>
                     <ul className='h-1/6 p-5 hidden lg:flex flex-col justify-between'>
@@ -200,3 +204,27 @@ function WheelItem(props){
             return(<></>);
     }
 }
+
+function Path(){
+    return(
+        <div className='container-fluid h-full flex justify-center items-center'>
+            <div className='container h-full'>
+                <div className='flex flex-col items-center'>
+                    <h1 className='underline'>Education</h1>
+                </div>
+                <div className='p-5'>
+                    <h3 className='bg-my-blue opacity-0.2 p-1 text-black-text tracking-widest flex justify-center'><strong>2025 - 2022</strong></h3>
+                    <br></br>
+                    <h2 className='italic'>Mines de Saint-Etienne, ISMIN</h2>
+                    <p className='p-1'>Currently in the Mines de Saint-Etienne, a prestigious French engineering school known for its rigorous academic programs. Within the institution, the ISMIN ("Ingénieur Spécialisation Microélectronique et Informatique") program offers a comprehensive education in microelectronics and computer science. </p>
+                    <br></br>
+                    <br></br>
+                    <h3 className='bg-my-blue opacity-0.2 p-1 text-black-text tracking-widest flex justify-center'><strong>2022 - 2020</strong></h3>
+                    <br></br>
+                    <h2 className='italic'>CPGE - PSI</h2>
+                    <p className='p-1'>Completed a two-year intensive preparatory program for entrance exams to leading French higher education institutions (Grandes Écoles) with a focus on physics & industrial sciences. CPGE programs are highly competitive and offer specialized coursework in fields like science, engineering, humanities, and social sciences.</p>
+                </div>
+            </div>
+        </div>
+    );
+} 

@@ -12,7 +12,7 @@ export default function Project(){
                 </div>
                 <div className='p-5'>
                     <button className={style.see_more}>
-                        <Link href='../' className='scroll_to_portfolio'>Go back to my portfolio</Link>
+                        <Link href='../#portfolio'>Go back to my portfolio</Link>
                     </button>
                 </div>
                 <div>
