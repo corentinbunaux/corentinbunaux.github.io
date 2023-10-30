@@ -157,7 +157,7 @@ const [rotate, setRotate] = useState(0);
                 transX = Math.cos(angle)*windowSize/(windowSize/reajust)
                 transY = Math.sin(angle)*windowSize/(windowSize/reajust)
                 return(
-                <div key={angle} style={{transform: `translate(${transX}%, ${transY}%) rotate(${rotate}deg)`}} className='absolute aspect-square h-11 lg:h-20 rounded-full flex justify-center items-center wheel-item'>
+                <div key={angle} style={{transform: `translate(${transX}%, ${transY}%) rotate(${rotate}deg)`}} className='absolute aspect-square h-11 lg:h-20 rounded-full flex justify-center items-center wheel-item bg-blue-200'>
                     <WheelItem index={index}/>
                 </div>
                 );
