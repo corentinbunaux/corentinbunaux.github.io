@@ -11,7 +11,7 @@ export default function ProjectsSection({ scroll, setScroll,...props }) {
         <section id='portfolio' className='flex justify-center items-center portfolio'>
             <div className='container h-5/6'>
                 <h1 className={style.check_out_my_portfolio}>Check out my portfolio</h1>
-                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 h-full'>
+                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 h-full'>
                     <div className='p-4'>
                         <div className={`relative h-full w-full ${style.fulldiv}`}>
                         <div className={`absolute h-full w-full rounded-lg ${style.internship}`}></div>

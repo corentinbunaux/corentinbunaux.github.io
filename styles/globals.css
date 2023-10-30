@@ -11,8 +11,7 @@
     --second-text : #666666;
 }
 
-/*sm*/
-@media (max-width:640px) {
+@media (max-width:768px) {
     .home, .path, .project{
         height : 100vh;
     }

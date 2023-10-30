@@ -32,42 +32,42 @@
 }
 
 .internship{
-    background-image: url('./../../public/pictures/photos_compress/internship.jpg');
+    background-image: url('./../../public/Internship.jpg');
     background-size: cover;
     opacity : 0.5;
     transition : opacity .2s ease-in-out;
 }
 
 .kusmitea{
-    background-image: url('./../../public/pictures/photos_compress/KT.jpg');
+    background-image: url('./../../public/KT.jpg');
     background-size: cover;
     opacity : 0.5;
     transition : opacity .2s ease-in-out;
 }
 
 .webdev{
-    background-image: url('./../../public/pictures/photos_compress/WebDev.jpg');
+    background-image: url('./../../public/WebDev.jpg');
     background-size: cover;
     opacity : 0.5;
     transition : opacity .2s ease-in-out;
 }
 
 .ap{
-    background-image: url('./../../public/pictures/photos_compress/AP.jpg');
+    background-image: url('./../../public/A&P.jpg');
     background-size: cover;
     opacity : 0.5;
     transition : opacity .2s ease-in-out;
 }
 
 .es{
-    background-image: url('./../../public/pictures/photos_compress/ES.jpg');
+    background-image: url('./../../public/ES.jpg');
     background-size: cover;
     opacity : 0.5;
     transition : opacity .2s ease-in-out;
 }
 
 .robotics{
-    background-image: url('./../../public/pictures/photos_compress/robotics.jpg');
+    background-image: url('./../../public/Robotics.jpg');
     background-size: cover;
     opacity : 0.5;
     transition : opacity .2s ease-in-out;
