@@ -3,7 +3,7 @@ import style from './../../styles/body/projectsSection.module.css'
 import Link from 'next/link';
 import { useEffect } from 'react';
 
-export default function ProjectsSection({ scroll, setScroll,...props }) {
+export default function ProjectsSection(props) {
     useEffect(()=>{
         props.onValueChange(document.getElementById('portfolio').offsetHeight);
       },[]);
@@ -19,7 +19,7 @@ export default function ProjectsSection({ scroll, setScroll,...props }) {
                                 <h1 className={style.title}>Internship 2024</h1>
                                 <p className={`${style.description} text-main-text`}>From April 2024 to August 2024</p>
                                 <button className={style.see_more}>
-                                    <Link href='/projects/Internship2024' onClick={()=>{setScroll(true)}}>See more</Link>
+                                    <Link href='/projects/Internship2024'>See more</Link>
                                 </button>
                             </div>
                         </div>

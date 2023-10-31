@@ -14,9 +14,6 @@ function Navbar(props) {
       let goToTop = 0
       element.addEventListener("click", ()=>{
         switch(index){
-          case 0:
-            goToTop = props.allTops.profileTop
-            break;
           case 1:
             goToTop = props.allTops.portfolioTop
             break;
@@ -29,6 +26,7 @@ function Navbar(props) {
           left : 0,
           behavior : "smooth",
         })
+        console.log(goToTop)
       })
     });
   }, []);

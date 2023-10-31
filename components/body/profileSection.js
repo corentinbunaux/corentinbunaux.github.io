@@ -79,8 +79,8 @@ function Photo(){
     return(
         <div className='container-fluid h-full'>
             <div className='columns-1 md:columns-2 h-full'>
-                <div className='h-1/2 md:h-full flex flex-col justify-center items-center md:w-5/6'>
-                    <Image src={photo} alt="photo" className='rounded-full h-auto w-auto max-h-full max-w-full md:w-1/2 lg:w-2/3 mt-10 md:mt-0'/>
+                <div id='photo' className='h-1/2 md:h-full flex flex-col justify-center items-center md:w-5/6 photo'>
+                    <Image src={photo} alt="photo" className='rounded-full h-auto w-auto max-h-full max-w-full md:w-1/2 lg:w-2/3 mt-10 md:mt-0 photo'/>
                 </div>
                 <div className='h-1/2 md:h-full hidden md:flex md:justify-end md:items-center'>
                     <ul className='h-1/6 p-5 hidden lg:flex flex-col justify-between'>

@@ -1,8 +1,12 @@
 import Link from 'next/link';
 import style from '../../styles/body/projectsSection.module.css'
-import { useEffect } from 'react';
+import { useEffect,useState } from 'react';
 
 export default function Project(){
+    const [portfolioTop, updateportfolioTop] = useState(0)
+    useEffect(()=>{
+        updateportfolioTop(parseInt(localStorage.getItem("portfolioTop")))
+    },[])
     return(
         <section className='project flex justify-center items-center'>
             <div className='container h-full flex flex-col'>
@@ -12,7 +16,7 @@ export default function Project(){
                 </div>
                 <div className='p-5'>
                     <button className={style.see_more}>
-                        <Link href='../#portfolio'>Go back to my portfolio</Link>
+                        <Link href='../' onClick={()=>{setTimeout(()=>{window.scroll({top : portfolioTop, left : 0, behavior : "smooth",});console.log(portfolioTop)},1000)}}> Go back to my portfolio</Link>
                     </button>
                 </div>
                 <div>
