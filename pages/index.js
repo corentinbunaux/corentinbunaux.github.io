@@ -31,7 +31,7 @@ export default function Website() {
         <title>Portfolio Corentin BUNAUX</title>
     </Head>
     <Navbar onValueChange={updateProfileTop} allTops={allTops}/>
-    <ProfileSection onValueChange={updatePortfolioTop}/>
+    <ProfileSection onValueChange={updatePortfolioTop} allTops={allTops}/>
     <ProjectsSection onValueChange={updateAboutTop}/>
     <AboutmeSection/>
     <Footer />

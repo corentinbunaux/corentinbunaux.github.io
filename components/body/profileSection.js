@@ -3,16 +3,9 @@ import Image from 'next/image'
 import photo from './../../public/CV.jpg'
 import { Parallax, ParallaxLayer } from '@react-spring/parallax';
 import Link from 'next/link';
+import style from '../../styles/body/profileSection.module.css'
 
 export default function ProfileSection(props){
-    const parallax = useRef(null);
-
-    const scroll = (to) => {
-      if (parallax.current) {
-        parallax.current.scrollTo(to);
-      }
-    };
-
     useEffect(() => {
         props.onValueChange(document.getElementById('home').offsetHeight);
 
@@ -30,16 +23,16 @@ export default function ProfileSection(props){
                 <ParallaxLayer sticky={{start : 0, end :1.1}} speed={1.5} style={{height : '100vh'}}>
                     <Photo/>
                 </ParallaxLayer>
-                <ParallaxLayer offset={0} speed={1.5} style={{height : '100vh'}} onClick={scroll(1)}>
+                <ParallaxLayer offset={0} speed={1.5} style={{height : '100vh'}}>
                     <Homepage/>
                 </ParallaxLayer>
-                <ParallaxLayer offset={1} speed={1.5} style={{height : '100vh'}} onClick={scroll(2)}>
+                <ParallaxLayer offset={1} speed={1.5} style={{height : '100vh'}}>
                     <Profile/>
                 </ParallaxLayer>
-                <ParallaxLayer offset={2} speed={1.5} style={{height : '100vh'}} onClick={scroll(3)}>
+                <ParallaxLayer offset={2} speed={1.5} style={{height : '100vh'}}>
                     <Path/>
                 </ParallaxLayer>
-                <ParallaxLayer offset={3} speed={1.5} style={{height : '100vh'}} onClick={scroll(0)}>
+                <ParallaxLayer offset={3} speed={1.5} style={{height : '100vh'}}>
                     <Abilities/>
                 </ParallaxLayer>
             </Parallax>
@@ -53,9 +46,10 @@ function Homepage(){
             <div className='absolute bg-my-blue h-1/4 md:h-1/3 w-full top-1/3 md:top-1/3 z-0'></div>
             <div className='columns-1 md:columns-2 h-full'>
                 <div className='h-1/2 md:h-full'></div>
-                <div className='h-1/2 md:h-full flex flex-col justify-start items-center mt-16 md:justify-center md:items-start'>
+                <div className='h-1/2 md:h-full flex flex-col justify-start items-center md:justify-center md:items-start'>
                     <h1><strong className='text-green-text'>Hey !</strong> I'm Corentin.</h1>
                     <h1 className='text-center'>An engineering student.</h1>
+                    <h1 className='w-1/2 flex justify-center mt-8 '><div className={`${style.iconscroll}`}></div></h1>
                 </div>
             </div>
         </div>
@@ -66,7 +60,7 @@ function Profile(){
         <div className='container-fluid h-full'>
             <div className='columns-1 md:columns-2 h-full'>
                 <div className='h-1/2 md:h-full'></div>
-                <div className='h-1/2 md:h-full md:me-60 md:me-10 lg:me-60'>
+                <div className='h-1/2 md:h-full md:me-10 lg:me-60'>
                     <h1 className='hidden md:block'>Who am I ?</h1>
                     <h2 className='text-blue-text'>An IT-Engineering Enthusiast</h2>
                     <p>As an IT-focused engineering student, I am a natural perfectionist with a keen sense of curiosity and perseverance. My academic path has enhanced my work capacity and adaptability, while my coursework has fostered autonomy, versatility, and a creative mindset.</p>
@@ -79,8 +73,8 @@ function Photo(){
     return(
         <div className='container-fluid h-full'>
             <div className='columns-1 md:columns-2 h-full'>
-                <div id='photo' className='h-1/2 md:h-full flex flex-col justify-center items-center md:w-5/6 photo'>
-                    <Image src={photo} alt="photo" className='rounded-full h-auto w-auto max-h-full max-w-full md:w-1/2 lg:w-2/3 mt-10 md:mt-0 photo'/>
+                <div className='h-1/2 md:h-full flex flex-col justify-center items-center md:w-5/6'>
+                    <Image src={photo} alt="photo" className='aspect-square rounded-full h-5/6 w-auto md:h-1/3 lg:h-1/2'/>
                 </div>
                 <div className='h-1/2 md:h-full hidden md:flex md:justify-end md:items-center'>
                     <ul className='h-1/6 p-5 hidden lg:flex flex-col justify-between'>
@@ -152,7 +146,18 @@ const [rotate, setRotate] = useState(0);
     <div className="w-full h-full flex justify-center items-start p-32">
         <div className='aspect-square rounded-full flex justify-center items-center h-full' style={{transform : `rotate(${-rotate}deg)`}}>
             {angles.map((angle,index)=>{
-                windowSize > 1024 ? reajust = 450 : reajust = 350
+                if(windowSize >1280){
+                    reajust = 400
+                }
+                else if(windowSize > 1024){
+                    reajust = 350
+                }
+                else if(windowSize > 768){
+                    reajust = 600
+                }
+                else{
+                    reajust = 350
+                }
                 transX = Math.cos(angle)*windowSize/(windowSize/reajust)
                 transY = Math.sin(angle)*windowSize/(windowSize/reajust)
                 return(
