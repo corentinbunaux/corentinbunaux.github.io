@@ -19,7 +19,7 @@ function AboutMe() {
                   <h1>About Me</h1>
               </div>
               <div className='h-5/6 p-10'>
-                  <p>I've been playing <strong className='text-blue-text'>TENNIS</strong> since I was a child. I've had the opportunity to coach groups of students during competitive events.</p>
+                  <p>I've played <strong className='text-blue-text'>TENNIS</strong> since I was a child. I've had the opportunity to coach groups of students during competitive events.</p>
                   <br></br>
                   <p>Over a decade, my consistent participation in tournaments have significantly strengthened my perseverance and competitive spirit.</p>
                   <br></br>
