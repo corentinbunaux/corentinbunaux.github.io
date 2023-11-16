@@ -40,7 +40,7 @@ export default function ProjectsSection(props) {
                         <div className={`relative h-full w-full ${style.fulldiv}`}>
                             <div className={`absolute h-full w-full rounded-lg ${style.webdev}`}></div>
                             <div className='flex flex-col justify-center items-center border border-second h-full rounded-lg w-full'>
-                                <h1 className={style.title}>Web developement</h1>
+                                <h1 className={style.title}>Web Developement</h1>
                                 <p className={`${style.description} text-main-text`}>Web portfolio V1 & V2</p>
                                 <button className={style.see_more}>
                                     <Link href='/projects/WebDev'>See more</Link>
