@@ -1,12 +1,12 @@
-import './styles/App.css';
+import Navbar from './components/navbar';
+import ProfileSection from './components/profileSection';
+import './styles/app.css';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-
-      </header>
-    </div>
+  return (<>
+  {/* <Navbar /> */}
+  <ProfileSection />
+  </>
   );
 }
 
