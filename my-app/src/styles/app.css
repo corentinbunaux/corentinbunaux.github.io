@@ -2,41 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
-:root{
-    --main : #1a1a1a;
-    --secondary : #333333;
-    --my-green : #81A3A7;
-    --my-blue : #a7bcc7;
-    --main-text : #f5f5f5;
-    --second-text : #666666;
+:root {
+    --main: #1a1a1a;
+    --secondary: #333333;
+    --my-green: #81A3A7;
+    --my-blue: #a7bcc7;
+    --main-text: #f5f5f5;
+    --second-text: #666666;
 }
 
 @media (max-width:768px) {
-    .home, .path, .project{
-        height : 100vh;
+
+    #home,
+    #profile {
+        height: 100vh;
     }
-    .aboutme{
-        height : 150vh;
+
+    #about {
+        height: 100vh;
     }
-    .portfolio{
-        height : 250vh;
+
+    #portfolio {
+        height: 250vh;
+    }
+
+    h1 {
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+    h2 {
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+
+    h3 {
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+
+    p {
+        margin-left: 1rem;
+        margin-right: 1rem;
     }
 }
 
 /*md*/
 @media (min-width:768px) {
-    .home, .path, .portfolio, .project{
-        height : 100vh;
+
+    #home,
+    #profile,
+    #about {
+        height: 100vh;
     }
-    .aboutme{
-        height : 120vh;
+
+    #portfolio{
+        height: 120vh;
     }
 }
 
 /*lg*/
 @media (min-width:1024px) {
-    .home, .path, .aboutme, .portfolio, .project{
-        height : 100vh;
+
+    #home,
+    #profile,
+    #about{
+        height: 100vh;
+    }
+    #portfolio {
+        height: 130vh;
     }
 }
 
@@ -46,43 +79,151 @@
 }
 
 ::-webkit-scrollbar-track {
-background: transparent;
+    background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-background: transparent;
+    background: transparent;
 }
 
 html {
-scrollbar-width: none;
+    scrollbar-width: none;
+    overflow-x: hidden;
 }
 
 body {
-scrollbar-width: none;
-background-color: var(--main);
-color : var(--main-text);
+    scrollbar-width: none;
+    background-color: var(--main);
+    color: var(--main-text);
+
+    user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
 }
 
-h1{
+h1 {
     font-size: 2.5rem;
-    color : var(--main-text);
+    color: var(--main-text);
     z-index: 1;
 }
-h2{
-    font-size : 1.875rem;
-    color : var(--main-text);
+
+h2 {
+    font-size: 1.875rem;
+    color: var(--main-text);
     z-index: 1;
 }
-h3{
+
+h3 {
     font-size: 1.25rem;
-    color : var(--main-text);
+    color: var(--main-text);
+    z-index: 1;
+    text-align: justify;
+}
+
+p {
+    font-size: 1.2rem;
+    text-align: justify;
+    color: var(--second-text);
     z-index: 1;
 }
-p{
-    font-size : 1.2rem;
-    text-align: justify;
-    color : var(--second-text);
-    z-index: 1;
+
+.outlined-text {
+    -webkit-text-stroke: 1px var(--main-text);
+    color: transparent;
+    font-size: 3.75rem;
+}
+
+.banner-section {
+    display: flex;
+    justify-content: center;
+    align-items: space-around;
+    animation: swipe var(--speed) linear infinite backwards; 
+}
+
+.paused {
+    animation-play-state: paused !important;
+}
+
+.description{
+    text-align: center;
+    padding : .5rem;
+}
+
+.title{
+    text-align : center;
+    padding : .5rem;
+    background: none;
+}
+
+.data-science{
+    background-image: url('../img/datascience.jpg');
+    background-size: cover;
+    opacity : 0.5;  
+    transition : opacity .2s ease-in-out;
+}
+
+.android{
+    background-image: url('../img/android.jpg');
+    background-size: cover;
+    opacity : 0.5;  
+    transition : opacity .2s ease-in-out;
+}
+
+.quimesis{
+    background-image: url('../img/quimesis.jpg');
+    background-size: cover;
+    opacity : 0.5;  
+    transition : opacity .2s ease-in-out;
+}
+
+.kusmitea{
+    background-image: url('../img/KT.jpg');
+    background-size: cover;
+    opacity : 0.5;
+    transition : opacity .2s ease-in-out;
+}
+
+.webdev{
+    background-image: url('../img/WebDev.jpg');
+    background-size: cover;
+    opacity : 0.5;
+    transition : opacity .2s ease-in-out;
+}
+
+.ap{
+    background-image: url('../img/A&P.jpg');
+    background-size: cover;
+    opacity : 0.5;
+    transition : opacity .2s ease-in-out;
+}
+
+.es{
+    background-image: url('../img/ES.jpg');
+    background-size: cover;
+    opacity : 0.5;
+    transition : opacity .2s ease-in-out;
+}
+
+.robotics{
+    background-image: url('../img/Robotics.jpg');
+    background-size: cover;
+    opacity : 0.5;
+    transition : opacity .2s ease-in-out;
+}
+
+.fulldiv:hover > div{
+    opacity: 1;
+}
+
+@keyframes swipe {
+    0% {
+        transform: translate(0);
+    }
+
+    100% {
+        transform: translate(-100%);
+    }
 }
 
 @keyframes ball_path {
@@ -491,17 +632,18 @@ p{
     }
 }
 
-.ball{
+.ball {
     position: relative;
-    top : 50%;
+    top: 50%;
     background: #dfff4f;
     border-radius: 50%;
     overflow: hidden;
-    height : 2.5rem;
-    width : 2.5rem;
+    height: 2.5rem;
+    width: 2.5rem;
     animation: ball_path 1s ease-out both;
 }
-.ball:before{
+
+.ball:before {
     content: '';
     position: absolute;
     width: 100%;
@@ -539,7 +681,6 @@ p{
     transform: scale(0.86);
 }
 
-
 .btn_federer:before,
 .btn_federer:after {
     position: absolute;
@@ -559,14 +700,14 @@ p{
     background-position: 50% 120%;
     animation: greentopBubbles 0.6s ease;
     background-image: radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
-    radial-gradient(circle, transparent 20%, var(--my-blue) 20%, transparent 30%),
-    radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
-    radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
-    radial-gradient(circle, transparent 10%, var(--my-blue) 15%, transparent 20%),
-    radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
-    radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
-    radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
-    radial-gradient(circle, var(--my-blue) 20%, transparent 20%);
+        radial-gradient(circle, transparent 20%, var(--my-blue) 20%, transparent 30%),
+        radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
+        radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, var(--my-blue) 15%, transparent 20%),
+        radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
+        radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
+        radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
+        radial-gradient(circle, var(--my-blue) 20%, transparent 20%);
 }
 
 @keyframes greentopBubbles {
@@ -593,12 +734,12 @@ p{
     background-position: 50% 0%;
     animation: greenbottomBubbles 0.6s ease;
     background-image: radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
-    radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
-    radial-gradient(circle, transparent 10%, var(--my-blue) 15%, transparent 20%),
-    radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
-    radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
-    radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
-    radial-gradient(circle, var(--my-blue) 20%, transparent 20%);
+        radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
+        radial-gradient(circle, transparent 10%, var(--my-blue) 15%, transparent 20%),
+        radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
+        radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
+        radial-gradient(circle, var(--my-blue) 20%, transparent 20%),
+        radial-gradient(circle, var(--my-blue) 20%, transparent 20%);
 }
 
 @keyframes greenbottomBubbles {
@@ -619,14 +760,16 @@ p{
     }
 }
 
-@keyframes endBtnFederer_pt1{
-    0%{
-        transform : scale(1) rotate(30deg);
+@keyframes endBtnFederer_pt1 {
+    0% {
+        transform: scale(1) rotate(30deg);
     }
-    25%{
+
+    25% {
         transform: scale(1.3) rotate(0deg);
     }
-    100%{
+
+    100% {
         transform: scale(0) rotate(180deg);
     }
 }

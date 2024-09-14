@@ -1,11 +1,11 @@
 import React from 'react'
-
+import '../styles/app.css'
 
 function Footer() {
   return (
-    <footer className="p-4 text-center text-main-text bg-my-green">
+    <footer className="p-4 text-center" style={{background: 'linear-gradient(to left, var(--my-green) 70%, var(--my-blue))'}}>
       <div className="container mx-auto">
-        <div className="mb-4"><strong>Please contact-me !</strong></div>
+        <div className="mb-4"><strong>Contactez-moi !</strong></div>
         <div className="flex justify-center items-center space-x-6 md:space-x-52 lg:space-x-80">
           <a href="http://linkedin.com/in/corentin-bunaux" target="_blank" rel="noopener noreferrer" className="text-main-text hover:underline flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 mr-2" viewBox="0 0 24 24">
@@ -24,10 +24,10 @@ function Footer() {
             <path fill="#F5F5F5" d="M2 7.42v14.172l7.086-7.086zM3.408 6l8.971 8.971c1.133 1.133 3.109 1.133 4.242 0L25.592 6H3.408z"></path>
             <path fill="#F5F5F5" d="M18.035 16.385c-.943.944-2.199 1.465-3.535 1.465s-2.592-.521-3.535-1.465l-.465-.465L3.42 23h22.16l-7.08-7.08-.465.465zM19.914 14.506L27 21.592V7.42z"></path>
             </svg>
-            Send e-mail
+            Lien e-mail
           </a>
         </div>
-        <div className="mt-4">2023 | Corentin Bunaux</div>
+        <div className="mt-4">2024 | Corentin Bunaux</div>
       </div>
     </footer>
   );

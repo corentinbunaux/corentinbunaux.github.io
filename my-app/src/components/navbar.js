@@ -32,21 +32,26 @@ function Navbar(props) {
   }, []);
 
   return (
-    <nav className="p-4 w-full fixed top-0 z-50">
+    <nav className="p-4 w-full fixed top-0 z-50" style={{ backdropFilter: 'blur(4px)'}}>
       <div className="container mx-auto">
         <ul className="flex space-x-6 md:space-x-12 items-center md:justify-start justify-center">
           <li>
-            <a className="text-main-text cursor-pointer">
+            <a className="cursor-pointer">
               Accueil
             </a>
           </li>
           <li>
-            <a className="text-main-text cursor-pointer">
+            <a className="cursor-pointer">
+              Profil
+            </a>
+          </li>
+          <li>
+            <a className="cursor-pointer">
               Portfolio
             </a>
           </li>
           <li>
-            <a className="text-main-text cursor-pointer">
+            <a className="cursor-pointer">
               À propos
             </a>
           </li>
