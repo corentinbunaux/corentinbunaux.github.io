@@ -26,24 +26,10 @@
         height: 250vh;
     }
 
-    h1 {
+    h1, h2, h3, p, button {
         margin-left: 1rem;
         margin-right: 1rem;
-    }
-    h2 {
-        margin-left: 1rem;
-        margin-right: 1rem;
-    }
-
-    h3 {
-        margin-left: 1rem;
-        margin-right: 1rem;
-    }
-
-    p {
-        margin-left: 1rem;
-        margin-right: 1rem;
-    }
+    }    
 }
 
 /*md*/
@@ -55,7 +41,7 @@
         height: 100vh;
     }
 
-    #portfolio{
+    #portfolio {
         height: 120vh;
     }
 }
@@ -65,9 +51,10 @@
 
     #home,
     #profile,
-    #about{
+    #about {
         height: 100vh;
     }
+
     #portfolio {
         height: 130vh;
     }
@@ -97,9 +84,12 @@ body {
     color: var(--main-text);
 
     user-select: none;
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* Internet Explorer/Edge */
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
 }
 
 h1 {
@@ -138,81 +128,81 @@ p {
     display: flex;
     justify-content: center;
     align-items: space-around;
-    animation: swipe var(--speed) linear infinite backwards; 
+    animation: swipe var(--speed) linear infinite backwards;
 }
 
 .paused {
     animation-play-state: paused !important;
 }
 
-.description{
+.description {
     text-align: center;
-    padding : .5rem;
+    padding: .5rem;
 }
 
-.title{
-    text-align : center;
-    padding : .5rem;
+.title {
+    text-align: center;
+    padding: .5rem;
     background: none;
 }
 
-.data-science{
+.data-science {
     background-image: url('../img/datascience.jpg');
     background-size: cover;
-    opacity : 0.5;  
-    transition : opacity .2s ease-in-out;
+    opacity: 0.5;
+    transition: opacity .2s ease-in-out;
 }
 
-.android{
+.android {
     background-image: url('../img/android.jpg');
     background-size: cover;
-    opacity : 0.5;  
-    transition : opacity .2s ease-in-out;
+    opacity: 0.5;
+    transition: opacity .2s ease-in-out;
 }
 
-.quimesis{
+.quimesis {
     background-image: url('../img/quimesis.jpg');
     background-size: cover;
-    opacity : 0.5;  
-    transition : opacity .2s ease-in-out;
+    opacity: 0.5;
+    transition: opacity .2s ease-in-out;
 }
 
-.kusmitea{
+.kusmitea {
     background-image: url('../img/KT.jpg');
     background-size: cover;
-    opacity : 0.5;
-    transition : opacity .2s ease-in-out;
+    opacity: 0.5;
+    transition: opacity .2s ease-in-out;
 }
 
-.webdev{
+.webdev {
     background-image: url('../img/WebDev.jpg');
     background-size: cover;
-    opacity : 0.5;
-    transition : opacity .2s ease-in-out;
+    opacity: 0.5;
+    transition: opacity .2s ease-in-out;
 }
 
-.ap{
+.ap {
     background-image: url('../img/A&P.jpg');
     background-size: cover;
-    opacity : 0.5;
-    transition : opacity .2s ease-in-out;
+    opacity: 0.5;
+    transition: opacity .2s ease-in-out;
 }
 
-.es{
+.es {
     background-image: url('../img/ES.jpg');
     background-size: cover;
-    opacity : 0.5;
-    transition : opacity .2s ease-in-out;
+    opacity: 0.5;
+    transition: opacity .2s ease-in-out;
 }
 
-.robotics{
+.robotics {
     background-image: url('../img/Robotics.jpg');
     background-size: cover;
-    opacity : 0.5;
-    transition : opacity .2s ease-in-out;
+    opacity: 0.5;
+    transition: opacity .2s ease-in-out;
 }
 
-.fulldiv:hover > div{
+.fulldiv:hover>div {
     opacity: 1;
 }
 
@@ -224,6 +214,29 @@ p {
     100% {
         transform: translate(-100%);
     }
+}
+
+.previous{
+    color: var(--main-text);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.previous::before{
+    margin-left: auto;
+}
+
+.previous::after, .previous::before{
+    content: '';
+    width: 0%;
+    height: 2px;
+    background: var(--my-green);
+    display: block;
+    transition: 0.5s;
+}
+
+.previous:hover::before, .previous:hover::after{
+    width: 100%;
 }
 
 @keyframes ball_path {
