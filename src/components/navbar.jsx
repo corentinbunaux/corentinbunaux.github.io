@@ -32,7 +32,7 @@ function Navbar(props) {
     if (window.location.hash === '#portfolio') {
       handleClick(2);
     }
-  }, [window.location.hash, handleClick]);
+  }, [handleClick]);
 
   return (
     <nav className="p-2 md:p-4 fixed top-0" style={{ backdropFilter: 'blur(4px)', width : "100vw", zIndex:"100" }}>

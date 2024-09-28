@@ -19,13 +19,13 @@ function ProfileSection(props) {
                 <h1 className='outlined-text'>Compétences</h1>
                 <h3 className='mt-1 mb-1'>Je parle <strong style={{ color: 'var(--my-green)' }}>anglais</strong> à niveau professionnel (C1, score TOIEC : <strong style={{ color: 'var(--my-green)' }}>950/990</strong>), et <strong style={{ color: 'var(--my-green)' }}>espagnol</strong> à niveau intermédiaire (B1), en plus de ma langue maternelle qui est le <strong style={{ color: 'var(--my-green)' }}>français</strong>.</h3>
                 <h3 className='mt-1 mb-1'>Une pluralité de projets scolaires, personnels, et en entreprise m'ont permis de développer une aisance avec les technologies et langages de programmations qui suivent.</h3>
-                <h3 className='cursor-pointer'><a onClick={() => {
+                <h3 className='cursor-pointer'><div onClick={() => {
                     window.scroll({
                         top: props.portfolioTop,
                         left: 0,
                         behavior: "smooth",
                     });
-                }} className='underline'>Voir les projets</a>.</h3>
+                }} className='underline'>Voir les projets</div></h3>
                 <br className='hidden md:inline'></br>
                 <br className='hidden md:inline'></br>
                 <br className='hidden lg:inline'></br>
