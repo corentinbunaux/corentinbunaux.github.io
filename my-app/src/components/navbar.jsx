@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useCallback } from 'react';
 
 function Navbar(props) {
 
-  function handleClick(index) {
+  const handleClick = useCallback((index) => {
     let scrollTop;
     switch (index) {
       case 0:
@@ -26,38 +26,37 @@ function Navbar(props) {
       left: 0,
       behavior: "smooth",
     });
-  };
+  }, [props.allTops]);
 
   useEffect(() => {
-    console.log(window.location.hash);
     if (window.location.hash === '#portfolio') {
       handleClick(2);
     }
-  }, [window.location.hash, props.allTops.portfolioTop]);
+  }, [window.location.hash, handleClick]);
 
   return (
-    <nav className="p-4 w-full fixed top-0 z-50" style={{ backdropFilter: 'blur(4px)' }}>
+    <nav className="p-2 md:p-4 fixed top-0" style={{ backdropFilter: 'blur(4px)', width : "100vw", zIndex:"100" }}>
       <div className="container mx-auto">
         <ul className="flex space-x-6 md:space-x-12 items-center md:justify-start justify-center">
           <li>
-            <a className="cursor-pointer" onClick={() => { handleClick(0) }}>
+            <div className="cursor-pointer" onClick={() => { handleClick(0) }}>
               Accueil
-            </a>
+            </div>
           </li>
           <li>
-            <a className="cursor-pointer" onClick={() => { handleClick(1) }}>
+            <div className="cursor-pointer" onClick={() => { handleClick(1) }}>
               Profil
-            </a>
+            </div>
           </li>
           <li>
-            <a className="cursor-pointer" onClick={() => { handleClick(2) }}>
+            <div className="cursor-pointer" onClick={() => { handleClick(2) }}>
               Portfolio
-            </a>
+            </div>
           </li>
           <li>
-            <a className="cursor-pointer" onClick={() => { handleClick(3) }}>
+            <div className="cursor-pointer" onClick={() => { handleClick(3) }}>
               À propos
-            </a>
+            </div>
           </li>
         </ul>
       </div>

@@ -10,7 +10,6 @@ import { useState, useEffect } from 'react';
 
 
 function App(props) {
-  const [scrollY, setScrollY] = useState(0);
 
   const [allTops, setAllTops] = useState({
     homepageTop: 0,
@@ -32,11 +31,16 @@ function App(props) {
     updateTops();
 
     window.addEventListener('resize', updateTops);
-    window.addEventListener('scroll', () => { setScrollY(window.scrollY) });
 
     return () => {
       window.removeEventListener('resize', updateTops);
     };
+  }, []);
+
+  useEffect(() => {
+    if (performance.navigation.type === 1) {
+      window.location.href = '/';
+    }
   }, []);
 
   return (

@@ -37,7 +37,7 @@
         }
 
         #about {
-            height: 150vh;
+            height: 170vh;
         }
 
         #portfolio {
@@ -106,6 +106,11 @@
 
         #portfolio {
             height: 130vh;
+        }
+
+        h3 {
+            font-size: 3rem;
+            background-color: 'red';
         }
     }
 
@@ -201,6 +206,35 @@ p {
     animation-play-state: paused !important;
 }
 
+.banner-section .aspect-square::before {
+    content: attr(data-content);
+    position: absolute;
+    bottom: 0%;
+    transform: translateY(0%);
+    opacity: 0;
+    border: solid 2px var(--my-blue);
+    border-radius: 9999px 9999px 9999px 9999px;
+    padding: .5rem;
+    transition: all 0.3s ease-in-out;
+    width: auto;
+    height: auto;
+    white-space: nowrap;
+    font-size: 1rem;
+    color : var(--main-text);
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.banner-section .aspect-square:hover::before {
+    transform: translateY(130%);
+    opacity: 1;
+}
+
+.banner-section .aspect-square:hover{
+    transform: scale(1.05);
+    transition: all 0.3s ease-in-out;
+}
+
 .description {
     text-align: center;
     padding: .5rem;
@@ -216,60 +250,55 @@ p {
     background-image: url('../img/datascience.jpg');
     background-size: cover;
     opacity: 0.5;
-    transition: opacity .2s ease-in-out;
+    transition: all .2s ease-in-out;
 }
 
 .android {
     background-image: url('../img/android.jpg');
     background-size: cover;
     opacity: 0.5;
-    transition: opacity .2s ease-in-out;
 }
 
 .quimesis {
     background-image: url('../img/quimesis.jpg');
     background-size: cover;
     opacity: 0.5;
-    transition: opacity .2s ease-in-out;
 }
 
 .kusmitea {
     background-image: url('../img/KT.jpg');
     background-size: cover;
     opacity: 0.5;
-    transition: opacity .2s ease-in-out;
 }
 
 .web {
     background-image: url('../img/WebDev.jpg');
     background-size: cover;
     opacity: 0.5;
-    transition: opacity .2s ease-in-out;
 }
 
 .programming {
     background-image: url('../img/A&P.jpg');
     background-size: cover;
     opacity: 0.5;
-    transition: opacity .2s ease-in-out;
 }
 
 .embedded {
     background-image: url('../img/ES.jpg');
     background-size: cover;
     opacity: 0.5;
-    transition: opacity .2s ease-in-out;
 }
 
 .robotics {
     background-image: url('../img/Robotics.jpg');
     background-size: cover;
     opacity: 0.5;
-    transition: opacity .2s ease-in-out;
 }
 
 .fulldiv:hover>div {
     opacity: 1;
+    transform: scale(1.05);
+    transition: all .2s ease-in-out;
 }
 
 @keyframes swipe {

@@ -6,8 +6,8 @@ const projects = [
     { cssClass: 'quimesis', title: 'Quimesis', description: "Stage d'ingénierie logicielle" },
     { cssClass: 'kusmitea', title: 'Kusmi Tea', description: 'Stage ouvrier' },
     { cssClass: 'datascience', title: 'Science des données', description: 'Bientôt disponible' },
-    { cssClass: 'web', title: 'Dévelopement Web', description: 'Portfolio' },
-    { cssClass: 'programming', title: 'Programmation', description: "Algorithmes d'optimisation" },
+    { cssClass: 'web', title: 'Dévelopement Web', description: 'Portfolio & API Rest' },
+    { cssClass: 'programming', title: 'Programmation', description: "Algorithmie et structure de données" },
     { cssClass: 'embedded', title: 'Systèmes Embarqués', description: 'Projet Robot' },
     { cssClass: 'robotics', title: 'Robotique', description: "Élaboration d'un bras d'exosquelette" },
 ];
