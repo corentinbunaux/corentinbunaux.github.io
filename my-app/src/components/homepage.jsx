@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react'
+import { React, useState, useEffect, useRef } from 'react'
 import photo from '../img/CV.jpg'
 import '../styles/app.css';
 
@@ -9,8 +9,8 @@ function Homepage() {
             <div className='absolute h-full w-full'>
                 <div className='columns-1 md:columns-2 h-full'>
                     <div className='relative h-1/2 md:h-full flex justify-center items-center'>
-                        <img src={photo} alt="photo" className='absolute aspect-square rounded-full h-2/3 w-auto md:h-1/3 lg:h-1/2' />
-                        <div className='absolute aspect-square rounded-full h-4/5 w-auto md:h-1/2 lg:h-2/3'>
+                        <img src={photo} alt="photo" className='absolute aspect-square rounded-full w-2/3 md:w-full lg:w-1/2 h-auto' />
+                        <div className='absolute aspect-square rounded-full w-2/3 md:w-full lg:w-1/2 h-auto'>
                             <RoundContainer />
                         </div>
                     </div>
@@ -51,9 +51,6 @@ function RoundContainer() {
     }
 
     const [rotate, setRotate] = useState(0);
-    let transY = 0,
-        transX = 0,
-        reajust = 1;
 
     const [windowSize, setWindowSize] = useState(window.innerWidth);
 
@@ -78,35 +75,24 @@ function RoundContainer() {
     }, []);
 
 
+    const parentDivRef = useRef(null);
+    const [parentSize, setParentSize] = useState({ width: 0, height: 0 });
+
+    useEffect(() => {
+        if (parentDivRef.current) {
+            const { offsetWidth, offsetHeight } = parentDivRef.current;
+            setParentSize({ width: offsetWidth, height: offsetHeight });
+        }
+    }, []);
+
     return (
-        <div className="w-full h-full flex justify-center items-start p-32">
-            <div className='aspect-square rounded-full flex justify-center items-center h-full' style={{ transform: `rotate(${-rotate}deg)` }}>
+        <div className="relative w-full h-full flex justify-center items-start">
+            <div ref={parentDivRef} className='aspect-square rounded-full flex justify-center items-center h-full' style={{ transform: `rotate(${-rotate}deg)` }}>
                 {angles.map((angle, index) => {
-                    if (windowSize > 2000) {
-                        reajust = 2 * windowSize / 5;
-                    }
-                    else if (windowSize > 1600) {
-                        reajust = windowSize / 2;
-                    }
-                    else if (windowSize > 1280) {
-                        reajust = 2 * windowSize / 3;
-                    }
-                    else if (windowSize > 1024) {
-                        reajust = 2 * windowSize / 3
-                    }
-                    else if (windowSize > 768) {
-                        reajust = 2 * windowSize / 3
-                    }
-                    else if (windowSize > 600) {
-                        reajust = 3 * windowSize / 4
-                    }
-                    else {
-                        reajust = windowSize;
-                    }
-                    transX = Math.cos(angle) * windowSize / (windowSize / reajust)
-                    transY = Math.sin(angle) * windowSize / (windowSize / reajust)
+                    const transX = Math.cos(angle) * parentSize.width / 2;
+                    const transY = Math.sin(angle) * parentSize.height / 2;
                     return (
-                        <div key={angle} style={{ transform: `translate(${transX}%, ${transY}%) rotate(${rotate}deg)` }} className='absolute aspect-square h-9 md:h-17 rounded-full flex justify-center items-center wheel-item'>
+                        <div key={angle} style={{ transform: `translate(${transX}px, ${transY}px) rotate(${rotate}deg)` }} className='absolute aspect-square h-9 md:h-17 rounded-full flex justify-center items-center wheel-item'>
                             <WheelItem index={index} />
                         </div>
                     );
@@ -114,7 +100,7 @@ function RoundContainer() {
             </div>
         </div>
     );
-}
+};
 
 function WheelItem(props) {
     switch (props.index) {

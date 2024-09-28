@@ -9,7 +9,9 @@ import Footer from './components/footer';
 import { useState, useEffect } from 'react';
 
 
-function App() {
+function App(props) {
+  const [scrollY, setScrollY] = useState(0);
+
   const [allTops, setAllTops] = useState({
     homepageTop: 0,
     profileTop: 0,
@@ -30,33 +32,12 @@ function App() {
     updateTops();
 
     window.addEventListener('resize', updateTops);
+    window.addEventListener('scroll', () => { setScrollY(window.scrollY) });
 
     return () => {
       window.removeEventListener('resize', updateTops);
     };
   }, []);
-
-  const [tab, setTab] = useState('full-portfolio');
-
-  useEffect(() => {
-    if (tab !== 'full-portfolio') {
-      const preventDefault = (e) => e.preventDefault();
-      window.addEventListener('wheel', preventDefault, { passive: false });
-      window.addEventListener('touchmove', preventDefault, { passive: false });
-      window.addEventListener('keydown', (e) => {
-        // Prevent scrolling with arrow keys, spacebar, and page up/down
-        if (['ArrowUp', 'ArrowDown', 'Space', 'PageUp', 'PageDown'].includes(e.code)) {
-          preventDefault(e);
-        }
-      }, { passive: false });
-
-      return () => {
-        window.removeEventListener('wheel', preventDefault);
-        window.removeEventListener('touchmove', preventDefault);
-        window.removeEventListener('keydown', preventDefault);
-      };
-    }
-  }, [tab]);
 
   return (
     <React.Fragment>
@@ -65,12 +46,12 @@ function App() {
         <Homepage />
       </section>
       <section id='profile'>
-        <ProfileSection portfolioTop={allTops.portfolioTop}/>
+        <ProfileSection portfolioTop={allTops.portfolioTop} />
       </section>
       <section id='portfolio'>
-        <ProjectsSection tab={tab} setTab={setTab} />
+        <ProjectsSection scrollY={window.scrollY} />
       </section>
-      <section id='about'>
+      <section id='about' className='flex justify-center items-center'>
         <AboutMe />
       </section>
       <section id='footer'>

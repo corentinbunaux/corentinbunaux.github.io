@@ -4,21 +4,21 @@ function Navbar(props) {
 
   function handleClick(index) {
     let scrollTop;
-    switch(index) {
+    switch (index) {
       case 0:
-      scrollTop = props.allTops.homepageTop;
-      break;
+        scrollTop = props.allTops.homepageTop;
+        break;
       case 1:
-      scrollTop = props.allTops.profileTop;
-      break;
+        scrollTop = props.allTops.profileTop;
+        break;
       case 2:
-      scrollTop = props.allTops.portfolioTop;
-      break;
+        scrollTop = props.allTops.portfolioTop;
+        break;
       case 3:
-      scrollTop = props.allTops.aboutTop;
-      break;
+        scrollTop = props.allTops.aboutTop;
+        break;
       default:
-      scrollTop = 0;
+        scrollTop = 0;
     }
 
     window.scroll({
@@ -27,6 +27,13 @@ function Navbar(props) {
       behavior: "smooth",
     });
   };
+
+  useEffect(() => {
+    console.log(window.location.hash);
+    if (window.location.hash === '#portfolio') {
+      handleClick(2);
+    }
+  }, [window.location.hash, props.allTops.portfolioTop]);
 
   return (
     <nav className="p-4 w-full fixed top-0 z-50" style={{ backdropFilter: 'blur(4px)' }}>

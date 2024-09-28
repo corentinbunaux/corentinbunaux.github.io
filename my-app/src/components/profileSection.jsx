@@ -13,7 +13,7 @@ function ProfileSection(props) {
                 <h3 className='mt-1 mb-1'>Je suis quelqu'un de naturellement curieux, avec le sens du détail, et qui porte un certain intérêt envers les nouvelles technologies.</h3>
                 <br className='hidden md:inline'></br>
                 <br className='hidden md:inline'></br>
-                <br className='hidden md:inline'></br>
+                <br className='hidden lg:inline'></br>
 
                 <br></br>
                 <h1 className='outlined-text'>Compétences</h1>
@@ -28,8 +28,8 @@ function ProfileSection(props) {
                 }} className='underline'>Voir les projets</a>.</h3>
                 <br className='hidden md:inline'></br>
                 <br className='hidden md:inline'></br>
-                <br className='hidden md:inline'></br>
-                <br className='hidden md:inline'></br>
+                <br className='hidden lg:inline'></br>
+                <br className='hidden lg:inline'></br>
 
                 <Banner />
             </div>

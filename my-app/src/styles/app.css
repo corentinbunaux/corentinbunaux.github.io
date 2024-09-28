@@ -11,29 +11,74 @@
     --second-text: #666666;
 }
 
+/* smartphones */
 @media (max-width:768px) {
 
-    #home,
-    #profile {
-        height: 100vh;
+    h1,
+    h2,
+    h3,
+    p,
+    button {
+        margin-left: .5rem;
+        margin-right: .5rem;
     }
 
-    #about {
-        height: 100vh;
+    h3 {
+        font-size: 1.25rem;
     }
 
-    #portfolio {
-        height: 250vh;
+    @media (max-height:750px) {
+        #home {
+            height: 100vh;
+        }
+
+        #profile {
+            height: 200vh;
+        }
+
+        #about {
+            height: 150vh;
+        }
+
+        #portfolio {
+            height: 260vh;
+        }
     }
 
-    h1, h2, h3, p, button {
-        margin-left: 1rem;
-        margin-right: 1rem;
-    }    
+    @media (min-height:750px) {
+        #home {
+            height: 100vh;
+        }
+
+        #profile {
+            height: 145vh;
+        }
+
+        #about {
+            height: 120vh;
+        }
+
+        #portfolio {
+            height: 250vh;
+        }
+    }
 }
 
 /*md*/
 @media (min-width:768px) {
+
+    h1,
+    h2,
+    h3,
+    p,
+    button {
+        margin-left: .5rem;
+        margin-right: .5rem;
+    }
+
+    h3 {
+        font-size: 1.25rem;
+    }
 
     #home,
     #profile,
@@ -48,15 +93,36 @@
 
 /*lg*/
 @media (min-width:1024px) {
+    @media (min-height:768px) {
 
-    #home,
-    #profile,
-    #about {
-        height: 100vh;
+        #home,
+        #about {
+            height: 100vh;
+        }
+
+        #profile {
+            height: 120vh;
+        }
+
+        #portfolio {
+            height: 130vh;
+        }
     }
 
-    #portfolio {
-        height: 130vh;
+    @media (max-height:768px) {
+
+        #home,
+        #about {
+            height: 100vh;
+        }
+
+        #profile {
+            height: 120vh;
+        }
+
+        #portfolio {
+            height: 130vh;
+        }
     }
 }
 
@@ -146,7 +212,7 @@ p {
     background: none;
 }
 
-.data-science {
+.datascience {
     background-image: url('../img/datascience.jpg');
     background-size: cover;
     opacity: 0.5;
@@ -174,21 +240,21 @@ p {
     transition: opacity .2s ease-in-out;
 }
 
-.webdev {
+.web {
     background-image: url('../img/WebDev.jpg');
     background-size: cover;
     opacity: 0.5;
     transition: opacity .2s ease-in-out;
 }
 
-.ap {
+.programming {
     background-image: url('../img/A&P.jpg');
     background-size: cover;
     opacity: 0.5;
     transition: opacity .2s ease-in-out;
 }
 
-.es {
+.embedded {
     background-image: url('../img/ES.jpg');
     background-size: cover;
     opacity: 0.5;
@@ -216,17 +282,18 @@ p {
     }
 }
 
-.previous{
+.previous {
     color: var(--main-text);
     font-size: 1.25rem;
     font-weight: 600;
 }
 
-.previous::before{
+.previous::before {
     margin-left: auto;
 }
 
-.previous::after, .previous::before{
+.previous::after,
+.previous::before {
     content: '';
     width: 0%;
     height: 2px;
@@ -235,7 +302,8 @@ p {
     transition: 0.5s;
 }
 
-.previous:hover::before, .previous:hover::after{
+.previous:hover::before,
+.previous:hover::after {
     width: 100%;
 }
 
