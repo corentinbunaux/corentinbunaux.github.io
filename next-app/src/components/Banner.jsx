@@ -1,12 +1,12 @@
-import { React, useEffect, useState } from "react";
-import '../styles/app.css';
+import React, { useEffect, useState } from 'react';
+import '../app/app.css';
 import BannerElement from "./BannerElement";
 
 const dataContents = [
   "HTML 5",
   "CSS 3 & SASS",
   "JavaScript",
-  "React.js",
+  "React.js & Next.js",
   "TypeScript",
   "Kotlin",
   "SQL",
@@ -25,8 +25,11 @@ const Banner = () => {
   const [right, setRight] = useState('0%');
   const [speed, setSpeed] = useState(5000);
   const [isHovered, setIsHovered] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
 
   useEffect(() => {
+    setIsClient(true);
     const handleResize = () => {
       // sm
       if (window.innerWidth < 768) {
@@ -75,7 +78,7 @@ const Banner = () => {
         <div className="banner-section sm:w-1/2 lg:w-1/3" style={{ "--speed": `${speed}ms` }}>
           <CarouselElmts isHovered={isHovered} setIsHovered={setIsHovered} />
         </div>
-        {window.innerWidth >= "1024px" &&
+        {isClient && window.innerWidth >= "1024px" &&
           <div className="banner-section lg:w-1/3" style={{ "--speed": `${speed}ms` }}>
             <CarouselElmts isHovered={isHovered} setIsHovered={setIsHovered} />
           </div>}

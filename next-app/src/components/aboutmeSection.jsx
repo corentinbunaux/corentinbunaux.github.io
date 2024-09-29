@@ -1,6 +1,6 @@
 import React from 'react';
 import Federer from './federer';
-import '../styles/app.css'
+import '../app/app.css'
 
 function AboutMe() {
   function TennisBallAnim() {

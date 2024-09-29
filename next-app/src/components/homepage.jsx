@@ -1,6 +1,7 @@
-import { React, useState, useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react';
 import photo from '../img/CV.jpg'
-import '../styles/app.css';
+import '../app/app.css';
+import Image from 'next/image';
 
 function Homepage() {
     return (
@@ -9,7 +10,7 @@ function Homepage() {
             <div className='absolute h-full w-full'>
                 <div className='columns-1 md:columns-2 h-full'>
                     <div className='relative h-1/2 md:h-full flex justify-center items-center'>
-                        <img src={photo} alt='' className='absolute aspect-square rounded-full w-2/3 md:w-full lg:w-1/2 h-auto' />
+                        <Image src={photo} alt='' className='absolute aspect-square rounded-full w-2/3 md:w-full lg:w-1/2 h-auto' />
                         <div className='absolute aspect-square rounded-full w-2/3 md:w-full lg:w-1/2 h-auto'>
                             <RoundContainer />
                         </div>

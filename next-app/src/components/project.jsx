@@ -1,5 +1,8 @@
-import React from 'react'
-import '../styles/app.css'
+"use client";
+
+import Image from 'next/image'
+import '../app/app.css'
+import { useEffect, useState } from 'react'
 import TIPE1 from '../img/TIPE1.jpg'
 import TIPE2 from '../img/TIPE2.jpg'
 import Quimesis1 from '../img/Quimesis1.png'
@@ -80,7 +83,7 @@ const contentOfPopUp = {
         mainPart: [
             {
                 title: 'Portfolio',
-                technologies: 'HTML, CSS, JavaScript, React.js, TailwindCSS',
+                technologies: 'HTML, CSS, JavaScript, React.js, TailwindCSS, Next.js',
                 description: 'J\'ai commencé par créer une première version de mon portfolio en utilisant les langages HTML, CSS et JavaScript. J\'ai ensuite décidé de l\'améliorer grâce à React.js, pour me familiariser avec ce framework, et en apprendre davantage sur les frameworks full-stack (Next.js). J\'ai également utilisé TailwindCSS pour faciliter le design.',
                 illustration: Web1,
             },
@@ -164,6 +167,13 @@ const contentOfPopUp = {
 };
 
 function Project(props) {
+
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
     return (
         <div className='absolute h-full w-full z-50' style={{ top: `${props.scrollY}px`, backdropFilter: 'blur(10px)' }}>
             <div className='container-fluid h-full flex justify-center items-center'>
@@ -180,21 +190,21 @@ function Project(props) {
                     <div id="popUpContent" className='container-fluid h-full'>
                         <h3 className='text-align'>{contentOfPopUp[props.tab].context}</h3>
                         {contentOfPopUp[props.tab].mainPart.map((part, index) => (
-                            (index % 2 === 0 && window.innerWidth > 768) ? (
+                            (index % 2 === 0 && isClient && window.innerWidth > 768) ? (
                                 <div className='mt-8 w-full h-2/3 flex flex-col md:flex-row' key={index}>
                                     <div className='h-full w-full md:w-1/2 flex flex-col justify-center'>
                                         <h2>{part.title}</h2>
                                         <h3>{part.technologies}</h3>
                                         <p className='text-align'>{part.description}</p>
                                     </div>
-                                    <div className='h-full w-full md:w-1/2 flex justify-center items-center p-16'>
-                                        <img src={part.illustration} alt={part.title} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                    <div className='h-full w-full md:w-1/2 flex justify-center items-center p-16' style={{ overflow: 'hidden' }} >
+                                        <Image src={part.illustration} alt={part.title} />
                                     </div>
                                 </div>
-                            ) : (index % 2 === 1 && window.innerWidth > 768) ? (
+                            ) : (index % 2 === 1 && isClient && window.innerWidth > 768) ? (
                                 <div className='mt-8 w-full h-2/3 flex flex-col md:flex-row' key={index}>
-                                    <div className='h-full w-full md:w-1/2 flex justify-center items-center p-20'>
-                                        <img src={part.illustration} alt={part.title} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                    <div className='h-full w-full md:w-1/2 flex justify-center items-center p-20' style={{ overflow: 'hidden' }} >
+                                        <Image src={part.illustration} alt={part.title} />
                                     </div>
                                     <div className='h-full w-full md:w-1/2 flex flex-col justify-center'>
                                         <h2>{part.title}</h2>
@@ -207,8 +217,8 @@ function Project(props) {
                                         <h3>{part.technologies}</h3>
                                         <p className='text-align'>{part.description}</p>
                                     </div>
-                                    <div className='h-full w-full md:w-1/2 flex justify-center items-center p-20'>
-                                        <img src={part.illustration} alt={part.title} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                    <div className='h-full w-full md:w-1/2 flex justify-center items-center p-20' style={{ overflow: 'hidden' }} >
+                                        <Image src={part.illustration} alt={part.title} />
                                     </div>
                                 </div>)))}
                     </div>

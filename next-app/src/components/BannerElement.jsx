@@ -1,5 +1,5 @@
 import React from "react"
-import '../styles/app.css';
+import '../app/app.css';
 
 function BannerElement(props) {
     const handleMouseEnter = () => {
