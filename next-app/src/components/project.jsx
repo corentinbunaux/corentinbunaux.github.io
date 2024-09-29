@@ -1,10 +1,12 @@
 "use client";
 
+import Link from 'next/link'
 import Image from 'next/image'
 import '../app/app.css'
 import { useEffect, useState } from 'react'
-import TIPE1 from '../img/TIPE1.jpg'
-import TIPE2 from '../img/TIPE2.jpg'
+import Robotics1 from '../img/Robotics1.png'
+import Robotics2 from '../img/Robotics2.png'
+
 import Quimesis1 from '../img/Quimesis1.png'
 import Quimesis2 from '../img/Quimesis2.png'
 import Quimesis3 from '../img/Quimesis3.png'
@@ -154,13 +156,13 @@ const contentOfPopUp = {
                 title: 'Création de pièces mécaniques',
                 technologies: 'Solidworks',
                 description: 'Nous avons commencé par modéliser différentes pièces mécaniques sur Solidworks. Ces pièces devaient pouvoir s\'incorporer sur une attèle de rééducation, qui nous servait de base pour le projet. Ainsi, nous avons conçu une pièce permettant de fixer un moteur sur l\'attèle, le plus proche de la liaison pivot située sur le coude.',
-                illustration: TIPE1,
+                illustration: Robotics1,
             },
             {
                 title: 'Mise en place du système de commande et de contrôle',
                 technologies: 'Arduino',
                 description: 'Par la suite, nous avons mis en place un système de commande et de contrôle pour le bras d\'exosquelette. Nous avons utilisé une carte Arduino pour contrôler le moteur, et nous avons développé un programme en C++ pour gérer les différentes tâches du bras.',
-                illustration: TIPE2,
+                illustration: Robotics2,
             },
         ],
     }
@@ -183,9 +185,9 @@ function Project(props) {
                         <h2>{contentOfPopUp[props.tab].description}</h2>
                     </div>
                     <div className='flex justify-center items-center md:justify-start mb-1 md:mb-2'>
-                        <a href="/#portfolio" className='previous'>
+                        <Link href="/#portfolio" className='previous'>
                             Retour
-                        </a>
+                        </Link>
                     </div>
                     <div id="popUpContent" className='container-fluid h-full'>
                         <h3 className='text-align'>{contentOfPopUp[props.tab].context}</h3>

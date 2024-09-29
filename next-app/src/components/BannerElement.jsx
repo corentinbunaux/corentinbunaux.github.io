@@ -1,6 +1,6 @@
 import React from "react"
-import Image from "next/image";
 import '../app/app.css';
+import Image from 'next/image';
 
 function BannerElement(props) {
     const handleMouseEnter = () => {
