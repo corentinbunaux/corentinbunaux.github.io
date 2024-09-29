@@ -15,7 +15,7 @@ const projects = [
 const ProjectCard = ({ cssClass, title, description }) => (
     <div className='p-4'>
         <Link href={`/${cssClass}`} className='relative h-full w-full fulldiv cursor-pointer'>
-            <div className={`absolute h-full w-full rounded-lg ${cssClass}`} style={{ height: '100%', width: '100%' }}></div>
+            <div className={`absolute h-full w-full rounded-lg android ${cssClass}`}></div>
             <div className='flex flex-col justify-center items-center border border-second h-full rounded-lg w-full'>
                 <h1 className='title'>{title}</h1>
                 <h3 className='description'>{description}</h3>
