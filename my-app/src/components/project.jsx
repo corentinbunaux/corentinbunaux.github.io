@@ -188,13 +188,13 @@ function Project(props) {
                                         <p className='text-align'>{part.description}</p>
                                     </div>
                                     <div className='h-full w-full md:w-1/2 flex justify-center items-center p-16'>
-                                        <img src={part.illustration} alt={part.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        <img src={part.illustration} alt={part.title} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                                     </div>
                                 </div>
                             ) : (index % 2 === 1 && window.innerWidth > 768) ? (
                                 <div className='mt-8 w-full h-2/3 flex flex-col md:flex-row' key={index}>
                                     <div className='h-full w-full md:w-1/2 flex justify-center items-center p-20'>
-                                        <img src={part.illustration} alt={part.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        <img src={part.illustration} alt={part.title} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                                     </div>
                                     <div className='h-full w-full md:w-1/2 flex flex-col justify-center'>
                                         <h2>{part.title}</h2>
@@ -208,7 +208,7 @@ function Project(props) {
                                         <p className='text-align'>{part.description}</p>
                                     </div>
                                     <div className='h-full w-full md:w-1/2 flex justify-center items-center p-20'>
-                                        <img src={part.illustration} alt={part.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        <img src={part.illustration} alt={part.title} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                                     </div>
                                 </div>)))}
                     </div>
