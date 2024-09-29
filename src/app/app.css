@@ -146,7 +146,7 @@
 
 html {
     scrollbar-width: none;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 body {
