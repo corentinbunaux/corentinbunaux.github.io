@@ -55,7 +55,7 @@
         }
 
         #about {
-            height: 120vh;
+            height: 130vh;
         }
 
         #portfolio {
@@ -146,7 +146,7 @@
 
 html {
     scrollbar-width: none;
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
 body {
@@ -246,14 +246,14 @@ p {
     background: none;
 }
 
-.datascience {
+/* .datascience {
     background-image: url('../img/datascience.jpg');
     background-size: cover;
     opacity: 0.5;
     transition: all .2s ease-in-out;
-}
+} */
 
-.android {
+/* .android {
     background-image: url('../img/android.jpg');
     background-size: cover;
     opacity: 0.5;
@@ -293,7 +293,7 @@ p {
     background-image: url('../img/Robotics.jpg');
     background-size: cover;
     opacity: 0.5;
-}
+} */
 
 .fulldiv:hover>div {
     opacity: 1;

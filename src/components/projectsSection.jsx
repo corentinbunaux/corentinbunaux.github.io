@@ -1,5 +1,6 @@
 import '../app/app.css'
 import Link from 'next/link'
+import Image from 'next/image'
 
 const projects = [
     { cssClass: 'android', title: 'Android', description: 'Bientôt disponible' },
@@ -15,7 +16,7 @@ const projects = [
 const ProjectCard = ({ cssClass, title, description }) => (
     <div className='p-4'>
         <Link href={`/${cssClass}`} className='relative h-full w-full fulldiv cursor-pointer'>
-            <div className={`absolute h-full w-full rounded-lg android ${cssClass}`}></div>
+            <Image src={`../img/${cssClass}`} className={`absolute h-full w-full rounded-lg ${cssClass}`} style={{ backgroundSize: 'cover', opacity: 0.5 }} />
             <div className='flex flex-col justify-center items-center border border-second h-full rounded-lg w-full'>
                 <h1 className='title'>{title}</h1>
                 <h3 className='description'>{description}</h3>
