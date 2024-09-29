@@ -220,7 +220,7 @@ p {
     height: auto;
     white-space: nowrap;
     font-size: 1rem;
-    color : var(--main-text);
+    color: var(--main-text);
     padding-left: 1rem;
     padding-right: 1rem;
 }
@@ -230,7 +230,7 @@ p {
     opacity: 1;
 }
 
-.banner-section .aspect-square:hover{
+.banner-section .aspect-square:hover {
     transform: scale(1.05);
     transition: all 0.3s ease-in-out;
 }
@@ -246,14 +246,14 @@ p {
     background: none;
 }
 
-/* .datascience {
+.datascience {
     background-image: url('../img/datascience.jpg');
     background-size: cover;
     opacity: 0.5;
     transition: all .2s ease-in-out;
-} */
+}
 
-/* .android {
+.android {
     background-image: url('../img/android.jpg');
     background-size: cover;
     opacity: 0.5;
@@ -293,7 +293,7 @@ p {
     background-image: url('../img/Robotics.jpg');
     background-size: cover;
     opacity: 0.5;
-} */
+}
 
 .fulldiv:hover>div {
     opacity: 1;
