@@ -266,31 +266,31 @@ p {
 }
 
 .kusmitea {
-    background-image: url('../img/KT.jpg');
+    background-image: url('../img/kusmitea.jpg');
     background-size: cover;
     opacity: 0.5;
 }
 
 .web {
-    background-image: url('../img/WebDev.jpg');
+    background-image: url('../img/web.jpg');
     background-size: cover;
     opacity: 0.5;
 }
 
 .programming {
-    background-image: url('../img/A&P.jpg');
+    background-image: url('../img/programming.jpg');
     background-size: cover;
     opacity: 0.5;
 }
 
 .embedded {
-    background-image: url('../img/ES.jpg');
+    background-image: url('../img/embedded.jpg');
     background-size: cover;
     opacity: 0.5;
 }
 
 .robotics {
-    background-image: url('../img/Robotics.jpg');
+    background-image: url('../img/robotics.jpg');
     background-size: cover;
     opacity: 0.5;
 }
