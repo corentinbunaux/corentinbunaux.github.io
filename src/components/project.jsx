@@ -184,28 +184,23 @@ function Project(props) {
                         <h1 className='outlined-text'>{contentOfPopUp[props.tab].title}</h1>
                         <h2>{contentOfPopUp[props.tab].description}</h2>
                     </div>
-                    <div className='flex justify-center items-center md:justify-start mb-1 md:mb-2'>
-                        <Link href="/#portfolio" className='previous'>
-                            Retour
-                        </Link>
-                    </div>
                     <div id="popUpContent" className='container-fluid h-full'>
                         <h3 className='text-align'>{contentOfPopUp[props.tab].context}</h3>
                         {contentOfPopUp[props.tab].mainPart.map((part, index) => (
                             (index % 2 === 0 && isClient && window.innerWidth > 768) ? (
-                                <div className='mt-8 w-full h-2/3 flex flex-col md:flex-row' key={index}>
+                                <div className='mt-2 md:mt-4 lg:mt-8 w-full h-2/3 flex flex-col md:flex-row' key={index}>
                                     <div className='h-full w-full md:w-1/2 flex flex-col justify-center'>
                                         <h2>{part.title}</h2>
                                         <h3>{part.technologies}</h3>
                                         <p className='text-align'>{part.description}</p>
                                     </div>
-                                    <div className='h-full w-full md:w-1/2 flex justify-center items-center p-16' style={{ overflow: 'hidden' }} >
+                                    <div className='h-1/2 md:h-full w-full md:w-1/2 flex justify-center items-center p-16' style={{ overflow: 'hidden' }} >
                                         <Image src={part.illustration} alt={part.title} />
                                     </div>
                                 </div>
                             ) : (index % 2 === 1 && isClient && window.innerWidth > 768) ? (
-                                <div className='mt-8 w-full h-2/3 flex flex-col md:flex-row' key={index}>
-                                    <div className='h-full w-full md:w-1/2 flex justify-center items-center p-20' style={{ overflow: 'hidden' }} >
+                                <div className='mt-2 md:mt-4 lg:mt-8 w-full h-2/3 flex flex-col md:flex-row' key={index}>
+                                    <div className='h-1/2 md:h-full w-full md:w-1/2 flex justify-center items-center p-20' style={{ overflow: 'hidden' }} >
                                         <Image src={part.illustration} alt={part.title} />
                                     </div>
                                     <div className='h-full w-full md:w-1/2 flex flex-col justify-center'>
@@ -213,13 +208,13 @@ function Project(props) {
                                         <h3>{part.technologies}</h3>
                                         <p className='text-align'>{part.description}</p>
                                     </div>
-                                </div>) : (<div className='mt-4 w-full h-2/3 flex flex-col md:flex-row' key={index} style={{ height: '150vh' }}>
+                                </div>) : (<div className='mt-1 md:mt-2 lg:mt-4 w-full h-2/3 flex flex-col md:flex-row' key={index} style={{ height: '150vh' }}>
                                     <div className='h-full w-full md:w-1/2 flex flex-col justify-center'>
                                         <h2>{part.title}</h2>
                                         <h3>{part.technologies}</h3>
                                         <p className='text-align'>{part.description}</p>
                                     </div>
-                                    <div className='h-full w-full md:w-1/2 flex justify-center items-center p-20' style={{ overflow: 'hidden' }} >
+                                    <div className='h-1/2 md:h-full w-full md:w-1/2 flex justify-center items-center p-20' style={{ overflow: 'hidden' }} >
                                         <Image src={part.illustration} alt={part.title} />
                                     </div>
                                 </div>)))}
