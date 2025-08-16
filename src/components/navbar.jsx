@@ -35,7 +35,7 @@ function Navbar(props) {
   }, [handleClick]);
 
   return (
-    <nav className="p-2 md:p-4 fixed top-0" style={{ backdropFilter: 'blur(4px)', width : "100vw", zIndex:"100" }}>
+    <nav className="p-2 md:p-4 md:ms-4 fixed top-0" style={{ backdropFilter: 'blur(4px)', width : "100vw", zIndex:"100" }}>
       <div className="container mx-auto">
         <ul className="flex space-x-6 md:space-x-12 items-center md:justify-start justify-center">
           <li>

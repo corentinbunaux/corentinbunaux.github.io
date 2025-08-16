@@ -41,7 +41,7 @@
         }
 
         #portfolio {
-            height: 260vh;
+            height: 500vh;
         }
     }
 
@@ -59,7 +59,7 @@
         }
 
         #portfolio {
-            height: 250vh;
+            height: 500vh;
         }
     }
 }
@@ -87,7 +87,7 @@
     }
 
     #portfolio {
-        height: 120vh;
+        height: 180vh;
     }
 }
 
@@ -105,12 +105,11 @@
         }
 
         #portfolio {
-            height: 130vh;
+            height: 200vh;
         }
 
         h3 {
             font-size: 3rem;
-            background-color: 'red';
         }
     }
 
@@ -126,7 +125,7 @@
         }
 
         #portfolio {
-            height: 130vh;
+            height: 200vh;
         }
     }
 }

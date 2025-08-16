@@ -24,10 +24,10 @@ function Footer() {
             <path fill="#F5F5F5" d="M2 7.42v14.172l7.086-7.086zM3.408 6l8.971 8.971c1.133 1.133 3.109 1.133 4.242 0L25.592 6H3.408z"></path>
             <path fill="#F5F5F5" d="M18.035 16.385c-.943.944-2.199 1.465-3.535 1.465s-2.592-.521-3.535-1.465l-.465-.465L3.42 23h22.16l-7.08-7.08-.465.465zM19.914 14.506L27 21.592V7.42z"></path>
             </svg>
-            Lien e-mail
+            E-mail
           </a>
         </div>
-        <div className="mt-4">2024 | Corentin Bunaux</div>
+        <div className="mt-4">2025 | Corentin Bunaux</div>
       </div>
     </footer>
   );
