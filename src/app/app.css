@@ -245,52 +245,91 @@ p {
     background: none;
 }
 
-.datascience {
-    background-image: url('../img/datascience.jpg');
+.safran {
+    background-image: url('../../public/img/safran.jpg');
     background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     opacity: 0.5;
-    transition: all .2s ease-in-out;
+}
+
+.sncf {
+    background-image: url('../../public/img/sncf.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.5;
+}
+
+.cctv {
+    background-image: url('../../public/img/cctv.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.5;
 }
 
 .android {
-    background-image: url('../img/android.jpg');
+    background-image: url('../../public/img/android.jpg');
     background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.5;
+}
+
+.minesweeper {
+    background-image: url('../../public/img/minesweeper.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     opacity: 0.5;
 }
 
 .quimesis {
-    background-image: url('../img/quimesis.jpg');
+    background-image: url('../../public/img/quimesis.jpg');
     background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     opacity: 0.5;
 }
 
 .kusmitea {
-    background-image: url('../img/kusmitea.jpg');
+    background-image: url('../../public/img/kusmitea.jpg');
     background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     opacity: 0.5;
 }
 
 .web {
-    background-image: url('../img/web.jpg');
+    background-image: url('../../public/img/web.jpg');
     background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     opacity: 0.5;
 }
 
 .programming {
-    background-image: url('../img/programming.jpg');
+    background-image: url('../../public/img/programming.jpg');
     background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     opacity: 0.5;
 }
 
 .embedded {
-    background-image: url('../img/embedded.jpg');
+    background-image: url('../../public/img/embedded.jpg');
     background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     opacity: 0.5;
 }
 
-.robotics {
-    background-image: url('../img/robotics.jpg');
+.tipe {
+    background-image: url('../../public/img/tipe.jpg');
     background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     opacity: 0.5;
 }
 

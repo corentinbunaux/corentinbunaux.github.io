@@ -116,7 +116,7 @@ function CarouselElmts(props) {
   );
 }
 
-const bannerElmts = [
+export const bannerElmts = [
   {
     id: "html",
     content: "HTML 5",

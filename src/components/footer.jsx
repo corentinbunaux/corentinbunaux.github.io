@@ -3,7 +3,7 @@ import '../app/app.css'
 
 function Footer() {
   return (
-    <footer className="p-4 text-center" style={{background: 'linear-gradient(to left, var(--my-green) 70%, var(--my-blue))'}}>
+    <footer className="p-4 text-center" style={{background: 'var(--my-green)'}}>
       <div className="container mx-auto">
         <div className="mb-4"><strong>Contactez-moi !</strong></div>
         <div className="flex justify-center items-center space-x-6 md:space-x-52 lg:space-x-80">

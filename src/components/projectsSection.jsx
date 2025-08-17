@@ -109,7 +109,7 @@ export const projects = [
   },
   {
     title: "Dévelopement Web",
-    href: "personal/web",
+    href: "personnal/web",
     description: "Site web portfolio",
     cssClassCard: "web",
     pageContent: {
@@ -195,7 +195,7 @@ export const projects = [
     title: "Robotique",
     href: "cpge_tipe",
     description: "Élaboration d'un bras d'exosquelette",
-    cssClassCard: "robotics",
+    cssClassCard: "tipe",
     pageContent: {
       context:
         "Durant les classes préparatoires, j'ai réalisé un mon TIPE (Travail d'Initiative Personnelle Encadré) sur le thème de la robotique. Ce projet a été mené en collaboration avec un camarade de classe et a été présenté lors des concours d'entrée aux écoles d'ingénieurs. Nous nous étions fixés l'objectif de concevoir un bras d'exosquelette, capable d'acompagner les mouvements de l'utilisateur lors de la réalisation de tâches répétitives.",
@@ -226,7 +226,7 @@ const ProjectCard = ({ project }) => (
       <div
         className={`absolute h-full w-full rounded-lg ${project.cssClassCard}`}
       ></div>
-      <div className="flex flex-col justify-center items-center border border-second h-full rounded-lg w-full">
+      <div className="flex flex-col justify-around items-center border border-second h-full rounded-lg w-full">
         <h1 className="title">{project.title}</h1>
         <h3 className="description">{project.description}</h3>
       </div>

@@ -42,7 +42,7 @@ function Homepage() {
         className="absolute h-1/4 md:h-1/3 w-full top-1/3 md:top-1/3"
         style={{
           background:
-            "linear-gradient(to left, var(--my-green) 70%, var(--my-blue))",
+            "var(--my-green)",
         }}
       ></div>
       <div className="absolute h-full w-full">
