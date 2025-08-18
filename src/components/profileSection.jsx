@@ -27,8 +27,6 @@ function ProfileSection(props) {
                 }} className='underline'>Voir les projets</div></h3>
                 <br className='hidden md:inline'></br>
                 <br className='hidden md:inline'></br>
-                <br className='hidden lg:inline'></br>
-                <br className='hidden lg:inline'></br>
 
                 <Banner />
             </div>

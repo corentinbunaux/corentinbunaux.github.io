@@ -35,14 +35,28 @@ const iconsWheel = {
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEnElEQVR4nO1ZW2gcVRg+aiuIeENEwSLiBQXbap8KIl4erKKioIj1mr5Yiw/WB8U3Kagg+lArKMUX2yjWJxEVjRiJWAVBxaK2UiHY2tRLE5Psnu+b2U20R77kn7CMe5nZ2d0suB8MyczOOd//n/Of/zbODTDAAANkQQjhZJK3k9wF4CAAkvw0hHCC63eEEE7y3l8P4FWSUyRDnWu96zdMTU2d7r1f7b1/AMBOkn+khN5P8hkAt5B83p694PoJAPY2WPEF4b33a2vfj6LoAgD/ADgcQljh+gUACOA4yTEA2wEMlUqly5qNITkqZaMo2uj6BQCOAJjP+r52wc6Odu1b1y8AcFimklGBhwD8XGuCAG7rjaRNEEI4EcAcyWOuBQB8USO8lHnd/j8oF+2WE977K0yYr1u9qzNE8oB2Re5ZO0TyRxv/ZG8kbgCSj5ogO11OSBkAO2yXynEcX+yWCyQ/lCDe+/uzjmlyVr4KIax0vcb09PQZAKryWKVS6eys49JnBcDD8nz27DnXa0RRtNHIx/KMS58Vm+taAH/L+3nv73O9BIA9pshjReZJTC3JyeQFAdzUOUlbZ7SziuhKOdqco95Z+cuUETa4bgPABiP+psAc6bMiU1tJ8jV7Nk/ycddNkNxmQrxYYI7/nBVBdQqAl2uU3APgPNcNAHjXkr67u0KwyDGk+GLKeMWcKIqumZycPK1jJCR/MoJ1rouoVCqXkvwkXSJgMeP+leQIya2qh9oiIPm7BcJzOy59fb71ljHvt1I5XftMkrwj98QA4mTLSf5mtfiXAN4i+azsvlVNUgQhhFNIriJ5Z5JdWBy6Oa8iaFAVpq9jJIe99zd0s9lAcz4yt1yZNIBxO+xXa2WsXr+R5GaryUdsu2vtehzAE+Vy+ZxulBMkvzeuuzIPJPlRFq/lvV9Tk+EmCik/e0ctok7W7ACeyp2JqwNigm3L8O4WI9gL4G0AldQhHdaCKAkt6hC4OOd3mQdFUXSPDfogR062RffKlBWxSf6Q2ilVmqMAngZwaxzHF4UQTs0qE4CrkoozsyJxHF+Y8bAvXeVy+fL0PHqm6hDA5/I6eedknQvAKy4PSO7LQTDaymtpp6IoulctJWstHWoQM0KTa1+eXVyq1xMiAJvcMgHAJpMhBnBl0UkgxTL0g9VS/SztmutE6TGVz3KrGRYTHVlMddltoqOWjlcATJB8I2mXzs7OnkXy4zZsfmRmZuZME3otyTeNp2JcR+293YWUMEU2Nzl481b9vW/3EwAebBYU9ZsVXBM25j27V33SSOFHCilhAa9qhNvNZa5QawfAS/b8uJH9SfL8HAu0ysYszYHGHFXJ0rYiCmYm5C7dK6hFUXRdEtwSszOyoTZrkpCRY3fbiiQ2qtWw9tAhE/oX+2ayxkjK7aQjchBJcdWKA8CRIoooGgf5bn2hqrVb3et5svUFOKrd5nC1O6LV0SrZpOMqSc3TFFqtXnC49BkRkZptSenZCfvtBYdTHVLjtXbEcXyJWjr6m3RCzKOs7meOBVi0nmsQR+b0uyuIXnAsQKshE7DPcFVrSg8XXqUecwwwwP8Z/wK/JUbzEvHoGwAAAABJRU5ErkJggg==",
 };
 
+export function GithubLogo(props) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={props.className}
+      viewBox="0 0 24 24"
+    >
+      <path
+        fill="#F5F5F5"
+        d="M12,2.2467A10.00042,10.00042,0,0,0,8.83752,21.73419c.5.08752.6875-.21247.6875-.475,0-.23749-.01251-1.025-.01251-1.86249C7,19.85919,6.35,18.78423,6.15,18.22173A3.636,3.636,0,0,0,5.125,16.8092c-.35-.1875-.85-.65-.01251-.66248A2.00117,2.00117,0,0,1,6.65,17.17169a2.13742,2.13742,0,0,0,2.91248.825A2.10376,2.10376,0,0,1,10.2,16.65923c-2.225-.25-4.55-1.11254-4.55-4.9375a3.89187,3.89187,0,0,1,1.025-2.6875,3.59373,3.59373,0,0,1,.1-2.65s.83747-.26251,2.75,1.025a9.42747,9.42747,0,0,1,5,0c1.91248-1.3,2.75-1.025,2.75-1.025a3.59323,3.59323,0,0,1,.1,2.65,3.869,3.869,0,0,1,1.025,2.6875c0,3.83747-2.33752,4.6875-4.5625,4.9375a2.36814,2.36814,0,0,1,.675,1.85c0,1.33752-.01251,2.41248-.01251,2.75,0,.26251.1875.575.6875.475A10.0053,10.0053,0,0,0,12,2.2467Z"
+      ></path>
+    </svg>
+  );
+}
+
 function Homepage() {
   return (
     <div className="container-fluid h-full">
       <div
         className="absolute h-1/4 md:h-1/3 w-full top-1/3 md:top-1/3"
         style={{
-          background:
-            "var(--my-green)",
+          background: "var(--my-green)",
         }}
       ></div>
       <div className="absolute h-full w-full">
@@ -88,16 +102,7 @@ function Homepage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-12 h-12 mr-2 mt-3"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    fill="#F5F5F5"
-                    d="M12,2.2467A10.00042,10.00042,0,0,0,8.83752,21.73419c.5.08752.6875-.21247.6875-.475,0-.23749-.01251-1.025-.01251-1.86249C7,19.85919,6.35,18.78423,6.15,18.22173A3.636,3.636,0,0,0,5.125,16.8092c-.35-.1875-.85-.65-.01251-.66248A2.00117,2.00117,0,0,1,6.65,17.17169a2.13742,2.13742,0,0,0,2.91248.825A2.10376,2.10376,0,0,1,10.2,16.65923c-2.225-.25-4.55-1.11254-4.55-4.9375a3.89187,3.89187,0,0,1,1.025-2.6875,3.59373,3.59373,0,0,1,.1-2.65s.83747-.26251,2.75,1.025a9.42747,9.42747,0,0,1,5,0c1.91248-1.3,2.75-1.025,2.75-1.025a3.59323,3.59323,0,0,1,.1,2.65,3.869,3.869,0,0,1,1.025,2.6875c0,3.83747-2.33752,4.6875-4.5625,4.9375a2.36814,2.36814,0,0,1,.675,1.85c0,1.33752-.01251,2.41248-.01251,2.75,0,.26251.1875.575.6875.475A10.0053,10.0053,0,0,0,12,2.2467Z"
-                  ></path>
-                </svg>
+                <GithubLogo className="w-12 h-12 mr-2 mb-3" />
               </a>
             </div>
           </div>
