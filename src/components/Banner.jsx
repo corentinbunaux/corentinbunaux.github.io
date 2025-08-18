@@ -456,53 +456,13 @@ export const bannerElmts = [
   {
     id: "windows",
     content: "Windows",
-    viewBox: "0 0 488 488",
+    viewBox: "0 0 48 48",
     svgContent: (
       <>
-        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-        <g
-          id="SVGRepo_tracerCarrier"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        ></g>
-        <g id="SVGRepo_iconCarrier">
-          {" "}
-          <polygon
-            style={{ fill: "#0DA2D6;" }}
-            points="0.144,254.608 0.16,420.52 199.496,447.824 199.336,255.888 "
-          ></polygon>{" "}
-          <g>
-            {" "}
-            <polyline
-              style={{ fill: "#20B5EC;" }}
-              points="0.16,420.52 199.496,447.824 199.336,255.888 "
-            ></polyline>{" "}
-            <polygon
-              style={{ fill: "#20B5EC;" }}
-              points="484,0 220,38.472 220,233.456 484,231.36 "
-            ></polygon>{" "}
-          </g>{" "}
-          <polyline
-            style={{ fill: "#0DA2D6;" }}
-            points="484,0 220,38.472 220,228 "
-          ></polyline>{" "}
-          <polygon
-            style={{ fill: "#20B5EC;" }}
-            points="0,69.096 0.184,234.92 199.528,233.784 199.432,42.024 "
-          ></polygon>{" "}
-          <polyline
-            style={{ fill: "#0DA2D6;" }}
-            points="0.184,234.92 199.528,233.784 199.432,42.024 "
-          ></polyline>{" "}
-          <polygon
-            style={{ fill: "#20B5EC;" }}
-            points="223.52,450.792 487.928,488 488,257.688 223.152,257.256 "
-          ></polygon>{" "}
-          <polyline
-            style={{ fill: "#0DA2D6;" }}
-            points="223.52,450.792 487.928,488 488,257.688 "
-          ></polyline>
-        </g>
+        <path
+          fill="#00b0ff"
+          d="M20 25.026L5.011 25 5.012 37.744 20 39.818zM22 25.03L22 40.095 42.995 43 43 25.066zM20 8.256L5 10.38 5.014 23 20 23zM22 7.973L22 23 42.995 23 42.995 5z"
+        ></path>
       </>
     ),
   },
