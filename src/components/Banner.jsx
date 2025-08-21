@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "../app/app.css";
-import Image from "next/image";
 
 const Banner = () => {
   const [width, setWidth] = useState("420vw");
@@ -51,7 +50,7 @@ const Banner = () => {
   }, [isHovered]);
 
   return (
-    <div className="relative h-1/6" style={{ width: width }}>
+    <div className="relative h-1/3" style={{ width: width }}>
       <div className="absolute flex w-full h-full" style={{ right: right }}>
         <div
           className="banner-section sm:w-1/2 lg:w-1/3"
@@ -85,7 +84,7 @@ function CarouselElmts(props) {
       {bannerElmts.map((content, index) => (
         <div
           key={index}
-          className="aspect-square h-1/2 md:h-2/3 lg:h-5/6 flex justify-center items-center"
+          className="aspect-square h-1/2 md:h-1/2 flex justify-center items-center"
           data-content={content.content}
         >
           <svg

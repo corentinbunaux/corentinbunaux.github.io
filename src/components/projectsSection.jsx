@@ -10,6 +10,7 @@ export const projects = [
     githubRepo: null,
     techLogos: ["typescript", "react", "git", "linux"],
     cssClassCard: "safran",
+    photos: [],
     pageContent: {
       context:
         "Lors de ma dernière année aux Mines de Saint-Etienne, j'ai eu l'opportunité de réaliser un stage de fin d'études au sein de l'entreprise Safran Data Systems. Ce stage m'a permis de m'immerger dans le monde spatial et de travailler sur des outils internes pour différentes équipes, ainsi qu'une application cliente.",
@@ -39,6 +40,7 @@ export const projects = [
     githubRepo: "https://github.com/corentinbunaux/projet-recherche-SNCF",
     techLogos: ["java", "git"],
     cssClassCard: "sncf",
+    photos: [],
     pageContent: {
       context:
         "Ce projet faisait office de projet de fin d'études à l'école des Mines. Il avait pour objectif de répondre à un besoin spécifique de la SNCF en matière de recherche et d'innovation. Par groupe de 4 étudiants, nous avons travaillé durant 1 mois sur l'optimisation d'un problème de génération de trajets propre à la SNCF.",
@@ -69,6 +71,7 @@ export const projects = [
     githubRepo: null,
     techLogos: ["arduino", "python", "react"],
     cssClassCard: "cctv",
+    photos: [],
     pageContent: {
       context:
         "En guise de projet personnel en parallèle des cours de dernière année aux Mines, je me suis lancé dans le développement d'un système de vidéo surveillance, accessible en ligne.",
@@ -99,6 +102,7 @@ export const projects = [
     entityLogo: "/logos/LOGO_EMSE.png",
     githubRepo: null,
     techLogos: ["kotlin", "typescript", "git"],
+    photos: [],
     pageContent: {
       context:
         "Lors de ma dernière année à l'école des Mines, un cours de développement web nous a permis de travailler sur un projet de création d'une application mobile. En binômes, nous avons choisi de développer une application de visualisation des radars automobiles.",
@@ -124,6 +128,7 @@ export const projects = [
     entityLogo: "/logos/LOGO_EMSE.png",
     githubRepo: "https://github.com/corentinbunaux/minesweeper",
     techLogos: ["java"],
+    photos: [],
     pageContent: {
       context:
         "Dans le cadre de ma formation en école d'ingénieur, j'ai eu l'opportunité de travailler sur un projet de développement d'un jeu du démineur, qui accompagnait un cours sur le développement Java.",
@@ -149,6 +154,7 @@ export const projects = [
     entityLogo: "/logos/LOGO_QUIMESIS.png",
     githubRepo: null,
     techLogos: ["cpp", "react", "git", "linux"],
+    photos: ["/img/Quimesis1.png", "/img/Quimesis2.png", "/img/Quimesis3.png"],
     pageContent: {
       context:
         "Dans le cadre de ma seconde année d'école d'ingénieur, j'ai eu l'opportunité de réaliser un stage d'ingénierie logicielle chez Quimesis, une entreprise Belge spécialisée dans trois domaines : la mécanique, l'électronique et l'informatique. J'ai été amené à travailler sur un projet informatique dans le domaine médical.",
@@ -178,6 +184,7 @@ export const projects = [
     cssClassCard: "kusmitea",
     entityLogo: "/logos/LOGO_KUSMI_TEA.png",
     githubRepo: null,
+    photos: ["/img/Kusmi1.jpg"],
     techLogos: [],
     pageContent: {
       context:
@@ -204,6 +211,7 @@ export const projects = [
     entityLogo: null,
     githubRepo: null,
     techLogos: ["html", "css", "javascript", "react"],
+    photos: [],
     pageContent: {
       context:
         "De nature curieuse, et étant donné qu'aucun cours de développement front-end n'était proposé dans ma formation, j'ai décidé de me lancer dans la création de mon propre portfolio. J'ai ainsi pu comprendre le fonctionnement du web, et m'initier au monde des interfaces graphiques dynamiques.",
@@ -224,6 +232,7 @@ export const projects = [
     entityLogo: "/logos/LOGO_EMSE.png",
     githubRepo: "https://github.com/dylan-bernhardt/dactylo-race",
     techLogos: ["python", "cpp", "git"],
+    photos: [],
     pageContent: {
       context:
         "Une variété de programmes informatiques réalisés au cours de ma formation en école d'ingénieur.",
@@ -254,6 +263,7 @@ export const projects = [
     entityLogo: "/logos/LOGO_EMSE.png",
     githubRepo: null,
     techLogos: [],
+    photos: ["/img/Embedded1.jpg", "/img/Embedded2.png"],
     pageContent: {
       context:
         "Dans le cadre de ma formation en école d'ingénieur, j'ai eu l'opportunité de travailler sur un projet de systèmes embarqués. Ce projet s'est déroulé sur les deux premières années, par binôme.",
@@ -279,6 +289,7 @@ export const projects = [
     entityLogo: "/logos/LOGO_AC_NORMANDIE.svg",
     githubRepo: null,
     techLogos: ["arduino"],
+    photos: ["/img/tipe1.png", "/img/tipe2.png"],
     pageContent: {
       context:
         "Durant les classes préparatoires, j'ai réalisé un mon TIPE (Travail d'Initiative Personnelle Encadré) sur le thème de la robotique. Ce projet a été mené en collaboration avec un camarade de classe et a été présenté lors des concours d'entrée aux écoles d'ingénieurs. Nous nous étions fixés l'objectif de concevoir un bras d'exosquelette, capable d'acompagner les mouvements de l'utilisateur lors de la réalisation de tâches répétitives.",

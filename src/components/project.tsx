@@ -10,19 +10,29 @@ import { bannerElmts } from "./Banner";
 
 export default function Project() {
   const [projectSlug, setProjectSlug] = useState("");
-  // windowWidth removed since it is unused
+  const [showCarousel, setShowCarousel] = useState(false);
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const path = window.location.pathname.slice(1);
       setProjectSlug(path);
-      // setWindowWidth(window.innerWidth); // removed since unused
+      setIsMobile(window.innerWidth < 768);
+
+      const handleResize = () => setIsMobile(window.innerWidth < 768);
+      window.addEventListener("resize", handleResize);
+
+      return () => {
+        window.removeEventListener("resize", handleResize);
+      };
     }
   }, []);
 
   const projectData = projects.find((project) => project.href === projectSlug);
   const githubRepo = projectData?.githubRepo;
   const entityLogo = projectData?.entityLogo;
+  const carouselImages = projectData?.photos || [];
   const techLogos =
     projectData?.techLogos
       .map((id) => bannerElmts.find((elmt) => elmt.id === id))
@@ -30,6 +40,103 @@ export default function Project() {
 
   return (
     <div className="project-page-container p-8 max-w-6xl mx-auto">
+      {/* Carousel Modal */}
+      {!isMobile && showCarousel && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50"
+          style={{ background: "rgba(26,26,26,0.85)" }}
+        >
+          <div
+            className="relative rounded-2xl shadow-2xl p-8 flex flex-col items-center w-full"
+            style={{ background: "var(--main)", width: "75vw" }}
+          >
+            <button
+              className="absolute top-4 right-4 text-3xl font-bold transition"
+              style={{
+                color: "var(--my-green)",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+              }}
+              onClick={() => setShowCarousel(false)}
+              aria-label="Fermer le carrousel"
+            >
+              &times;
+            </button>
+            <div className="flex items-center justify-between w-full gap-4">
+              <button
+                className="text-3xl px-4 py-2 transition"
+                style={{
+                  background: "none",
+                  color: "var(--my-green)",
+                  border: "none",
+                  boxShadow: "none",
+                  borderRadius: 0,
+                  cursor: "pointer",
+                }}
+                onClick={() =>
+                  setCarouselIndex((prev) =>
+                    prev === 0 ? carouselImages.length - 1 : prev - 1
+                  )
+                }
+                aria-label="Photo précédente"
+              >
+                &#8592;
+              </button>
+              <div
+                className="flex items-center justify-center"
+                style={{
+                  width: "50vw",
+                  height: "50vh",
+                  minWidth: 320,
+                  minHeight: 240,
+                }}
+              >
+                <Image
+                  src={carouselImages[carouselIndex]}
+                  alt={`Photo ${carouselIndex + 1}`}
+                  width={0}
+                  height={0}
+                  sizes="50vw"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                    borderRadius: "1.5rem",
+                    boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
+                  }}
+                  className=""
+                />
+              </div>
+              <button
+                className="text-3xl px-4 py-2 transition"
+                style={{
+                  background: "none",
+                  color: "var(--my-green)",
+                  border: "none",
+                  boxShadow: "none",
+                  borderRadius: 0,
+                  cursor: "pointer",
+                }}
+                onClick={() =>
+                  setCarouselIndex((prev) =>
+                    prev === carouselImages.length - 1 ? 0 : prev + 1
+                  )
+                }
+                aria-label="Photo suivante"
+              >
+                &#8594;
+              </button>
+            </div>
+            <div
+              className="mt-4 text-center font-semibold tracking-wide text-lg"
+              style={{ color: "var(--my-green)" }}
+            >
+              {carouselIndex + 1} / {carouselImages.length}
+            </div>
+          </div>
+        </div>
+      )}
       <hr
         style={{
           border: "none",
@@ -54,7 +161,7 @@ export default function Project() {
                 >
                   <GithubLogo className="w-8 h-8 ms-1" />
                   <span
-                    className="text-[1rem]"
+                    className="text-lg font-medium"
                     style={{ color: "var(--my-green)" }}
                   >
                     Lien vers le dépôt GitHub
@@ -87,8 +194,27 @@ export default function Project() {
                 ))}
               </div>
             )}
+            {/* Carousel Button */}
+            {!isMobile && carouselImages.length > 0 && (
+              <div className="mt-8">
+                <button
+                  className="px-6 py-2 rounded-lg font-semibold transition"
+                  style={{
+                    background: "var(--my-green)",
+                    color: "var(--main-text)",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
+                  }}
+                  onClick={() => {
+                    setShowCarousel(true);
+                    setCarouselIndex(0);
+                  }}
+                >
+                  Voir les photos
+                </button>
+              </div>
+            )}
           </div>
-            
+
           {entityLogo && (
             <div
               className="rounded-lg p-3 bg-white flex items-center justify-center"
@@ -141,7 +267,7 @@ export default function Project() {
                 <h3 className="text-xl mb-1">{part.title}</h3>
                 <p>{part.description}</p>
 
-                {(idx < projectData.pageContent.mainPart.length - 1) && (
+                {idx < projectData.pageContent.mainPart.length - 1 && (
                   <hr
                     style={{
                       border: "none",

@@ -4,7 +4,7 @@ import Banner from './Banner';
 function ProfileSection(props) {
     return (
         <div className='container-fluid h-full flex justify-center items-center p-5'>
-            <div className='container h-5/6'>
+            <div className='container h-2/3'>
                 <h1 className='outlined-text'>Profil</h1>
                 <h3 className='mt-1 mb-1'>Actuellement à la recherche d'un premier emploi, je suis motivé et prêt à relever de nouveaux défis.</h3>
                 <h3 className='mt-1 mb-1'>À l'issu des <strong style={{ color: 'var(--my-green)' }}>classes préparatoires (CPGE)</strong>, j'ai intégré l'École des <a href='https://www.mines-stetienne.fr/lecole/'><strong className='underline' style={{ color: 'var(--my-green)' }}>Mines de Saint-Étienne</strong></a>, à travers le cursus <a href='https://www.mines-stetienne.fr/formation/ismin/'><strong className='underline' style={{ color: 'var(--my-green)' }}>ISMIN</strong></a>, dont je serai prochainement diplômé.</h3>
