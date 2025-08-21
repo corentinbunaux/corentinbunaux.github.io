@@ -134,6 +134,7 @@ body {
   scrollbar-width: none;
   background-color: var(--main);
   color: var(--main-text);
+  overflow-x: hidden;
 
   user-select: none;
   -webkit-user-select: none;
@@ -142,6 +143,11 @@ body {
   /* Firefox */
   -ms-user-select: none;
   /* Internet Explorer/Edge */
+}
+
+.project-page-container,
+.banner-section {
+  overflow-x: hidden;
 }
 
 h1 {
@@ -228,7 +234,7 @@ p {
 }
 
 .safran {
-  background-image: url("../../public/img/safran.jpg");
+  background-image: url("/img/safran.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -236,7 +242,7 @@ p {
 }
 
 .sncf {
-  background-image: url("../../public/img/sncf.jpg");
+  background-image: url("/img/sncf.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -244,7 +250,7 @@ p {
 }
 
 .cctv {
-  background-image: url("../../public/img/cctv.jpg");
+  background-image: url("/img/cctv.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -252,7 +258,7 @@ p {
 }
 
 .android {
-  background-image: url("../../public/img/android.jpg");
+  background-image: url("/img/android.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -260,7 +266,7 @@ p {
 }
 
 .minesweeper {
-  background-image: url("../../public/img/minesweeper.png");
+  background-image: url("/img/minesweeper.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -268,7 +274,7 @@ p {
 }
 
 .quimesis {
-  background-image: url("../../public/img/quimesis.jpg");
+  background-image: url("/img/quimesis.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -276,7 +282,7 @@ p {
 }
 
 .kusmitea {
-  background-image: url("../../public/img/kusmitea.jpg");
+  background-image: url("/img/kusmitea.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -284,7 +290,7 @@ p {
 }
 
 .web {
-  background-image: url("../../public/img/web.jpg");
+  background-image: url("/img/web.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -292,7 +298,7 @@ p {
 }
 
 .programming {
-  background-image: url("../../public/img/programming.jpg");
+  background-image: url("/img/programming.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -300,7 +306,7 @@ p {
 }
 
 .embedded {
-  background-image: url("../../public/img/embedded.jpg");
+  background-image: url("/img/embedded.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -308,7 +314,7 @@ p {
 }
 
 .tipe {
-  background-image: url("../../public/img/tipe.jpg");
+  background-image: url("/img/tipe.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;

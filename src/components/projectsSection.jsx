@@ -167,7 +167,7 @@ export const projects = [
         {
           title: "Développement d'une application web",
           description:
-            "Dans un but de faciliter l'intégration du logiciel de segmentation dentaire dans le quotidien des dentistes, j'ai développé une application web en React.js, intégrant la librarie VTK. Cette application permet de visualiser les images 3D des dents, de les segmenter, et de les exporter, le tout depuis un navigateur web. Elle est également dotée de fonctionnalités de visualisation supplémentaires. Cette étape m'a permis de comprendre les principes de fonctionnement d'applicationss full-stack.",
+            "Dans un but de faciliter l'intégration du logiciel de segmentation dentaire dans le quotidien des dentistes, j'ai développé une application web en React.js, intégrant la librarie VTK. Cette application permet de visualiser les images 3D des dents, de les segmenter, et de les exporter, le tout depuis un navigateur web. Elle est également dotée de fonctionnalités de visualisation supplémentaires. Cette étape m'a permis de comprendre les principes de fonctionnement d'applications full-stack.",
         },
         {
           title: "Mise en place d'un environnement de développement optimisé",
