@@ -233,6 +233,10 @@ p {
   background: none;
 }
 
+.project-card-img {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
 
 .fulldiv:hover > img,
 .fulldiv:hover > div {

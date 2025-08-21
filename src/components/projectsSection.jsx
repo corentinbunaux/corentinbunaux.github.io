@@ -319,7 +319,7 @@ const ProjectCard = ({ project }) => (
         <img
           src={project.img}
           alt={project.title}
-          className="absolute h-full w-full rounded-lg object-cover opacity-50"
+          className="absolute h-full w-full rounded-lg object-cover opacity-50 project-card-img"
         />
       )}
       <div className="flex flex-col justify-around items-center border border-second h-full rounded-lg w-full">
