@@ -9,7 +9,7 @@ export const projects = [
     entityLogo: "/logos/LOGO_SAFRAN_rvb.png",
     githubRepo: null,
     techLogos: ["typescript", "react", "git", "linux"],
-    cssClassCard: "safran",
+    img: "/img/safran.jpg",
     photos: [],
     pageContent: {
       context:
@@ -39,7 +39,7 @@ export const projects = [
     entityLogo: "/logos/LOGO_SNCF.png",
     githubRepo: "https://github.com/corentinbunaux/projet-recherche-SNCF",
     techLogos: ["java", "git"],
-    cssClassCard: "sncf",
+    img: "/img/sncf.jpg",
     photos: [],
     pageContent: {
       context:
@@ -70,7 +70,7 @@ export const projects = [
     entityLogo: null,
     githubRepo: null,
     techLogos: ["arduino", "python", "react"],
-    cssClassCard: "cctv",
+    img: "/img/cctv.jpg",
     photos: [],
     pageContent: {
       context:
@@ -98,7 +98,7 @@ export const projects = [
     title: "Android",
     href: "emse/android",
     description: "Développement d'une application mobile",
-    cssClassCard: "android",
+    img: "/img/android.jpg",
     entityLogo: "/logos/LOGO_EMSE.png",
     githubRepo: null,
     techLogos: ["kotlin", "typescript", "git"],
@@ -124,7 +124,7 @@ export const projects = [
     title: "Démineur",
     href: "emse/minesweeper",
     description: "Développement d'un jeu de démineur",
-    cssClassCard: "minesweeper",
+    img: "/img/minesweeper.png",
     entityLogo: "/logos/LOGO_EMSE.png",
     githubRepo: "https://github.com/corentinbunaux/minesweeper",
     techLogos: ["java"],
@@ -150,7 +150,7 @@ export const projects = [
     title: "Quimesis",
     href: "internships/quimesis",
     description: "Stage d'ingénierie logicielle",
-    cssClassCard: "quimesis",
+    img: "/img/quimesis.jpg",
     entityLogo: "/logos/LOGO_QUIMESIS.png",
     githubRepo: null,
     techLogos: ["cpp", "react", "git", "linux"],
@@ -181,7 +181,7 @@ export const projects = [
     title: "Kusmi Tea",
     href: "internships/kusmitea",
     description: "Stage ouvrier",
-    cssClassCard: "kusmitea",
+    img: "/img/kusmitea.jpg",
     entityLogo: "/logos/LOGO_KUSMI_TEA.png",
     githubRepo: null,
     photos: ["/img/Kusmi1.jpg"],
@@ -207,7 +207,7 @@ export const projects = [
     title: "Dévelopement Web",
     href: "personnal/web",
     description: "Site web portfolio",
-    cssClassCard: "web",
+    img: "/img/web.jpg",
     entityLogo: null,
     githubRepo: null,
     techLogos: ["html", "css", "javascript", "react"],
@@ -228,7 +228,7 @@ export const projects = [
     title: "Programmation",
     href: "emse/programming",
     description: "Algorithmie et structure de données",
-    cssClassCard: "programming",
+    img: "/img/programming.jpg",
     entityLogo: "/logos/LOGO_EMSE.png",
     githubRepo: "https://github.com/dylan-bernhardt/dactylo-race",
     techLogos: ["python", "cpp", "git"],
@@ -259,7 +259,7 @@ export const projects = [
     title: "Systèmes Embarqués",
     href: "emse/embedded",
     description: "Projet Robot",
-    cssClassCard: "embedded",
+    img: "/img/embedded.jpg",
     entityLogo: "/logos/LOGO_EMSE.png",
     githubRepo: null,
     techLogos: [],
@@ -285,7 +285,7 @@ export const projects = [
     title: "Robotique",
     href: "cpge_tipe",
     description: "Élaboration d'un bras d'exosquelette",
-    cssClassCard: "tipe",
+    img: "/img/tipe.jpg",
     entityLogo: "/logos/LOGO_AC_NORMANDIE.svg",
     githubRepo: null,
     techLogos: ["arduino"],
@@ -315,9 +315,13 @@ const ProjectCard = ({ project }) => (
       href={`/${project.href}`}
       className="relative h-full w-full fulldiv cursor-pointer"
     >
-      <div
-        className={`absolute h-full w-full rounded-lg ${project.cssClassCard}`}
-      ></div>
+      {project.img && (
+        <img
+          src={project.img}
+          alt={project.title}
+          className="absolute h-full w-full rounded-lg object-cover opacity-50"
+        />
+      )}
       <div className="flex flex-col justify-around items-center border border-second h-full rounded-lg w-full">
         <h1 className="title">{project.title}</h1>
         <h3 className="description">{project.description}</h3>
