@@ -44,9 +44,9 @@ inséparable de l'upgrade, d'où l'estimation passée de 1.5 à 2.5 demi-journé
 
 ## Open questions
 
-- Les deux workflows CI épinglent **Node 20**, qui est en fin de vie depuis
-  avril 2026 (Next 16 exige >= 20.9.0, donc ça passe encore). Faut-il passer
-  la CI en Node 22/24 ? Décision non prise, hors périmètre de PORT-002.
+- ~~Node 20 en fin de vie dans les workflows CI~~ → tranché le 2026-09-26 :
+  les deux workflows sont passés en **Node 24** (LTS actif, aligné sur le
+  Node local de la machine de dev).
 - TypeScript 7.0.2 existe ; le repo est épinglé en `^6.0.3` (version qui
   arrivait déjà par transitivité). Upgrade TS majeur à traiter à part.
 - `npm audit` : 7 vulnérabilités (1 low, 1 moderate, 5 high) non traitées.
