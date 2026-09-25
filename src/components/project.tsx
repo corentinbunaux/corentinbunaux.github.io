@@ -2,7 +2,7 @@
 
 import "../app/app.css";
 import { useEffect, useState } from "react";
-import { projects } from "./projectsSection";
+import { projects } from "../data/projects";
 import React from "react";
 import Image from "next/image";
 import { GithubLogo } from "./homepage";
