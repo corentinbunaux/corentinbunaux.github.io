@@ -34,6 +34,8 @@ pages under `src/app/`. The only runtime logic is DOM measurement (`useEffect`
 | Date | Decision | Why | Alternatives rejected |
 | --- | --- | --- | --- |
 | — | Next.js App Router with a single scrolling page plus separate static routes per project | Simple portfolio, no need for a CMS or dynamic routing | — |
+| 2026-09-26 | Next.js 16 + React 19, ESLint flat config (`eslint.config.mjs`) | Next 16 is the current stable release; it removes `next lint`, so the ESLint CLI and flat config are mandatory, not optional | Staying on Next 15 (maintenance only) |
+| 2026-09-26 | ESLint pinned to `^9`, not `^10` | `eslint-config-next@16.3.6` crashes on ESLint 10 (`scopeManager.addGlobals is not a function`) | ESLint 10, which the peer range allows but the plugin does not support |
 
 ## Invariants
 

@@ -6,7 +6,7 @@ programming), research work (SNCF) and personal projects, for recruiters and
 visitors browsing his profile.
 
 - **Budget group**: `corentin` — see `/budget`
-- **Stack**: TypeScript/JavaScript, Next.js 14 (React 18), Tailwind CSS
+- **Stack**: TypeScript/JavaScript, Next.js 16 (React 19, Turbopack), Tailwind CSS
 - **Run**: `npm run dev` · **Test**: none configured · **Lint**: `npm run lint && npx tsc --noEmit`
 
 ## Read before anything else
