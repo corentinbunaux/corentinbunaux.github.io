@@ -7,52 +7,59 @@
 > Keep it under ~60 lines. It is loaded every session; it is not a logbook.
 > Archive older entries under `.claude/passations/YYYY-MM-DD-<slug>.md`.
 
-**Session**: 2026-09-26 · **Ticket**: PORT-001 · **Status**: review (attente checkpoint humain)
+**Session**: 2026-09-26 · **Ticket**: PORT-002 · **Status**: review (attente checkpoint humain)
 
 ## Objective
 
-Corriger l'export statique cassé (`output: "export"` était commenté alors que
-la CI publie déjà `./out`) et ajouter un gate CI minimal (lint/typecheck/build).
+Passer le repo sur la dernière stack stable (Next 16 + React 19) sans toucher
+au contenu, en gardant l'export statique et le gate CI de PORT-001 verts.
 
 ## Problem statement
 
-Confirmé : le build ne produisait pas `out/` avant ce ticket. Découverte non
-présente dans le brouillon initial du ticket : `next/image` est déjà utilisé
-(`homepage.jsx`, roue d'icônes) et l'optimiseur par défaut est incompatible
-avec `output: "export"` — il fallait aussi `images.unoptimized: true`, sinon
-le build casse dès l'activation de l'export.
+Le brouillon du ticket ne parlait que d'un bump de versions. En réalité
+Next 16 **supprime `next lint`** : sans migration ESLint (flat config + CLI
+directe), le gate CI créé en PORT-001 casse. La migration ESLint était donc
+inséparable de l'upgrade, d'où l'estimation passée de 1.5 à 2.5 demi-journées.
 
 ## What changed
 
 | File | Change |
 | --- | --- |
-| `next.config.mjs` | `output: "export"` activé + `images.unoptimized: true` ajouté |
-| `.github/workflows/ci.yml` | Nouveau : lint + `tsc --noEmit` + build sur push/PR |
-| `ARCHITECTURE.md` | Invariants/points faibles mis à jour (export forcé, gate CI) |
-| `.claude/tickets/PORT-001.md` | `status: review` |
+| `package.json` | next 16.3.6, react/react-dom 19.3.0, eslint ^9, eslint-config-next 16.3.6, `typescript` ajouté en explicite, script `lint` → `eslint .` |
+| `.eslintrc.json` → `eslint.config.mjs` | Migration flat config ; `react/no-unescaped-entities: off` conservée, `react-hooks/set-state-in-effect` ramenée en `warn` |
+| `tsconfig.json` | `moduleResolution: bundler` (node10 déprécié en TS 6) ; `jsx`/`target`/`include` réécrits par `next build` lui-même |
+| `ARCHITECTURE.md`, `CLAUDE.md` | Stack et décisions à jour |
 
 ## What failed
 
-`npm run build` a d'abord échoué (`'next' n'est pas reconnu`) : `node_modules`
-n'était pas installé. Corrigé par `npm ci` avant de rebuilder — pas une
-impasse, juste un pré-requis manqué.
+1. **Codemod officiel inutilisable ici** : `npx @next/codemod@canary upgrade latest`
+   (puis `... upgrade 16.3.6`) répond
+   `Invalid revision provided: "latest" (resolved to "latest")` en mode non
+   interactif. Migration faite à la main à la place — ne pas réessayer le
+   codemod dans ce contexte.
+2. **ESLint 10 incompatible** : `eslint-config-next@16.3.6` déclare pourtant
+   `eslint >= 9.0.0` en peer, mais plante au runtime avec
+   `TypeError: scopeManager.addGlobals is not a function`. Rester en `^9`
+   malgré le warning npm « eslint@9.39.5 is no longer supported ».
 
 ## Open questions
 
-`npm ci` signale 16 vulnérabilités (1 critique) dans les dépendances
-actuelles — hors périmètre de ce ticket, pas corrigé. À décider : un futur
-ticket dédié, ou traité en marge de PORT-002 (upgrade Next/React) ?
+- Les deux workflows CI épinglent **Node 20**, qui est en fin de vie depuis
+  avril 2026 (Next 16 exige >= 20.9.0, donc ça passe encore). Faut-il passer
+  la CI en Node 22/24 ? Décision non prise, hors périmètre de PORT-002.
+- TypeScript 7.0.2 existe ; le repo est épinglé en `^6.0.3` (version qui
+  arrivait déjà par transitivité). Upgrade TS majeur à traiter à part.
+- `npm audit` : 7 vulnérabilités (1 low, 1 moderate, 5 high) non traitées.
 
 ## Next step
 
-Pousser la branche `fix/PORT-001-static-export-ci`, ouvrir une PR vers
-`refonte-2026`, vérifier dans l'onglet Actions que `nextjs.yml` et `ci.yml`
-passent tous les deux au vert, puis merger. Ensuite : `/ticket PORT-002`
-(upgrade Next 15 + React 19).
+Lancer en parallèle les 4 tickets débloqués par PORT-002, chacun sur sa propre
+branche depuis `refonte-2026` : PORT-003 (spike three.js), PORT-004 (tokens
+CSS), PORT-005 (images `next/image`), PORT-008 (`src/data/projects.ts`).
 
 ## Do not
 
-- Ne pas toucher `public/img/Avatar_Coco.png` — non trackée, sans rapport
-  avec ce ticket, semble être un travail en cours ailleurs.
-- Ne pas lancer `npm audit fix --force` sans validation — casserait des
-  versions juste avant l'upgrade Next/React de PORT-002.
+- Ne pas toucher `public/img/Avatar_Coco.png` — non trackée, sans rapport.
+- Ne pas passer ESLint en 10.x (voir « What failed » ci-dessus).
+- Ne pas « corriger » `react-hooks/set-state-in-effect` dans `project.tsx` :
+  ce fichier est réécrit entièrement par PORT-012.
