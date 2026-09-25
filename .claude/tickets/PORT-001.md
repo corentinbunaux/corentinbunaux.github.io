@@ -4,7 +4,7 @@ title: Corriger et compléter la CI/CD (export statique cassé + gate lint/typec
 group: corentin
 machine: asus_corentin
 milestone: M1 — Fondations
-status: ready
+status: review
 resumeAt: null
 priority: P0
 estimate: 1.0
