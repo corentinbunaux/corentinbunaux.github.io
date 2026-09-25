@@ -41,11 +41,12 @@ pages under `src/app/`. The only runtime logic is DOM measurement (`useEffect`
   keep those exact `id`s — `navbar.jsx` and `page.tsx` depend on them for
   scroll-spy offsets.
 - No backend/API routes — this app is meant to stay static-hostable (GitHub
-  Pages style), see the commented `output: "export"` in `next.config.mjs`.
+  Pages style); `output: "export"` + `images.unoptimized: true` in
+  `next.config.mjs` enforce this at build time.
 
 ## Known weak points
 
-- No test suite (`npm test` is not defined) and no CI test gate — regressions
-  are caught only by manual/visual checks.
+- No test suite (`npm test` is not defined) — regressions are caught only by
+  manual/visual checks and by the `ci.yml` build/lint/typecheck gate.
 - Scroll-offset logic recomputes on `resize` only, not on content/image load,
   so late-loading images can throw off `navbar` highlighting.
