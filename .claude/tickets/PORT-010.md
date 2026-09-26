@@ -4,7 +4,7 @@ title: "Zone ② Parcours — nouvelle section timeline"
 group: corentin
 machine: asus_corentin
 milestone: M3 — Contenu & structure
-status: in-progress
+status: review
 resumeAt: null
 priority: P1
 estimate: 1.0
