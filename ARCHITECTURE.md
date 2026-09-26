@@ -18,8 +18,10 @@ route per project under `src/app/*`. No backend, no database, no CMS.
 | `src/app/page.tsx` | Assembles the six home sections and measures each one's `offsetTop` for the navbar's scroll-spy | Client component (`"use client"`) |
 | `src/app/layout.tsx` | Root HTML shell, page metadata | |
 | `src/app/{cpge_tipe,emse,internships,personnal,research,work}/**` | One static route per project (12 total, including `work/gcii`) | Each imports `projects` from `src/data/projects.ts`, resolves its own entry by `href`, and renders `<ProjectPage project={...} />` |
-| `src/app/lab/hero-3d/` | Throwaway spike route (PORT-003) prototyping a three.js hero mesh | Not linked from the real site; GO/NO-GO verdict still pending Corentin's own test — delete once PORT-019/020 settle it either way |
 | `src/data/projects.ts` | Typed single source of truth for all 12 projects | `category`/`featured` (PORT-011, drives the Projets filters), `period`/`location` (PORT-008/010, drives the Parcours timeline), `role`/`team`/`result` (PORT-012/013, drives each project page's "En bref" card) |
+| `src/components/useDesktopMotionGate.ts` | Shared gate (`>=1024px` AND no `prefers-reduced-motion`) for every decorative three.js accent | Consumed by `HeroCanvas.tsx`, `ProjectAccent3D.tsx` — one gate, so the three call sites can't drift apart |
+| `src/components/HeroMesh.tsx` + `HeroCanvas.tsx` | The hero's cursor-reactive three.js mesh (production, promoted from the PORT-003 spike — GO verdict from Corentin) | Renders as a background layer behind `homepage.jsx`'s content (DOM order, no z-index); gated by `useDesktopMotionGate`, `next/dynamic(ssr:false)` |
+| `src/components/ProjectAccent3D.tsx` + `SafranAccent.tsx`/`QuimesisAccent.tsx` | Per-project contextual three.js accents (PORT-020), looked up by `href` | Both are three.js (Quimesis deviates from the original VTK.js arbitrage — see Key decisions); render in normal flow (`float-right`, fixed size) next to the project title, not as an absolute overlay |
 | `src/components/ProjectPage.tsx` | The project-page template: breadcrumb, sticky "En bref" card, header visual, numbered body sections, gallery, prev/next nav (array order, `UNROUTED_HREFS` guard for any future data-ahead-of-route entry) | Replaces the old `project.tsx` (deleted, PORT-013) — no more `window.location.pathname` sniffing |
 | `src/components/journeySection.tsx` | The Parcours timeline (zone ②) | Reads `period`/`location` off `src/data/projects.ts`; not wired into the navbar's scroll-spy (see Known weak points) |
 | `src/components/` (rest) | `homepage`, `navbar`, `profileSection`, `projectsSection`, `aboutmeSection`, `footer`, `federer`, `optimizedImage`, `Banner` | Mix of `.jsx` and `.tsx` |
@@ -50,6 +52,8 @@ animation (no JS driving it — see Key decisions).
 | 2026-09-26 | Hero icon wheel (`RoundContainer`) rotates via CSS `@keyframes`, not a JS interval | The old `setInterval(fn, 10)` re-rendered React 100×/second forever — Lighthouse measured 13.1s of main-thread work from it alone | Throttling the interval (still JS-driven, still forces reflows) |
 | 2026-09-26 | Nav restructured to Profil/Expériences/Projets/À propos, wired to `journeyTop` | Matches the mockup's 4 nav entries; "Expériences" needed a real scroll target once the Parcours section existed | Keeping "Accueil" as a 5th item (mockup drops it — the hero is already what's on screen at the top) |
 | 2026-09-26 | No "Télécharger le CV" button anywhere (hero or footer) | No CV PDF exists yet; a dead link is worse than no button | Linking to a placeholder path like `/cv.pdf` |
+| 2026-09-26 | three.js promoted to production for the hero (GO) | Corentin tested the `/lab/hero-3d` spike on his own machine: "je ne vois pas de lags" | NO-GO path (keep the 2D hero as-is) — not taken |
+| 2026-09-26 | Quimesis's contextual accent uses three.js, not `@kitware/vtk.js` | VTK.js is ~14MB unpacked, never used in this repo, and needs real scan/mesh data to render anything meaningful — none exists here; a from-scratch pipeline for one decorative accent was judged disproportionate | A real VTK.js integration — not closed, just not attempted this session |
 
 ## Invariants
 
@@ -93,8 +97,11 @@ animation (no JS driving it — see Key decisions).
   in `app.css` makes `body` a CSSOM scroll container, which becomes the
   sticky positioning context instead of the viewport. Recommended fix:
   `overflow-x: clip` instead of `hidden`.
-- `/src/app/lab/hero-3d` is a spike, not production code — delete once
-  PORT-019/PORT-020 settle three.js's fate (GO/NO-GO still pending Corentin's
-  own hands-on test of that route).
 - No CV PDF exists — the mockup's "Télécharger le CV" CTA is absent from both
   the hero and the footer until one is provided.
+- Lighthouse Performance on the home page measures 82-86/100 (mobile) in this
+  project's sandboxed dev environment, short of the 90 target — confirmed via
+  the wheel-spin CSS fix and again after the M5 3D accents that neither
+  regressed it further nor explains the shortfall (network capture shows
+  zero three.js chunk loaded under mobile emulation). Needs re-measuring
+  against the deployed GitHub Pages site or a non-shared machine.
