@@ -7,59 +7,62 @@
 > Keep it under ~60 lines. It is loaded every session; it is not a logbook.
 > Archive older entries under `.claude/passations/YYYY-MM-DD-<slug>.md`.
 
-**Session**: 2026-09-26 · **Ticket**: PORT-002 · **Status**: review (attente checkpoint humain)
+**Session**: 2026-09-26 · **Tickets**: PORT-003, PORT-004, PORT-005, PORT-008 · **Status**: review (4 checkpoints humains en attente)
 
 ## Objective
 
-Passer le repo sur la dernière stack stable (Next 16 + React 19) sans toucher
-au contenu, en gardant l'export statique et le gate CI de PORT-001 verts.
+Faire tourner en parallèle les 4 tickets débloqués par PORT-002 (M1 fini), en
+worktrees git isolées, puis fusionner dans `refonte-2026`.
 
 ## Problem statement
 
-Le brouillon du ticket ne parlait que d'un bump de versions. En réalité
-Next 16 **supprime `next lint`** : sans migration ESLint (flat config + CLI
-directe), le gate CI créé en PORT-001 casse. La migration ESLint était donc
-inséparable de l'upgrade, d'où l'estimation passée de 1.5 à 2.5 demi-journées.
+Les 4 agents ont crashé sur la limite de session Claude (quota, pas un bug de
+logique) avant de terminer. Reprise après reset : le code de chacun était
+quasi fini, juste pas commité/vérifié jusqu'au bout.
 
 ## What changed
 
 | File | Change |
 | --- | --- |
-| `package.json` | next 16.3.6, react/react-dom 19.3.0, eslint ^9, eslint-config-next 16.3.6, `typescript` ajouté en explicite, script `lint` → `eslint .` |
-| `.eslintrc.json` → `eslint.config.mjs` | Migration flat config ; `react/no-unescaped-entities: off` conservée, `react-hooks/set-state-in-effect` ramenée en `warn` |
-| `tsconfig.json` | `moduleResolution: bundler` (node10 déprécié en TS 6) ; `jsx`/`target`/`include` réécrits par `next build` lui-même |
-| `ARCHITECTURE.md`, `CLAUDE.md` | Stack et décisions à jour |
+| `src/app/app.css`, `tailwind.config.js` | PORT-004 : tokens de surface/bordure/focus, `--second-text` → `#999999` (WCAG AA), `vh` → padding, `justify`→`left`, scrollbar visible |
+| `src/data/projects.ts` (nouveau) | PORT-008 : 12 projets typés (11 existants + GCII/Enedis), remplace le tableau de `projectsSection.jsx` |
+| `scripts/optimize-images.mjs`, `src/components/optimizedImage.tsx`, `assets/images-src/**` | PORT-005 : AVIF+WebP générés par `sharp` (public/ : 9,3 Mo → ~1,7 Mo) |
+| `src/app/lab/hero-3d/**` | PORT-003 : spike three.js isolé, GO/NO-GO **pas encore tranché** |
+| `.gitignore`, `eslint.config.mjs` | Ignorer `.claude/worktrees/` (voir « What failed ») |
 
 ## What failed
 
-1. **Codemod officiel inutilisable ici** : `npx @next/codemod@canary upgrade latest`
-   (puis `... upgrade 16.3.6`) répond
-   `Invalid revision provided: "latest" (resolved to "latest")` en mode non
-   interactif. Migration faite à la main à la place — ne pas réessayer le
-   codemod dans ce contexte.
-2. **ESLint 10 incompatible** : `eslint-config-next@16.3.6` déclare pourtant
-   `eslint >= 9.0.0` en peer, mais plante au runtime avec
-   `TypeError: scopeManager.addGlobals is not a function`. Rester en `^9`
-   malgré le warning npm « eslint@9.39.5 is no longer supported ».
+1. **Corruption d'encodage** : la branche originale de PORT-005 a ré-encodé en
+   UTF-8 double tout le texte français de `projectsSection.jsx` en l'éditant
+   (« études » → « Ã©tudes »), + BOM ajouté. Diagnostiqué via `git diff` (les
+   lignes non touchées restaient correctes). Cette branche n'a **pas** été
+   fusionnée ; le travail a été rejoué à la main sur `src/data/projects.ts`
+   (propre, issu de PORT-008). Si ça se reproduit : comparer le diff plutôt
+   que relire, ne jamais éditer ce fichier via un outil qui ne garantit pas
+   l'UTF-8 sans BOM.
+2. **`eslint .` a rapporté ~800 erreurs après le merge** : les 4 worktrees
+   (`.claude/worktrees/agent-*`) étaient restées imbriquées dans le checkout
+   principal, chacune avec son propre `.next/` plein de code minifié. Corrigé
+   par suppression des worktrees (`git worktree remove`) + ignore ESLint
+   dédié. Si `eslint .` explose soudainement : vérifier `git worktree list`.
 
 ## Open questions
 
-- ~~Node 20 en fin de vie dans les workflows CI~~ → tranché le 2026-09-26 :
-  les deux workflows sont passés en **Node 24** (LTS actif, aligné sur le
-  Node local de la machine de dev).
-- TypeScript 7.0.2 existe ; le repo est épinglé en `^6.0.3` (version qui
-  arrivait déjà par transitivité). Upgrade TS majeur à traiter à part.
-- `npm audit` : 7 vulnérabilités (1 low, 1 moderate, 5 high) non traitées.
+- **PORT-003 verdict GO/NO-GO non tranché** — outil de navigateur indisponible
+  cette session. Corentin doit lancer `npm run dev`, ouvrir `/lab/hero-3d`.
+- `.claude/settings.json` a été modifié sans qu'on le demande (deny-list
+  `curl|sh` → `sh:*`/`bash:*`) par un des agents parallèles ; reverté sans
+  commit. À surveiller si ça se reproduit.
 
 ## Next step
 
-Lancer en parallèle les 4 tickets débloqués par PORT-002, chacun sur sa propre
-branche depuis `refonte-2026` : PORT-003 (spike three.js), PORT-004 (tokens
-CSS), PORT-005 (images `next/image`), PORT-008 (`src/data/projects.ts`).
+4 checkpoints humains à faire (voir chaque ticket PORT-003/004/005/008 pour le
+détail), puis `/ticket PORT-010` ou `PORT-011` (parallélisables, dépendent
+seulement de PORT-008).
 
 ## Do not
 
-- Ne pas toucher `public/img/Avatar_Coco.png` — non trackée, sans rapport.
-- Ne pas passer ESLint en 10.x (voir « What failed » ci-dessus).
-- Ne pas « corriger » `react-hooks/set-state-in-effect` dans `project.tsx` :
-  ce fichier est réécrit entièrement par PORT-012.
+- Ne pas re-tenter le codemod `@next/codemod` (voir passation archivée).
+- Ne pas repasser ESLint en `^10` (voir passation archivée).
+- Ne pas éditer `public/img/`/`public/logos/` à la main — régénérer via
+  `npm run optimize:images` depuis `assets/images-src/`.
