@@ -4,7 +4,7 @@ title: "Zone ① Accueil — hero et statut réels, nav restructurée"
 group: corentin
 machine: asus_corentin
 milestone: M3 — Contenu & structure
-status: ready
+status: review
 resumeAt: null
 priority: P1
 estimate: 1.5
