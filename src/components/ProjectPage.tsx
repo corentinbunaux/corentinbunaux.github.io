@@ -1,27 +1,17 @@
+"use client";
+
 import Link from "next/link";
 import { OptimizedImage } from "./optimizedImage";
 import { ProjectAccent3D } from "./ProjectAccent3D";
 import {
   projects,
+  localizeProject,
   type Project,
   type ProjectPeriod,
   type TechLogoId,
 } from "../data/projects";
-
-const MONTHS = [
-  "janvier",
-  "février",
-  "mars",
-  "avril",
-  "mai",
-  "juin",
-  "juillet",
-  "août",
-  "septembre",
-  "octobre",
-  "novembre",
-  "décembre",
-] as const;
+import { useTranslation, type Dictionary } from "../i18n/dictionary";
+import { useLanguage } from "../i18n/LanguageContext";
 
 const TECH_LABELS: Record<TechLogoId, string> = {
   html: "HTML",
@@ -50,18 +40,20 @@ const TECH_LABELS: Record<TechLogoId, string> = {
  */
 const UNROUTED_HREFS = new Set<string>([]);
 
-function formatDuration(period?: ProjectPeriod): string | null {
+function formatDuration(period: ProjectPeriod | undefined, t: Dictionary): string | null {
   if (!period) return null;
 
   const [startYear, startMonth] = period.start.split("-").map(Number);
 
   if (period.status === "ongoing") {
-    return `Depuis ${MONTHS[startMonth - 1]} ${startYear}`;
+    return `${t.projectPage.since} ${t.common.months[startMonth - 1]} ${startYear}`;
   }
 
   const [endYear, endMonth] = period.end.split("-").map(Number);
-  const months = (endYear - startYear) * 12 + (endMonth - startMonth) + 1;
-  return months === 1 ? "1 mois" : `${months} mois`;
+  const monthCount = (endYear - startYear) * 12 + (endMonth - startMonth) + 1;
+  const unit =
+    monthCount === 1 ? t.projectPage.monthSingular : t.projectPage.monthPlural;
+  return `${monthCount} ${unit}`;
 }
 
 function findNeighbor(startIndex: number, step: 1 | -1): Project | undefined {
@@ -87,26 +79,31 @@ export type ProjectPageProps = {
   project: Project;
 };
 
-export function ProjectPage({ project }: ProjectPageProps) {
-  const index = projects.findIndex((p) => p.href === project.href);
-  const previous = index === -1 ? undefined : findNeighbor(index, -1);
-  const next = index === -1 ? undefined : findNeighbor(index, 1);
-  const duration = formatDuration(project.period);
+export function ProjectPage({ project: rawProject }: ProjectPageProps) {
+  const t = useTranslation();
+  const { language } = useLanguage();
+  const project = localizeProject(rawProject, language);
+  const index = projects.findIndex((p) => p.href === rawProject.href);
+  const previousRaw = index === -1 ? undefined : findNeighbor(index, -1);
+  const nextRaw = index === -1 ? undefined : findNeighbor(index, 1);
+  const previous = previousRaw ? localizeProject(previousRaw, language) : undefined;
+  const next = nextRaw ? localizeProject(nextRaw, language) : undefined;
+  const duration = formatDuration(project.period, t);
   const stack = project.techLogos.map((id) => TECH_LABELS[id]);
 
   return (
     <main className="project-page mx-auto max-w-6xl px-4 py-8 sm:px-8">
-      <nav aria-label="Fil d'Ariane" className="mb-6 text-sm text-second-text">
+      <nav aria-label={t.projectPage.breadcrumbLabel} className="mb-6 text-sm text-second-text">
         <ol className="flex flex-wrap items-center gap-2">
           <li>
             <Link href="/" className="hover:text-my-green">
-              Accueil
+              {t.projectPage.home}
             </Link>
           </li>
           <li aria-hidden="true">/</li>
           <li>
             <Link href="/#section-portfolio" className="hover:text-my-green">
-              Projets
+              {t.common.projects}
             </Link>
           </li>
           <li aria-hidden="true">/</li>
@@ -131,7 +128,7 @@ export function ProjectPage({ project }: ProjectPageProps) {
               <div className="mb-6 overflow-hidden rounded-2xl border border-second bg-surface">
                 <OptimizedImage
                   src={project.img}
-                  alt={`Visuel du projet ${project.title}`}
+                  alt={`${t.projectPage.visualAltPrefix}${project.title}`}
                   priority
                   sizes="(min-width: 1024px) 60vw, 100vw"
                   style={{ width: "100%", height: "auto", display: "block" }}
@@ -162,7 +159,7 @@ export function ProjectPage({ project }: ProjectPageProps) {
                 id="section-context-heading"
                 className="mb-2 text-xl font-semibold text-main-text"
               >
-                Contexte
+                {t.projectPage.context}
               </h2>
               <p className="text-main-text">{project.pageContent.context}</p>
             </section>
@@ -191,7 +188,7 @@ export function ProjectPage({ project }: ProjectPageProps) {
                   id="gallery-heading"
                   className="mb-4 text-xl font-semibold text-main-text"
                 >
-                  Galerie
+                  {t.projectPage.gallery}
                 </h2>
                 <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {project.photos.map((photo, idx) => (
@@ -201,7 +198,7 @@ export function ProjectPage({ project }: ProjectPageProps) {
                     >
                       <OptimizedImage
                         src={photo}
-                        alt={`${project.title} — photo ${idx + 1}`}
+                        alt={`${project.title} — ${t.projectPage.photoLabel} ${idx + 1}`}
                         sizes="(min-width: 640px) 50vw, 100vw"
                         style={{
                           width: "100%",
@@ -217,7 +214,7 @@ export function ProjectPage({ project }: ProjectPageProps) {
           </div>
 
           <nav
-            aria-label="Navigation entre projets"
+            aria-label={t.projectPage.navBetweenProjects}
             className="mt-12 flex flex-col gap-4 border-t border-second pt-6 sm:flex-row sm:justify-between"
           >
             {previous ? (
@@ -226,7 +223,7 @@ export function ProjectPage({ project }: ProjectPageProps) {
                 className="group flex flex-col text-left"
               >
                 <span className="text-sm text-second-text">
-                  ← Projet précédent
+                  ← {t.projectPage.prevProject}
                 </span>
                 <span className="font-semibold text-main-text group-hover:text-my-green">
                   {previous.title}
@@ -241,7 +238,7 @@ export function ProjectPage({ project }: ProjectPageProps) {
                 className="group flex flex-col text-right sm:items-end"
               >
                 <span className="text-sm text-second-text">
-                  Projet suivant →
+                  {t.projectPage.nextProject} →
                 </span>
                 <span className="font-semibold text-main-text group-hover:text-my-green">
                   {next.title}
@@ -262,36 +259,36 @@ export function ProjectPage({ project }: ProjectPageProps) {
               id="en-bref-heading"
               className="mb-4 text-lg font-semibold text-main-text"
             >
-              En bref
+              {t.projectPage.enBref}
             </h2>
             <dl className="space-y-4 text-sm">
               {project.role && (
                 <div>
-                  <dt className="text-second-text">Rôle</dt>
+                  <dt className="text-second-text">{t.projectPage.role}</dt>
                   <dd className="text-main-text">{project.role}</dd>
                 </div>
               )}
               {duration && (
                 <div>
-                  <dt className="text-second-text">Durée</dt>
+                  <dt className="text-second-text">{t.projectPage.duration}</dt>
                   <dd className="text-main-text">{duration}</dd>
                 </div>
               )}
               {project.team && (
                 <div>
-                  <dt className="text-second-text">Équipe</dt>
+                  <dt className="text-second-text">{t.projectPage.team}</dt>
                   <dd className="text-main-text">{project.team}</dd>
                 </div>
               )}
               {stack.length > 0 && (
                 <div>
-                  <dt className="text-second-text">Stack</dt>
+                  <dt className="text-second-text">{t.projectPage.stack}</dt>
                   <dd className="text-main-text">{stack.join(", ")}</dd>
                 </div>
               )}
               {project.result && (
                 <div>
-                  <dt className="text-second-text">Résultat</dt>
+                  <dt className="text-second-text">{t.projectPage.result}</dt>
                   <dd className="text-main-text">{project.result}</dd>
                 </div>
               )}
@@ -301,7 +298,7 @@ export function ProjectPage({ project }: ProjectPageProps) {
               <div className="mt-6 flex items-center justify-center rounded-lg bg-white p-3">
                 <OptimizedImage
                   src={project.entityLogo}
-                  alt={`Logo ${project.title}`}
+                  alt={`${t.projectPage.logoLabel} ${project.title}`}
                   sizes="8rem"
                   style={{
                     width: "100%",
@@ -319,7 +316,7 @@ export function ProjectPage({ project }: ProjectPageProps) {
                 rel="noopener noreferrer"
                 className="mt-4 block text-center text-sm font-medium text-my-green hover:underline"
               >
-                Voir le dépôt GitHub
+                {t.projectPage.viewRepo}
               </a>
             )}
           </div>

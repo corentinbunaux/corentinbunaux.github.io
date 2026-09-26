@@ -1,5 +1,6 @@
 import React from 'react'
 import '../app/app.css'
+import { useTranslation } from '../i18n/dictionary'
 
 const EMAIL = 'corentin.bunaux@gmail.com'
 const LINKEDIN_URL = 'http://linkedin.com/in/corentin-bunaux'
@@ -7,12 +8,6 @@ const GITHUB_URL = 'https://github.com/corentinbunaux'
 
 const FOCUS_RING =
   'focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-focus rounded-sm'
-
-const NAV_LINKS = [
-  { label: 'Profil', href: '#profile' },
-  { label: 'Projets', href: '#portfolio' },
-  { label: 'À propos', href: '#about' },
-]
 
 // Real project routes, matching `href` in src/data/projects.ts (PORT-008) —
 // no invented paths.
@@ -62,23 +57,29 @@ function GitHubIcon(props) {
 
 function Footer() {
   const year = new Date().getFullYear()
+  const t = useTranslation()
+
+  const NAV_LINKS = [
+    { label: t.common.profile, href: '#profile' },
+    { label: t.common.projects, href: '#portfolio' },
+    { label: t.common.about, href: '#about' },
+  ]
 
   return (
     <footer className="bg-surface border-t border-second text-main-text">
       <div className="container mx-auto px-4 py-10 md:py-14">
         <div className="flex flex-col gap-6 border-b border-second pb-10 md:flex-row md:items-start md:justify-between">
           <div className="max-w-md">
-            <h2 className="text-xl font-semibold">Travaillons ensemble</h2>
+            <h2 className="text-xl font-semibold">{t.footer.workTogether}</h2>
             <p className="mt-2 text-second-text">
-              Ouvert aux missions en prestation depuis Le Havre, sur site à La
-              Défense ou à distance.
+              {t.footer.availability}
             </p>
             <a
               href={`mailto:${EMAIL}`}
               className={`mt-4 inline-flex items-center gap-2 rounded-md bg-my-green px-4 py-2 font-medium text-main hover:underline ${FOCUS_RING}`}
             >
               <MailIcon className="h-5 w-5" />
-              Me contacter
+              {t.footer.contactCta}
             </a>
             <ul className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-second-text">
               <li>
@@ -113,9 +114,9 @@ function Footer() {
         </div>
 
         <div className="grid grid-cols-1 gap-8 py-10 sm:grid-cols-3">
-          <nav aria-label="Navigation">
+          <nav aria-label={t.footer.navHeading}>
             <h3 className="text-sm font-semibold uppercase tracking-wide text-second-text">
-              Navigation
+              {t.footer.navHeading}
             </h3>
             <ul className="mt-3 space-y-2">
               {NAV_LINKS.map((link) => (
@@ -128,9 +129,9 @@ function Footer() {
             </ul>
           </nav>
 
-          <nav aria-label="Projets">
+          <nav aria-label={t.common.projects}>
             <h3 className="text-sm font-semibold uppercase tracking-wide text-second-text">
-              Projets
+              {t.common.projects}
             </h3>
             <ul className="mt-3 space-y-2">
               {PROJECT_LINKS.map((link) => (
@@ -143,9 +144,9 @@ function Footer() {
             </ul>
           </nav>
 
-          <nav aria-label="Contact">
+          <nav aria-label={t.footer.contactHeading}>
             <h3 className="text-sm font-semibold uppercase tracking-wide text-second-text">
-              Contact
+              {t.footer.contactHeading}
             </h3>
             <ul className="mt-3 space-y-2">
               <li>
@@ -154,7 +155,7 @@ function Footer() {
                   className={`flex items-center gap-2 hover:underline ${FOCUS_RING}`}
                 >
                   <MailIcon className="h-4 w-4" />
-                  E-mail
+                  {t.footer.emailLabel}
                 </a>
               </li>
               <li>

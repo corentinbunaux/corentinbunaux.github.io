@@ -1,6 +1,14 @@
 import Link from "next/link";
 import "../app/app.css";
-import { projects, type Project, type ProjectPeriod } from "../data/projects";
+import {
+  projects,
+  localizeProject,
+  type Project,
+  type ProjectPeriod,
+} from "../data/projects";
+import { useTranslation } from "../i18n/dictionary";
+import { useLanguage } from "../i18n/LanguageContext";
+import type { Dictionary } from "../i18n/dictionary";
 
 /**
  * A project that has a confirmed `period`. `projects` models "dates not
@@ -31,54 +39,45 @@ const journeyEntries: readonly JourneyProject[] = allProjects
   .slice()
   .sort((a, b) => a.period.start.localeCompare(b.period.start));
 
-const MONTHS_FR = [
-  "janvier",
-  "février",
-  "mars",
-  "avril",
-  "mai",
-  "juin",
-  "juillet",
-  "août",
-  "septembre",
-  "octobre",
-  "novembre",
-  "décembre",
-] as const;
-
-function formatMonthYear(yearMonth: string): string {
+function formatMonthYear(yearMonth: string, months: readonly string[]): string {
   const [year, month] = yearMonth.split("-").map(Number);
-  return `${MONTHS_FR[month - 1]} ${year}`;
+  return `${months[month - 1]} ${year}`;
 }
 
-function formatPeriod(period: ProjectPeriod): string {
+function formatPeriod(period: ProjectPeriod, t: Dictionary): string {
+  const months = t.common.months;
   if (period.status === "ongoing") {
-    return `${formatMonthYear(period.start)} → aujourd'hui`;
+    return `${formatMonthYear(period.start, months)} → ${t.journey.ongoingLabel}`;
   }
 
   const [startYear, startMonth] = period.start.split("-").map(Number);
   const [endYear, endMonth] = period.end.split("-").map(Number);
 
   if (startYear === endYear && startMonth === endMonth) {
-    return formatMonthYear(period.start);
+    return formatMonthYear(period.start, months);
   }
   if (startYear === endYear) {
-    return `${MONTHS_FR[startMonth - 1]} – ${MONTHS_FR[endMonth - 1]} ${endYear}`;
+    return `${months[startMonth - 1]} – ${months[endMonth - 1]} ${endYear}`;
   }
-  return `${formatMonthYear(period.start)} – ${formatMonthYear(period.end)}`;
+  return `${formatMonthYear(period.start, months)} – ${formatMonthYear(period.end, months)}`;
 }
 
 function JourneyEntryRow({
   entry,
   isLast,
+  t,
+  language,
 }: {
   entry: JourneyProject;
   isLast: boolean;
+  t: Dictionary;
+  language: "fr" | "en";
 }) {
   const isOngoing = entry.period.status === "ongoing";
+  const localized = localizeProject(entry, language);
   const subtitle = entry.location
-    ? `${entry.description} · ${entry.location}`
-    : entry.description;
+    ? `${localized.description} · ${entry.location}`
+    : localized.description;
 
   return (
     <li className="flex gap-4">
@@ -98,24 +97,26 @@ function JourneyEntryRow({
         className="block flex-1 rounded-md pb-6 focus-visible:outline-none"
       >
         <h2 className="text-lg font-semibold text-main-text hover:underline">
-          {entry.title}
+          {localized.title}
           {isOngoing && (
             <span className="ml-2 rounded-full bg-my-green/20 px-2 py-0.5 text-xs font-normal text-my-green">
-              Poste actuel
+              {t.journey.currentBadge}
             </span>
           )}
         </h2>
         <p className="text-second-text">{subtitle}</p>
-        <p className="text-sm text-second-text">{formatPeriod(entry.period)}</p>
+        <p className="text-sm text-second-text">{formatPeriod(entry.period, t)}</p>
       </Link>
     </li>
   );
 }
 
 function JourneySection() {
+  const t = useTranslation();
+  const { language } = useLanguage();
   return (
     <div className="container mx-auto px-[var(--section-padding-x)] py-[var(--section-padding-y)]">
-      <h1 className="outlined-text">Parcours</h1>
+      <h1 className="outlined-text">{t.journey.title}</h1>
       <div className="mt-8 rounded-lg border border-second bg-surface-raised p-6 md:p-8">
         <ol className="flex flex-col">
           {journeyEntries.map((entry, index) => (
@@ -123,6 +124,8 @@ function JourneySection() {
               key={entry.href}
               entry={entry}
               isLast={index === journeyEntries.length - 1}
+              t={t}
+              language={language}
             />
           ))}
         </ol>

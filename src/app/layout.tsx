@@ -1,5 +1,6 @@
 import React from "react";
 import "./app.css";
+import { LanguageProvider } from "../i18n/LanguageContext";
 
 export const metadata = {
   title: "Portfolio - Corentin Bunaux",
@@ -8,9 +9,9 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="fr">
       <body>
-        {children}
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );

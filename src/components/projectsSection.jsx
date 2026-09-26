@@ -3,18 +3,23 @@
 import "../app/app.css";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { projects } from "../data/projects";
+import { projects, localizeProject } from "../data/projects";
 import { OptimizedImage } from "./optimizedImage";
 import { bannerElmts } from "./Banner";
+import { useTranslation } from "../i18n/dictionary";
+import { useLanguage } from "../i18n/LanguageContext";
 
 /** Filter pills shown above the grid. "all" is not a real project category. */
-const CATEGORY_FILTERS = [
-  { id: "all", label: "Tous" },
-  { id: "pro", label: "Pro" },
-  { id: "recherche", label: "Recherche" },
-  { id: "ecole", label: "École" },
-  { id: "perso", label: "Perso" },
-];
+function useCategoryFilters() {
+  const t = useTranslation();
+  return [
+    { id: "all", label: t.projects.filters.all },
+    { id: "pro", label: t.projects.filters.pro },
+    { id: "recherche", label: t.projects.filters.recherche },
+    { id: "ecole", label: t.projects.filters.ecole },
+    { id: "perso", label: t.projects.filters.perso },
+  ];
+}
 
 /** Small round pill rendering one tech logo, reusing the icons from Banner.jsx. */
 const TechPill = ({ id }) => {
@@ -38,7 +43,7 @@ const TechPill = ({ id }) => {
   );
 };
 
-const ProjectCard = ({ project }) => (
+const ProjectCard = ({ project, t }) => (
   <Link
     href={`/${project.href}`}
     className={`group flex flex-col overflow-hidden rounded-lg border border-second bg-surface transition-colors hover:border-secondary ${
@@ -55,7 +60,7 @@ const ProjectCard = ({ project }) => (
         />
       ) : (
         <span className="flex h-full w-full items-center justify-center text-sm text-second-text">
-          Aperçu à venir
+          {t.projects.previewComing}
         </span>
       )}
     </div>
@@ -75,6 +80,9 @@ const ProjectCard = ({ project }) => (
 
 function ProjectsSection() {
   const [activeFilter, setActiveFilter] = useState("all");
+  const t = useTranslation();
+  const { language } = useLanguage();
+  const categoryFilters = useCategoryFilters();
 
   const filteredProjects = useMemo(() => {
     const matching =
@@ -83,10 +91,11 @@ function ProjectsSection() {
         : projects.filter((project) => project.category === activeFilter);
 
     // The featured project, when present in the filtered set, always leads.
-    return [...matching].sort(
+    const sorted = [...matching].sort(
       (a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured))
     );
-  }, [activeFilter]);
+    return sorted.map((project) => localizeProject(project, language));
+  }, [activeFilter, language]);
 
   return (
     <section
@@ -94,13 +103,13 @@ function ProjectsSection() {
       className="flex justify-center items-center h-full"
     >
       <div className="container p-5">
-        <h1 className="outlined-text">Projets</h1>
+        <h1 className="outlined-text">{t.common.projects}</h1>
         <div
           className="mb-6 flex flex-wrap gap-2"
           role="group"
-          aria-label="Filtrer les projets par nature"
+          aria-label={t.projects.filterGroupLabel}
         >
-          {CATEGORY_FILTERS.map((filter) => {
+          {categoryFilters.map((filter) => {
             const isActive = filter.id === activeFilter;
             return (
               <button
@@ -121,7 +130,7 @@ function ProjectsSection() {
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredProjects.map((project) => (
-            <ProjectCard key={project.href} project={project} />
+            <ProjectCard key={project.href} project={project} t={t} />
           ))}
         </div>
       </div>
