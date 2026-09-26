@@ -18,7 +18,8 @@ route per project under `src/app/*`. No backend, no database, no CMS.
 | `src/app/page.tsx` | Assembles the six home sections and measures each one's `offsetTop` for the navbar's scroll-spy | Client component (`"use client"`) |
 | `src/app/layout.tsx` | Root HTML shell, page metadata | |
 | `src/app/{cpge_tipe,emse,internships,personnal,research,work}/**` | One static route per project (12 total, including `work/gcii`) | Each imports `projects` from `src/data/projects.ts`, resolves its own entry by `href`, and renders `<ProjectPage project={...} />` |
-| `src/data/projects.ts` | Typed single source of truth for all 12 projects | `category`/`featured` (PORT-011, drives the Projets filters), `period`/`location` (PORT-008/010, drives the Parcours timeline), `role`/`team`/`result` (PORT-012/013, drives each project page's "En bref" card) |
+| `src/data/projects.ts` | Typed single source of truth for all 12 projects | `category`/`featured` (PORT-011, drives the Projets filters), `period`/`location` (PORT-008/010, drives the Parcours timeline), `role`/`team`/`result` (PORT-012/013, drives each project page's "En bref" card); every prose field is `LocalizedText` (`{fr, en}`, PORT-017), resolved via `localizeProject()` |
+| `src/i18n/` | `LanguageContext.tsx` (provider + `useLanguage()`), `dictionary.ts` (`{fr, en}` `Dictionary` + `useTranslation()`), `types.ts` (`Language`, `LocalizedText`) | Client-side only, default `fr`, persisted to `localStorage` (`corentinbunaux.language`) and re-synced in a `useEffect` post-mount to avoid a hydration mismatch; no routing impact (no `/fr` `/en` paths) |
 | `src/components/useDesktopMotionGate.ts` | Shared gate (`>=1024px` AND no `prefers-reduced-motion`) for every decorative three.js accent | Consumed by `HeroCanvas.tsx`, `ProjectAccent3D.tsx` — one gate, so the three call sites can't drift apart |
 | `src/components/HeroMesh.tsx` + `HeroCanvas.tsx` | The hero's cursor-reactive three.js mesh (production, promoted from the PORT-003 spike — GO verdict from Corentin) | Renders as a background layer behind `homepage.jsx`'s content (DOM order, no z-index); gated by `useDesktopMotionGate`, `next/dynamic(ssr:false)` |
 | `src/components/ProjectAccent3D.tsx` + `SafranAccent.tsx`/`QuimesisAccent.tsx` | Per-project contextual three.js accents (PORT-020), looked up by `href` | Both are three.js (Quimesis deviates from the original VTK.js arbitrage — see Key decisions); render in normal flow (`float-right`, fixed size) next to the project title, not as an absolute overlay |
@@ -54,6 +55,8 @@ animation (no JS driving it — see Key decisions).
 | 2026-09-26 | No "Télécharger le CV" button anywhere (hero or footer) | No CV PDF exists yet; a dead link is worse than no button | Linking to a placeholder path like `/cv.pdf` |
 | 2026-09-26 | three.js promoted to production for the hero (GO) | Corentin tested the `/lab/hero-3d` spike on his own machine: "je ne vois pas de lags" | NO-GO path (keep the 2D hero as-is) — not taken |
 | 2026-09-26 | Quimesis's contextual accent uses three.js, not `@kitware/vtk.js` | VTK.js is ~14MB unpacked, never used in this repo, and needs real scan/mesh data to render anything meaningful — none exists here; a from-scratch pipeline for one decorative accent was judged disproportionate | A real VTK.js integration — not closed, just not attempted this session |
+| 2026-09-26 | i18n: client-side context + dictionary, `LocalizedText` fields in place on `Project` (not a parallel `projects.en.ts`) | No `/fr`/`/en` routes needed (stays 100% static export); keeping both languages on the same object next to each other means they can't silently drift apart the way two separate files could | `next-intl`/`react-i18next` (new dependency for a problem this small); a mirrored `projects.en.ts` |
+| 2026-09-26 | `LanguageToggle` rendered in both `navbar.jsx` (home) and `ProjectPage.tsx`'s breadcrumb (every project page) | `navbar.jsx` itself is only mounted by `src/app/page.tsx` — a visitor landing directly on a project page (shared link, search result) had no way to change language at all without the toggle also living there | A single global toggle in `layout.tsx` outside either component — rejected only because it would've meant restyling it out of context of both navbar's and the breadcrumb's design |
 
 ## Invariants
 
@@ -74,6 +77,11 @@ animation (no JS driving it — see Key decisions).
   that module silently drops an id it does not recognize.
 - Every project page goes through `ProjectPage.tsx` — there is no more
   per-project bespoke component (`project.tsx` is deleted).
+- Any newly displayed string must go through `useTranslation()`
+  (`src/i18n/dictionary.ts`) or, for per-project prose, `LocalizedText` +
+  `localizeProject()` — not a hardcoded French literal. The `Dictionary`
+  interface makes a missing `en` key a compile error, but nothing stops a new
+  hardcoded string from being added outside the dictionary entirely.
 
 ## Known weak points
 
