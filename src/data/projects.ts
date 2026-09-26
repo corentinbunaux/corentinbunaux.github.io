@@ -74,6 +74,15 @@ export interface Project {
   readonly period?: ProjectPeriod;
   /** Omitted where the location is not confirmed. */
   readonly location?: string;
+  /**
+   * Short role/title shown in the project page's "En bref" summary card.
+   * Omitted where not yet authored (see PORT-012's ticket refinement).
+   */
+  readonly role?: string;
+  /** Team size or composition shown in "En bref". Omitted where not known. */
+  readonly team?: string;
+  /** Headline outcome shown in "En bref". Omitted where not yet authored. */
+  readonly result?: string;
   readonly pageContent: ProjectPageContent;
 }
 
@@ -121,6 +130,9 @@ export const projects = [
     img: "/img/safran",
     photos: [],
     period: { status: "completed", start: "2025-04", end: "2025-09" },
+    role: "Développeur logiciel — frameworks & outils internes",
+    result:
+      "Framework et CLI adoptés pour la génération de nouveaux projets par plusieurs équipes internes.",
     pageContent: {
       context:
         "Lors de ma dernière année aux Mines de Saint-Etienne, j'ai eu l'opportunité de réaliser un stage de fin d'études au sein de l'entreprise Safran Data Systems. Ce stage m'a permis de m'immerger dans le monde spatial et de travailler sur des outils internes pour différentes équipes, ainsi qu'une application cliente.",
