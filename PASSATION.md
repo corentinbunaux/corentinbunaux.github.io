@@ -7,64 +7,62 @@
 > Keep it under ~60 lines. It is loaded every session; it is not a logbook.
 > Archive older entries under `.claude/passations/YYYY-MM-DD-<slug>.md`.
 
-**Session**: 2026-09-26 · **Tickets**: PORT-006/007/009/010/011/012/013/014/015/016 · **Status**: jalons M2+M3 fermés
+**Session**: 2026-09-26 (soir) · **Tickets**: PORT-019/020/021/017/018 · **Status**: M4+M5 fermés, refonte quasi complète
 
 ## Objective
 
-Fermer M2 (design system) et M3 (contenu) en parallélisant tout ce qui n'avait
-pas de conflit de fichier, en séquentiel pour le reste (PORT-006→009 sur
-`navbar.jsx`, PORT-012→013 sur le gabarit de page projet).
+Finir M5 (three.js, GO confirmé par Corentin) et M4 (i18n) en parallélisant,
+sous contrainte de budget de session — objectif : que Corentin voie un rendu
+complet en fin de session avant de donner des retours détaillés.
 
 ## What changed
 
-10 tickets mergés dans `refonte-2026`. Points marquants :
-- Navbar accessible (boutons sémantiques) + restructurée (Profil/Expériences/
-  Projets/À propos), wired à la nouvelle section Parcours.
-- `ProjectPage.tsx` remplace `project.tsx` (supprimé) sur les 12 routes —
-  fini le `window.location.pathname`.
-- Filtres Projets (`category`/`featured` dans `src/data/projects.ts`).
-- Roue d'icônes du hero : `setInterval` 10ms → animation CSS pure
-  (13,1s → 2,6s de main-thread selon Lighthouse).
-- CTA "Télécharger le CV" retiré partout (pas de PDF disponible).
+- **M5** : hero three.js en production (plus de spike `/lab`), accents
+  contextuels Safran (orbites) et Quimesis (fragments, three.js — VTK.js
+  écarté, décision documentée dans PORT-020/ARCHITECTURE.md), aucune
+  régression perf confirmée par capture réseau réelle sous émulation mobile.
+- **M4** : infra i18n complète + traduction FR/EN de tout le site en un seul
+  passage (`src/i18n/`, `LocalizedText` sur `src/data/projects.ts`). Toggle
+  vérifié fonctionnel sur la home ET les pages projet (bug trouvé et corrigé
+  en session : le toggle n'existait qu'dans `navbar.jsx`, absent des pages
+  projet — ajouté dans le fil d'Ariane de `ProjectPage.tsx`).
+- Photo du hero remplacée par l'avatar de Corentin (modification manuelle de
+  sa part, prise en compte).
 
 ## What failed
 
-- **Corruption d'encodage** (vague précédente, PORT-005) : ne pas éditer un
-  fichier à texte français via un outil qui ne garantit pas l'UTF-8 sans BOM.
-  Comparer le diff plutôt que relire visuellement pour l'attraper.
-- **Worktrees imbriqués non nettoyés** ont fait exploser `eslint .` à ~800
-  erreurs (ESLint lintait `.next`/`node_modules` des autres worktrees) —
-  `git worktree remove --force --force` + `rm -rf` systématiquement après
-  chaque merge, jamais laissé traîner.
-- **Lighthouse en environnement sandboxé** : scores de performance non
-  fiables (82-86 sur deux runs identiques) — à refaire sur le site déployé.
+- Aucun échec bloquant cette fois. Deux "quasi-échecs" évités par
+  vérification avant de conclure : (1) le score Lighthouse ne bougeait pas
+  après le fix du hero — vérifié que c'était du bruit d'environnement, pas
+  une régression ; (2) le toggle i18n semblait complet mais ne marchait que
+  sur la home — trouvé en testant réellement une page projet, pas en faisant
+  confiance au rapport de l'agent délégué.
 
 ## Open questions
 
-Trois bugs pré-existants trouvés et documentés (pas corrigés, hors périmètre
-de leur ticket d'origine) : PORT-022 (scroll `behavior:'smooth'` ne scrolle
-jamais), PORT-023 (hiérarchie de titres h1→h3 invalide site entier), le
-`body{overflow-x:hidden}` qui casse `position:sticky` (noté dans
-`ARCHITECTURE.md`, pas encore de ticket dédié).
+Rien de bloquant. `PORT-018` reste `blocked` intentionnellement — c'est la
+relecture de Corentin, pas un travail Claude.
 
 ## Next step
 
-**Attendre les checkpoints humains avant M4/M5** (voir liste ci-dessous) —
-ne pas empiler i18n/three.js sur du contenu pas encore relu. Une fois relu :
-`/ticket PORT-017` (infra i18n) ou trancher le GO/NO-GO three.js
-(`/lab/hero-3d`, `.claude/tickets/PORT-003.md`) pour débloquer PORT-019.
+**Le backlog M1-M5 est épuisé.** Il reste : les checkpoints humains cumulés
+(liste ci-dessous), et 3 bugs pré-existants documentés mais non corrigés
+(PORT-022 scroll fluide, PORT-023 hiérarchie de titres, sticky "En bref" —
+tous dans `ARCHITECTURE.md` § Known weak points). Aucun n'empêche de voir le
+rendu complet.
 
 ## Do not
 
-- Ne pas toucher `public/img/Avatar_Coco.png` (non suivi, hors sujet).
-- Ne pas repasser ESLint en `^10` (crash avec `eslint-config-next`).
-- Ne pas éditer `public/img`/`public/logos` à la main — régénérer via
-  `npm run optimize:images`.
+- Ne pas toucher `public/img/Avatar_Coco.png`.
+- Ne pas repasser ESLint en `^10`.
+- Ne pas régénérer `public/img`/`public/logos` à la main.
+- Ne pas ajouter `@kitware/vtk.js` sans en reparler — décision déjà pesée.
 
-## Checkpoints humains en attente (10)
+## Checkpoints humains en attente (Corentin)
 
-PORT-001/002/003/004/005 (Lighthouse+navigateur sur la nouvelle stack),
-PORT-006 (focus clavier), PORT-007 (relancer Lighthouse hors sandbox),
-PORT-009/010/011/014/015 (relecture visuelle/contenu), **PORT-016 : relire
-le contenu GCII/Enedis dans `src/data/projects.ts`** (le plus important —
-c'est un emploi en cours).
+Le plus important : **PORT-018** (relire les traductions FR/EN, notamment
+GCII/Enedis) et **PORT-016** (relire le contenu GCII/Enedis lui-même).
+Ensuite, dans l'ordre du backlog : PORT-001 à 015, 019, 020 (voir chaque
+`human_checkpoint` dans `.claude/tickets/`). Un point notable signalé par
+l'agent i18n : le texte source contenait "score TOIEC" (faute) — gardé tel
+quel en français, corrigé en "TOEIC" côté anglais, pas propagé.
