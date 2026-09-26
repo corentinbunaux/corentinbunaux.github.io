@@ -4,7 +4,7 @@ title: "[Recherche] Prototype de faisabilité du hero three.js"
 group: corentin
 machine: asus_corentin
 milestone: M1 — Fondations
-status: ready
+status: review
 resumeAt: null
 priority: P1
 estimate: 1.0
@@ -124,5 +124,32 @@ précisément l'objet du ticket.
 
 ## Verdict
 
-_À remplir à l'exécution : GO ou NO-GO, avec les FPS relevés et le surcoût de
-bundle mesuré._
+**Vérifié dans cette reprise (build/code), pas encore le FPS réel** — l'outil
+de contrôle navigateur était indisponible dans cette session pour terminer la
+mesure prévue. Ce qui est confirmé :
+
+- `npm run lint && npx tsc --noEmit` propres, `npm run build` réussit,
+  15 pages générées dont `/lab/hero-3d`.
+- Isolation confirmée par lecture du code (`src/app/lab/hero-3d/page.tsx`) :
+  le `matchMedia` sur `(min-width: 1024px)` et `(prefers-reduced-motion:
+  reduce)` est évalué avant tout rendu de `<HeroMesh>`, et l'import dynamique
+  (`next/dynamic`, `ssr:false`) n'est déclenché que si `gate.state ===
+  "render"`. Le repli statique ne charge jamais `HeroMesh.tsx`, donc jamais
+  `three`.
+- Surcoût de bundle : le chunk le plus lourd de tout l'export est de 524 Ko
+  (`out/_next/static/chunks/1rliaxigqozca.js`, quasi certainement le chunk
+  `three`) — absent des références de `out/index.html`, cohérent avec un
+  chargement différé qui ne concerne que `/lab/hero-3d` à ≥1024px.
+- Relecture de `HeroMesh.tsx` : nettoyage complet au démontage (dispose de la
+  géométrie/matériaux/renderer + `forceContextLoss`), pas de fuite mémoire
+  évidente, pas de `any`, résolution de grille raisonnable (64×64 = 4225
+  sommets).
+
+**GO/NO-GO reste à prononcer par Corentin** — c'est le point de contrôle
+humain prévu par ce ticket dès l'origine (pas une vérification que je peux
+faire à sa place) : `npm run dev`, ouvrir `/lab/hero-3d` sur son propre
+téléphone et son ordinateur, bouger le curseur, lire le compteur FPS affiché
+à l'écran par le prototype lui-même.
+
+**Statut : `review`** — code et build vérifiés ; le verdict GO/NO-GO attend
+le test manuel de Corentin.
