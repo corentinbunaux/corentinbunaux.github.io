@@ -230,11 +230,11 @@ export const bannerElmts = [
     viewBox: "0 0 32 32",
     svgContent: (
       <>
-        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
         <g
           id="SVGRepo_tracerCarrier"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         ></g>
         <g id="SVGRepo_iconCarrier">
           {" "}
@@ -261,11 +261,11 @@ export const bannerElmts = [
               gradientUnits="userSpaceOnUse"
             >
               {" "}
-              <stop offset="0.097" stop-color="#0095D5"></stop>{" "}
-              <stop offset="0.301" stop-color="#238AD9"></stop>{" "}
-              <stop offset="0.621" stop-color="#557BDE"></stop>{" "}
-              <stop offset="0.864" stop-color="#7472E2"></stop>{" "}
-              <stop offset="1" stop-color="#806EE3"></stop>{" "}
+              <stop offset="0.097" stopColor="#0095D5"></stop>{" "}
+              <stop offset="0.301" stopColor="#238AD9"></stop>{" "}
+              <stop offset="0.621" stopColor="#557BDE"></stop>{" "}
+              <stop offset="0.864" stopColor="#7472E2"></stop>{" "}
+              <stop offset="1" stopColor="#806EE3"></stop>{" "}
             </linearGradient>{" "}
             <linearGradient
               id="paint1_linear_87_8183"
@@ -276,10 +276,10 @@ export const bannerElmts = [
               gradientUnits="userSpaceOnUse"
             >
               {" "}
-              <stop offset="0.118" stop-color="#0095D5"></stop>{" "}
-              <stop offset="0.418" stop-color="#3C83DC"></stop>{" "}
-              <stop offset="0.696" stop-color="#6D74E1"></stop>{" "}
-              <stop offset="0.833" stop-color="#806EE3"></stop>{" "}
+              <stop offset="0.118" stopColor="#0095D5"></stop>{" "}
+              <stop offset="0.418" stopColor="#3C83DC"></stop>{" "}
+              <stop offset="0.696" stopColor="#6D74E1"></stop>{" "}
+              <stop offset="0.833" stopColor="#806EE3"></stop>{" "}
             </linearGradient>{" "}
             <linearGradient
               id="paint2_linear_87_8183"
@@ -290,12 +290,12 @@ export const bannerElmts = [
               gradientUnits="userSpaceOnUse"
             >
               {" "}
-              <stop offset="0.107" stop-color="#C757BC"></stop>{" "}
-              <stop offset="0.214" stop-color="#D0609A"></stop>{" "}
-              <stop offset="0.425" stop-color="#E1725C"></stop>{" "}
-              <stop offset="0.605" stop-color="#EE7E2F"></stop>{" "}
-              <stop offset="0.743" stop-color="#F58613"></stop>{" "}
-              <stop offset="0.823" stop-color="#F88909"></stop>{" "}
+              <stop offset="0.107" stopColor="#C757BC"></stop>{" "}
+              <stop offset="0.214" stopColor="#D0609A"></stop>{" "}
+              <stop offset="0.425" stopColor="#E1725C"></stop>{" "}
+              <stop offset="0.605" stopColor="#EE7E2F"></stop>{" "}
+              <stop offset="0.743" stopColor="#F58613"></stop>{" "}
+              <stop offset="0.823" stopColor="#F88909"></stop>{" "}
             </linearGradient>{" "}
           </defs>{" "}
         </g>
@@ -343,11 +343,11 @@ export const bannerElmts = [
     viewBox: "-45 0 346 346",
     svgContent: (
       <>
-        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
         <g
           id="SVGRepo_tracerCarrier"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         ></g>
         <g id="SVGRepo_iconCarrier">
           <g>
@@ -427,11 +427,11 @@ export const bannerElmts = [
     viewBox: "0 -41 256 256",
     svgContent: (
       <>
-        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
         <g
           id="SVGRepo_tracerCarrier"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         ></g>
         <g id="SVGRepo_iconCarrier">
           <g fill="#00979C">
