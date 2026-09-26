@@ -111,6 +111,9 @@ export const projects = [
     photos: [],
     period: { status: "ongoing", start: "2025-11" },
     location: "Le Havre",
+    role: "Ingénieur logiciel fullstack — refonte d'une application métier",
+    result:
+      "Refonte en cours d'une application métier utilisée par plus de 10 000 utilisateurs chez Enedis, avec migration du socle historique PHP vers Django et React.",
     pageContent: {
       context:
         "Depuis novembre 2025, je suis ingénieur logiciel fullstack chez GCII, en prestation pour Enedis, au Havre. Il s'agit de mon premier poste, à l'issue de trois stages. J'interviens sur la refonte d'une application métier utilisée par plus de 10 000 utilisateurs.",
