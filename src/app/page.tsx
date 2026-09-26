@@ -15,6 +15,7 @@ export default function Home() {
   const [allTops, setAllTops] = useState({
     homepageTop: 0,
     profileTop: 0,
+    journeyTop: 0,
     portfolioTop: 0,
     aboutTop: 0,
   });
@@ -24,6 +25,7 @@ export default function Home() {
       setAllTops({
         homepageTop: document.getElementById("home").offsetTop,
         profileTop: document.getElementById("profile").offsetTop,
+        journeyTop: document.getElementById("journey").offsetTop,
         portfolioTop: document.getElementById("portfolio").offsetTop,
         aboutTop: document.getElementById("about").offsetTop,
       });
@@ -48,7 +50,7 @@ export default function Home() {
     <>
       <Navbar allTops={allTops} />
       <section id="home">
-        <Homepage />
+        <Homepage portfolioTop={allTops.portfolioTop} />
       </section>
       <section id="profile">
         <ProfileSection portfolioTop={allTops.portfolioTop} />

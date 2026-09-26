@@ -6,10 +6,10 @@ function Navbar(props) {
     let scrollTop;
     switch (index) {
       case 0:
-        scrollTop = props.allTops.homepageTop;
+        scrollTop = props.allTops.profileTop;
         break;
       case 1:
-        scrollTop = props.allTops.profileTop;
+        scrollTop = props.allTops.journeyTop;
         break;
       case 2:
         scrollTop = props.allTops.portfolioTop;
@@ -40,17 +40,17 @@ function Navbar(props) {
         <ul className="flex space-x-6 md:space-x-12 items-center md:justify-start justify-center">
           <li>
             <button type="button" className="cursor-pointer" onClick={() => { handleClick(0) }}>
-              Accueil
-            </button>
-          </li>
-          <li>
-            <button type="button" className="cursor-pointer" onClick={() => { handleClick(1) }}>
               Profil
             </button>
           </li>
           <li>
+            <button type="button" className="cursor-pointer" onClick={() => { handleClick(1) }}>
+              Expériences
+            </button>
+          </li>
+          <li>
             <button type="button" className="cursor-pointer" onClick={() => { handleClick(2) }}>
-              Portfolio
+              Projets
             </button>
           </li>
           <li>

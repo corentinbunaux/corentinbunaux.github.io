@@ -51,7 +51,7 @@ export function GithubLogo(props) {
   );
 }
 
-function Homepage() {
+function Homepage({ portfolioTop }) {
   return (
     <div className="container-fluid h-full">
       <div
@@ -64,11 +64,12 @@ function Homepage() {
         <div className="columns-1 md:columns-2 h-full">
           <div className="relative h-1/2 md:h-full flex justify-center items-center">
             <OptimizedImage
-              src="/img/cv"
+              src="/img/avatar"
               alt="Photo de Corentin Bunaux"
               priority
               sizes="(max-width: 768px) 66vw, (max-width: 1024px) 50vw, 25vw"
-              className="absolute aspect-square rounded-full w-2/3 md:w-full lg:w-1/2 h-auto bg-red-100"
+              className="absolute aspect-square rounded-full w-2/3 md:w-full lg:w-1/2 h-auto"
+              style={{backgroundColor : "#1a1a1a"}}
             />
             <div className="absolute aspect-square rounded-full w-2/3 md:w-full lg:w-1/2 h-auto">
               <RoundContainer />
@@ -82,6 +83,19 @@ function Homepage() {
               <h2 style={{ backdropFilter: "blur(10px)" }}>
                 Je m'appelle <strong>Corentin</strong>.
               </h2>
+              <button
+                type="button"
+                className="mt-4 rounded-full bg-surface-raised border border-second px-6 py-2 text-main-text hover:bg-surface"
+                onClick={() => {
+                  window.scroll({
+                    top: portfolioTop,
+                    left: 0,
+                    behavior: "smooth",
+                  });
+                }}
+              >
+                Voir mes projets
+              </button>
             </div>
             <div className="h-full p-5 hidden lg:flex flex-col justify-center items-end">
               <a
