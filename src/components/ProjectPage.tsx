@@ -41,13 +41,13 @@ const TECH_LABELS: Record<TechLogoId, string> = {
 };
 
 /**
- * `work/gcii` (GCII / Enedis) has a data entry (PORT-008) but no route yet —
- * its `page.tsx` ships with PORT-013, which migrates the remaining project
- * pages onto this template. Until then, skip it in prev/next navigation so
- * the pilot page never links to a 404. Remove this once PORT-013 adds the
- * route.
+ * Guard against linking prev/next to a project that has a `src/data/projects.ts`
+ * entry but no `page.tsx` route yet (e.g. a project added ahead of its page
+ * being written). Empty now that all 12 entries have routes (PORT-013 added
+ * the last one, `work/gcii`) — kept so a future data-only entry doesn't
+ * produce a dead link.
  */
-const UNROUTED_HREFS = new Set(["work/gcii"]);
+const UNROUTED_HREFS = new Set<string>([]);
 
 function formatDuration(period?: ProjectPeriod): string | null {
   if (!period) return null;

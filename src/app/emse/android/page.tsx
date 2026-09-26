@@ -1,6 +1,12 @@
-import React from 'react';
-import Project from "../../../components/project";
+import { projects } from "../../../data/projects";
+import { ProjectPage } from "../../../components/ProjectPage";
+
+const project = projects.find((p) => p.href === "emse/android");
+
+if (!project) {
+  throw new Error('Project "emse/android" not found in src/data/projects.ts.');
+}
 
 export default function Page() {
-    return <Project />;
+  return <ProjectPage project={project} />;
 }

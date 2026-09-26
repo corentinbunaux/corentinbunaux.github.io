@@ -1,12 +1,10 @@
 import { projects } from "../../../data/projects";
 import { ProjectPage } from "../../../components/ProjectPage";
 
-const project = projects.find((p) => p.href === "personnal/web");
+const project = projects.find((p) => p.href === "work/gcii");
 
 if (!project) {
-  throw new Error(
-    'Project "personnal/web" not found in src/data/projects.ts.'
-  );
+  throw new Error('Project "work/gcii" not found in src/data/projects.ts.');
 }
 
 export default function Page() {
