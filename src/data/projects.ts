@@ -267,6 +267,7 @@ export const projects = [
     techLogos: ["cpp", "react", "git", "linux"],
     photos: ["/img/quimesis-1", "/img/quimesis-2", "/img/quimesis-3"],
     period: { status: "completed", start: "2024-04", end: "2024-07" },
+    location: "Belgique",
     pageContent: {
       context:
         "Dans le cadre de ma seconde année d'école d'ingénieur, j'ai eu l'opportunité de réaliser un stage d'ingénierie logicielle chez Quimesis, une entreprise Belge spécialisée dans trois domaines : la mécanique, l'électronique et l'informatique. J'ai été amené à travailler sur un projet informatique dans le domaine médical.",
@@ -299,6 +300,7 @@ export const projects = [
     photos: ["/img/kusmi-1"],
     techLogos: [],
     period: { status: "completed", start: "2023-01", end: "2023-01" },
+    location: "Normandie",
     pageContent: {
       context:
         "Durant ma première année d'école d'ingénieur, j'ai réalisé un stage ouvrier chez Kusmi Tea, entreprise spécialisée dans l'import/export et la vente de thé. J'ai été amené à travailler sur la chaîne de production, et au support informatique.",

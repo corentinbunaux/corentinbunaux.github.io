@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Homepage from "../components/homepage";
 import Navbar from "../components/navbar";
 import ProfileSection from "../components/profileSection";
+import JourneySection from "../components/journeySection";
 import "./app.css";
 import AboutMe from "../components/aboutmeSection";
 import ProjectsSection from "../components/projectsSection";
@@ -51,6 +52,9 @@ export default function Home() {
       </section>
       <section id="profile">
         <ProfileSection portfolioTop={allTops.portfolioTop} />
+      </section>
+      <section id="journey" className="flex justify-center items-center">
+        <JourneySection />
       </section>
       <section id="portfolio">
         <ProjectsSection />
