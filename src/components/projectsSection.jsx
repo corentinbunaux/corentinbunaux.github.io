@@ -1,6 +1,7 @@
 import "../app/app.css";
 import Link from "next/link";
 import { projects } from "../data/projects";
+import { OptimizedImage } from "./optimizedImage";
 
 const ProjectCard = ({ project }) => (
   <div className="p-4">
@@ -9,9 +10,10 @@ const ProjectCard = ({ project }) => (
       className="relative h-full w-full fulldiv cursor-pointer"
     >
       {project.img && (
-        <img
+        <OptimizedImage
           src={project.img}
           alt={project.title}
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="absolute h-full w-full rounded-lg object-cover opacity-50 project-card-img"
         />
       )}

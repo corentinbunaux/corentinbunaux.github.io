@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { projects } from "../data/projects";
 import React from "react";
 import Image from "next/image";
+import { OptimizedImage } from "./optimizedImage";
 import { GithubLogo } from "./homepage";
 import { bannerElmts } from "./Banner";
 
@@ -92,11 +93,10 @@ export default function Project() {
                   minHeight: 240,
                 }}
               >
-                <Image
+                <OptimizedImage
                   src={carouselImages[carouselIndex]}
                   alt={`Photo ${carouselIndex + 1}`}
-                  width={0}
-                  height={0}
+                  priority
                   sizes="50vw"
                   style={{
                     width: "100%",
@@ -225,12 +225,15 @@ export default function Project() {
                 minHeight: "5rem",
               }}
             >
-              <Image
+              <OptimizedImage
                 src={entityLogo}
                 alt="Entity Logo"
-                width={2000}
-                height={2000}
-                style={{ objectFit: "contain" }}
+                sizes="10rem"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  objectFit: "contain",
+                }}
               />
             </div>
           )}
