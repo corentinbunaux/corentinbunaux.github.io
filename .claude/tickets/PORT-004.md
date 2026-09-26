@@ -4,7 +4,7 @@ title: Nettoyage des tokens CSS et de l'accessibilité globale
 group: corentin
 machine: asus_corentin
 milestone: M2 — Design system & accessibilité
-status: ready
+status: review
 resumeAt: null
 priority: P1
 estimate: 2
@@ -123,3 +123,22 @@ cliquables et sur le bouton PUSH. Vérifier au passage que la sélection de text
 - Les cartes projet, privées de la hauteur imposée par `#portfolio`, se
   réduisent à la hauteur de leur texte. Une hauteur minimale de carte est
   nécessaire.
+
+## Vérification (reprise après reset de quota)
+
+- `npm run lint` : 0 erreur, 5 warnings pré-existants (hors périmètre).
+- `npx tsc --noEmit` : propre.
+- `npm run build` (export statique) : 12 pages générées, succès.
+- Contraste WCAG recalculé indépendamment (luminance relative, formule
+  standard) — confirme les ratios documentés en commentaire dans `app.css` :
+  `--second-text` sur `--main`/`--surface`/`--surface-raised` = 6.11 / 5.72 /
+  5.04 (seuil AA texte normal : 4.5) ; `--focus` sur `--main`/`--surface-raised`
+  = 8.84 / 7.29 (seuil AA composant non-texte : 3.0) ; bouton PUSH corrigé de
+  2.49 (échec) à 6.41 (`--main` sur `--my-green` au lieu de `--main-text`).
+- Vérification clavier (Tab) en navigateur non refaite dans cette reprise
+  (outil de contrôle navigateur indisponible dans cette session) — reste le
+  point de contrôle humain à faire par Corentin.
+
+**Statut : `review`** — travail complet, build/lint/typecheck/contraste
+vérifiés ; seul le point de contrôle humain (focus clavier visuel) reste à
+faire par Corentin.
