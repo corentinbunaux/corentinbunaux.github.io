@@ -31,6 +31,10 @@
     "width": 1256,
     "height": 826
   },
+  "/img/avatar": {
+    "width": 1024,
+    "height": 1024
+  },
   "/img/cctv": {
     "width": 640,
     "height": 359
