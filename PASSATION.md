@@ -7,62 +7,64 @@
 > Keep it under ~60 lines. It is loaded every session; it is not a logbook.
 > Archive older entries under `.claude/passations/YYYY-MM-DD-<slug>.md`.
 
-**Session**: 2026-09-26 · **Tickets**: PORT-003, PORT-004, PORT-005, PORT-008 · **Status**: review (4 checkpoints humains en attente)
+**Session**: 2026-09-26 · **Tickets**: PORT-006/007/009/010/011/012/013/014/015/016 · **Status**: jalons M2+M3 fermés
 
 ## Objective
 
-Faire tourner en parallèle les 4 tickets débloqués par PORT-002 (M1 fini), en
-worktrees git isolées, puis fusionner dans `refonte-2026`.
-
-## Problem statement
-
-Les 4 agents ont crashé sur la limite de session Claude (quota, pas un bug de
-logique) avant de terminer. Reprise après reset : le code de chacun était
-quasi fini, juste pas commité/vérifié jusqu'au bout.
+Fermer M2 (design system) et M3 (contenu) en parallélisant tout ce qui n'avait
+pas de conflit de fichier, en séquentiel pour le reste (PORT-006→009 sur
+`navbar.jsx`, PORT-012→013 sur le gabarit de page projet).
 
 ## What changed
 
-| File | Change |
-| --- | --- |
-| `src/app/app.css`, `tailwind.config.js` | PORT-004 : tokens de surface/bordure/focus, `--second-text` → `#999999` (WCAG AA), `vh` → padding, `justify`→`left`, scrollbar visible |
-| `src/data/projects.ts` (nouveau) | PORT-008 : 12 projets typés (11 existants + GCII/Enedis), remplace le tableau de `projectsSection.jsx` |
-| `scripts/optimize-images.mjs`, `src/components/optimizedImage.tsx`, `assets/images-src/**` | PORT-005 : AVIF+WebP générés par `sharp` (public/ : 9,3 Mo → ~1,7 Mo) |
-| `src/app/lab/hero-3d/**` | PORT-003 : spike three.js isolé, GO/NO-GO **pas encore tranché** |
-| `.gitignore`, `eslint.config.mjs` | Ignorer `.claude/worktrees/` (voir « What failed ») |
+10 tickets mergés dans `refonte-2026`. Points marquants :
+- Navbar accessible (boutons sémantiques) + restructurée (Profil/Expériences/
+  Projets/À propos), wired à la nouvelle section Parcours.
+- `ProjectPage.tsx` remplace `project.tsx` (supprimé) sur les 12 routes —
+  fini le `window.location.pathname`.
+- Filtres Projets (`category`/`featured` dans `src/data/projects.ts`).
+- Roue d'icônes du hero : `setInterval` 10ms → animation CSS pure
+  (13,1s → 2,6s de main-thread selon Lighthouse).
+- CTA "Télécharger le CV" retiré partout (pas de PDF disponible).
 
 ## What failed
 
-1. **Corruption d'encodage** : la branche originale de PORT-005 a ré-encodé en
-   UTF-8 double tout le texte français de `projectsSection.jsx` en l'éditant
-   (« études » → « Ã©tudes »), + BOM ajouté. Diagnostiqué via `git diff` (les
-   lignes non touchées restaient correctes). Cette branche n'a **pas** été
-   fusionnée ; le travail a été rejoué à la main sur `src/data/projects.ts`
-   (propre, issu de PORT-008). Si ça se reproduit : comparer le diff plutôt
-   que relire, ne jamais éditer ce fichier via un outil qui ne garantit pas
-   l'UTF-8 sans BOM.
-2. **`eslint .` a rapporté ~800 erreurs après le merge** : les 4 worktrees
-   (`.claude/worktrees/agent-*`) étaient restées imbriquées dans le checkout
-   principal, chacune avec son propre `.next/` plein de code minifié. Corrigé
-   par suppression des worktrees (`git worktree remove`) + ignore ESLint
-   dédié. Si `eslint .` explose soudainement : vérifier `git worktree list`.
+- **Corruption d'encodage** (vague précédente, PORT-005) : ne pas éditer un
+  fichier à texte français via un outil qui ne garantit pas l'UTF-8 sans BOM.
+  Comparer le diff plutôt que relire visuellement pour l'attraper.
+- **Worktrees imbriqués non nettoyés** ont fait exploser `eslint .` à ~800
+  erreurs (ESLint lintait `.next`/`node_modules` des autres worktrees) —
+  `git worktree remove --force --force` + `rm -rf` systématiquement après
+  chaque merge, jamais laissé traîner.
+- **Lighthouse en environnement sandboxé** : scores de performance non
+  fiables (82-86 sur deux runs identiques) — à refaire sur le site déployé.
 
 ## Open questions
 
-- **PORT-003 verdict GO/NO-GO non tranché** — outil de navigateur indisponible
-  cette session. Corentin doit lancer `npm run dev`, ouvrir `/lab/hero-3d`.
-- `.claude/settings.json` a été modifié sans qu'on le demande (deny-list
-  `curl|sh` → `sh:*`/`bash:*`) par un des agents parallèles ; reverté sans
-  commit. À surveiller si ça se reproduit.
+Trois bugs pré-existants trouvés et documentés (pas corrigés, hors périmètre
+de leur ticket d'origine) : PORT-022 (scroll `behavior:'smooth'` ne scrolle
+jamais), PORT-023 (hiérarchie de titres h1→h3 invalide site entier), le
+`body{overflow-x:hidden}` qui casse `position:sticky` (noté dans
+`ARCHITECTURE.md`, pas encore de ticket dédié).
 
 ## Next step
 
-4 checkpoints humains à faire (voir chaque ticket PORT-003/004/005/008 pour le
-détail), puis `/ticket PORT-010` ou `PORT-011` (parallélisables, dépendent
-seulement de PORT-008).
+**Attendre les checkpoints humains avant M4/M5** (voir liste ci-dessous) —
+ne pas empiler i18n/three.js sur du contenu pas encore relu. Une fois relu :
+`/ticket PORT-017` (infra i18n) ou trancher le GO/NO-GO three.js
+(`/lab/hero-3d`, `.claude/tickets/PORT-003.md`) pour débloquer PORT-019.
 
 ## Do not
 
-- Ne pas re-tenter le codemod `@next/codemod` (voir passation archivée).
-- Ne pas repasser ESLint en `^10` (voir passation archivée).
-- Ne pas éditer `public/img/`/`public/logos/` à la main — régénérer via
-  `npm run optimize:images` depuis `assets/images-src/`.
+- Ne pas toucher `public/img/Avatar_Coco.png` (non suivi, hors sujet).
+- Ne pas repasser ESLint en `^10` (crash avec `eslint-config-next`).
+- Ne pas éditer `public/img`/`public/logos` à la main — régénérer via
+  `npm run optimize:images`.
+
+## Checkpoints humains en attente (10)
+
+PORT-001/002/003/004/005 (Lighthouse+navigateur sur la nouvelle stack),
+PORT-006 (focus clavier), PORT-007 (relancer Lighthouse hors sandbox),
+PORT-009/010/011/014/015 (relecture visuelle/contenu), **PORT-016 : relire
+le contenu GCII/Enedis dans `src/data/projects.ts`** (le plus important —
+c'est un emploi en cours).
