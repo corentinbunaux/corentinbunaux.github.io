@@ -4,14 +4,14 @@ title: "[Recherche] Prototype de faisabilité du hero three.js"
 group: corentin
 machine: asus_corentin
 milestone: M1 — Fondations
-status: review
+status: done
 resumeAt: null
 priority: P1
 estimate: 1.0
 confidence: medium
 depends_on: [PORT-002]
 parallel_safe: true
-human_checkpoint: "Corentin ouvre /lab/hero-3d sur son propre téléphone et son ordinateur, confirme si c'est fluide ou non"
+human_checkpoint: "Fait 2026-09-26 — Corentin : \"je ne vois pas de lags dans le navigateur, donc on peut partir la dessus\". GO confirmé."
 created: 2026-09-26
 ---
 
@@ -153,3 +153,17 @@ téléphone et son ordinateur, bouger le curseur, lire le compteur FPS affiché
 
 **Statut : `review`** — code et build vérifiés ; le verdict GO/NO-GO attend
 le test manuel de Corentin.
+
+## Verdict final (Corentin, 2026-09-26)
+
+**GO.** "Je ne vois pas de lags dans le navigateur, donc on peut partir
+là-dessus, tout en conservant à l'esprit qu'il faudra peut-être retirer ces
+parties pour certains navigateurs / dimensions d'écran, donc implémenter le
+code en fonction de ces potentielles contraintes." Aucun chiffre de FPS
+fourni — le ressenti de Corentin prime, comme prévu par ce ticket.
+
+**Pour PORT-019/PORT-020** : garder exactement le filet de sécurité déjà
+prototypé ici — rendu conditionnel `matchMedia (min-width: 1024px)`,
+repli statique sous `prefers-reduced-motion: reduce`, garde évalué avant
+l'import dynamique. Le prototype `/lab/hero-3d` peut être supprimé une fois
+PORT-019 livré.
