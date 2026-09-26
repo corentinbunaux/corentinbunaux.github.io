@@ -4,19 +4,22 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
 /**
- * PORT-003 spike — cursor-reactive mesh for the hero (Canva mockup, zone 1).
+ * Cursor-reactive mesh for the hero (Canva mockup, zone 1). Promoted to
+ * production in PORT-019 from the PORT-003 spike (GO verdict, Corentin:
+ * "je ne vois pas de lags dans le navigateur").
  *
- * Deliberately plain three.js, no @react-three/fiber: the point of the spike is
- * to measure the floor cost of three.js itself, not that of a React renderer on
- * top of it.
+ * Deliberately plain three.js, no @react-three/fiber: PORT-003 measured the
+ * floor cost of three.js itself, not that of a React renderer on top of it,
+ * and there is no reason to add that layer now that the number is known.
  *
- * This component assumes its caller has already decided it should run (viewport
- * >= 1024px, no `prefers-reduced-motion`). It does not re-check that itself, so
- * that the module is never even imported when the guard says no.
+ * This component assumes its caller (HeroCanvas) has already decided it
+ * should run (viewport >= 1024px, no `prefers-reduced-motion`). It does not
+ * re-check that itself, so that the module is never even imported when the
+ * guard says no.
  */
 
 type HeroMeshProps = {
-  /** Called once per rendered frame with the rAF timestamp, to drive the FPS meter. */
+  /** Optional per-frame hook (rAF timestamp) — unused in production, kept for parity with the spike's FPS meter. */
   onFrame?: (now: number) => void;
 };
 
