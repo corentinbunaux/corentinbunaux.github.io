@@ -133,7 +133,6 @@ export default Homepage;
 
 function RoundContainer() {
   const parentDivRef = useRef(null);
-  const [rotate, setRotate] = useState(0);
   const [parentSize, setParentSize] = useState({ width: 0, height: 0 });
 
   const childCount = Object.keys(iconsWheel).length;
@@ -143,28 +142,17 @@ function RoundContainer() {
   );
 
   useEffect(() => {
-    const updateRotate = () => {
-      setRotate((prevRotate) => (prevRotate - 0.12) % 360);
-    };
-
     if (parentDivRef.current) {
       const { offsetWidth, offsetHeight } = parentDivRef.current;
       setParentSize({ width: offsetWidth, height: offsetHeight });
     }
-
-    const interval = setInterval(updateRotate, 10);
-
-    return () => {
-      clearInterval(interval);
-    };
   }, []);
 
   return (
     <div className="relative w-full h-full flex justify-center items-start">
       <div
         ref={parentDivRef}
-        className="aspect-square rounded-full flex justify-center items-center h-full"
-        style={{ transform: `rotate(${-rotate}deg)` }}
+        className="aspect-square rounded-full flex justify-center items-center h-full wheel-spin"
       >
         {angles.map((angle, index) => {
           const transX = (Math.cos(angle) * parentSize.width) / 2;
@@ -176,11 +164,13 @@ function RoundContainer() {
             <div
               key={angle}
               style={{
-                transform: `translate(${transX}px, ${transY}px) rotate(${rotate}deg)`,
+                transform: `translate(${transX}px, ${transY}px)`,
               }}
               className="absolute aspect-square h-9 md:h-17 rounded-full flex justify-center items-center wheel-item"
             >
-              <Image src={src} alt={key} width={50} height={50} />
+              <div className="wheel-item-counter-spin w-full h-full flex justify-center items-center">
+                <Image src={src} alt={key} width={50} height={50} />
+              </div>
             </div>
           );
         })}
