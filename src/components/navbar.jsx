@@ -1,6 +1,39 @@
 import React, { useEffect, useCallback } from 'react';
+import { useLanguage } from '../i18n/LanguageContext';
+import { useTranslation } from '../i18n/dictionary';
+
+function LanguageToggle() {
+  const { language, setLanguage } = useLanguage();
+  const t = useTranslation();
+
+  return (
+    <div
+      role="group"
+      aria-label={t.navbar.languageGroupLabel}
+      className="flex overflow-hidden rounded-full border border-second bg-surface text-sm"
+    >
+      <button
+        type="button"
+        aria-pressed={language === 'fr'}
+        onClick={() => setLanguage('fr')}
+        className={`px-3 py-1 cursor-pointer ${language === 'fr' ? 'bg-surface-raised text-main-text' : 'text-second-text'}`}
+      >
+        FR
+      </button>
+      <button
+        type="button"
+        aria-pressed={language === 'en'}
+        onClick={() => setLanguage('en')}
+        className={`px-3 py-1 cursor-pointer ${language === 'en' ? 'bg-surface-raised text-main-text' : 'text-second-text'}`}
+      >
+        EN
+      </button>
+    </div>
+  );
+}
 
 function Navbar(props) {
+  const t = useTranslation();
 
   const handleClick = useCallback((index) => {
     let scrollTop;
@@ -40,23 +73,26 @@ function Navbar(props) {
         <ul className="flex space-x-6 md:space-x-12 items-center md:justify-start justify-center">
           <li>
             <button type="button" className="cursor-pointer" onClick={() => { handleClick(0) }}>
-              Profil
+              {t.common.profile}
             </button>
           </li>
           <li>
             <button type="button" className="cursor-pointer" onClick={() => { handleClick(1) }}>
-              Expériences
+              {t.navbar.experiences}
             </button>
           </li>
           <li>
             <button type="button" className="cursor-pointer" onClick={() => { handleClick(2) }}>
-              Projets
+              {t.common.projects}
             </button>
           </li>
           <li>
             <button type="button" className="cursor-pointer" onClick={() => { handleClick(3) }}>
-              À propos
+              {t.common.about}
             </button>
+          </li>
+          <li>
+            <LanguageToggle />
           </li>
         </ul>
       </div>

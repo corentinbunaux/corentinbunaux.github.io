@@ -3,6 +3,7 @@ import "../app/app.css";
 import Image from "next/image";
 import { OptimizedImage } from "./optimizedImage";
 import { HeroCanvas } from "./HeroCanvas";
+import { useTranslation } from "../i18n/dictionary";
 
 const iconsWheel = {
   knightChess:
@@ -53,6 +54,7 @@ export function GithubLogo(props) {
 }
 
 function Homepage({ portfolioTop }) {
+  const t = useTranslation();
   return (
     <div className="container-fluid h-full">
       <HeroCanvas />
@@ -67,7 +69,7 @@ function Homepage({ portfolioTop }) {
           <div className="relative h-1/2 md:h-full flex justify-center items-center">
             <OptimizedImage
               src="/img/avatar"
-              alt="Photo de Corentin Bunaux"
+              alt={t.hero.avatarAlt}
               priority
               sizes="(max-width: 768px) 66vw, (max-width: 1024px) 50vw, 25vw"
               className="absolute aspect-square rounded-full w-2/3 md:w-full lg:w-1/2 h-auto"
@@ -80,10 +82,10 @@ function Homepage({ portfolioTop }) {
           <div className="h-1/2 md:h-full columns-1 lg:columns-2">
             <div className="relative h-full flex justify-center items-center md:items-start flex-col">
               <h1 className="flex" style={{ backdropFilter: "blur(10px)" }}>
-                <strong>Hey !</strong>
+                <strong>{t.hero.greeting}</strong>
               </h1>
               <h2 style={{ backdropFilter: "blur(10px)" }}>
-                Je m'appelle <strong>Corentin</strong>.
+                {t.hero.namePrefix} <strong>Corentin</strong>.
               </h2>
               <button
                 type="button"
@@ -96,7 +98,7 @@ function Homepage({ portfolioTop }) {
                   });
                 }}
               >
-                Voir mes projets
+                {t.hero.cta}
               </button>
             </div>
             <div className="h-full p-5 hidden lg:flex flex-col justify-center items-end">
