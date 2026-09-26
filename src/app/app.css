@@ -3,12 +3,43 @@
 @tailwind utilities;
 
 :root {
+  /* Base surfaces, from the darkest page background upwards. */
   --main: #1a1a1a;
   --secondary: #333333;
+  --surface: #202020;
+  --surface-raised: #2a2a2a;
+  --border: #2f2f2f;
+
+  /* Accents. */
   --my-green: #81a3a7;
   --my-blue: #a7bcc7;
+
+  /* Text. Contrast ratios against --main / --surface / --surface-raised:
+     --main-text   15.96 / 14.94 / 13.16
+     --second-text  6.11 /  5.72 /  5.03  (WCAG AA needs 4.5 for body text)
+     The previous --second-text was #666666: 3.03 / 2.84 / 2.50, all failing. */
   --main-text: #f5f5f5;
-  --second-text: #666666;
+  --second-text: #999999;
+
+  /* Focus. 8.84:1 on --main, 7.28:1 on --surface-raised — well past the 3:1
+     WCAG AA needs for a non-text indicator. Consumed by PORT-006 (navbar). */
+  --focus: #a7bcc7;
+  --focus-width: 3px;
+  --focus-offset: 3px;
+
+  /* Vertical rhythm. Sections are sized by their content plus this padding,
+     never by a fixed vh height. */
+  --section-padding-y: 4rem;
+  --section-padding-x: 1rem;
+  --card-min-height: 11rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --section-padding-y: 6rem;
+    --section-padding-x: 2rem;
+    --card-min-height: 13rem;
+  }
 }
 
 /* smartphones */
@@ -24,42 +55,6 @@
 
   h3 {
     font-size: 1.25rem;
-  }
-
-  @media (max-height: 750px) {
-    #home {
-      height: 90vh;
-    }
-
-    #profile {
-      height: 140vh;
-    }
-
-    #about {
-      height: 170vh;
-    }
-
-    #portfolio {
-      height: 500vh;
-    }
-  }
-
-  @media (min-height: 750px) {
-    #home {
-      height: 100vh;
-    }
-
-    #profile {
-      height: 145vh;
-    }
-
-    #about {
-      height: 130vh;
-    }
-
-    #portfolio {
-      height: 500vh;
-    }
   }
 }
 
@@ -77,72 +72,90 @@
   h3 {
     font-size: 1.25rem;
   }
-
-  #home,
-  #about {
-    height: 100vh;
-  }
-
-  #profile {
-    height: 160vh;
-  }
-
-  #portfolio {
-    height: 180vh;
-  }
 }
 
 /*lg*/
 @media (min-width: 1024px) {
-  #home,
-  #about {
-    height: 100vh;
-  }
-
-  #profile {
-    height: 100vh;
-  }
-
-  #portfolio {
-    height: 150vh;
-  }
-
   h3 {
     font-size: 3rem;
   }
 }
 
-/* Masquer la barre de défilement latérale*/
-::-webkit-scrollbar {
-  width: 0rem;
+/* Section sizing.
+
+   These four sections used to carry a fixed `height` in `vh`, redeclared at
+   every width AND height breakpoint (#portfolio reached 500vh on mobile).
+   Anything but a 16:9 viewport either clipped the content or left a large
+   empty band below it. They are now sized by their own content plus a padding
+   token.
+
+   #home is the one exception: every child of homepage.jsx is absolutely
+   positioned, so the section has no in-flow content to be sized by and would
+   collapse to zero. It keeps a viewport *minimum* — `min-height`, not
+   `height`, so content can still grow past the fold instead of being cut. */
+#profile,
+#portfolio,
+#about {
+  box-sizing: border-box;
+  padding-block: var(--section-padding-y);
+  padding-inline: var(--section-padding-x);
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+#home {
+  box-sizing: border-box;
+  min-height: 100svh;
 }
 
-::-webkit-scrollbar-thumb {
-  background: transparent;
+/* Children of those sections use percentage heights (h-full, h-5/6, h-2/3)
+   that resolved against the old fixed heights. With an auto-height parent a
+   percentage height computes to auto, which is what we want — but the project
+   cards then shrink to the height of their own text, so they get a floor. */
+#portfolio .fulldiv,
+#portfolio .fulldiv > div:not(.project-card-img) {
+  min-height: var(--card-min-height);
 }
 
 html {
-  scrollbar-width: none;
   overflow-x: hidden;
+
+  /* The scrollbar used to be hidden outright (scrollbar-width: none plus a
+     zero-width ::-webkit-scrollbar), which removes the only cue that a page
+     five screens tall has more below. It is styled to the palette instead. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--secondary) var(--main);
+}
+
+::-webkit-scrollbar {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--main);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary);
+  border: 3px solid var(--main);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border);
 }
 
 body {
-  scrollbar-width: none;
   background-color: var(--main);
   color: var(--main-text);
   overflow-x: hidden;
+}
 
-  user-select: none;
-  -webkit-user-select: none;
-  /* Safari */
-  -moz-user-select: none;
-  /* Firefox */
-  -ms-user-select: none;
-  /* Internet Explorer/Edge */
+/* Visible focus for every interactive element. PORT-006 builds the navbar's
+   keyboard affordances on these tokens. */
+:focus-visible {
+  outline: var(--focus-width) solid var(--focus);
+  outline-offset: var(--focus-offset);
+  border-radius: 2px;
 }
 
 .project-page-container,
@@ -166,12 +179,12 @@ h3 {
   font-size: 1.25rem;
   color: var(--main-text);
   z-index: 1;
-  text-align: justify;
+  text-align: left;
 }
 
 p {
   font-size: 1.2rem;
-  text-align: justify;
+  text-align: left;
   color: var(--second-text);
   z-index: 1;
 }
@@ -727,7 +740,9 @@ p {
   transition: all 0.2s ease;
   z-index: 4;
   transform: rotate(30deg);
-  color: var(--main-text);
+  /* --main-text on --my-green was 2.49:1, an AA failure on a real button.
+     --main on the same green is 6.41:1. */
+  color: var(--main);
   background-color: var(--my-green);
 }
 
