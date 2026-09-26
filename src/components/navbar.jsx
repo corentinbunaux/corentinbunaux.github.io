@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useTranslation } from '../i18n/dictionary';
 
-function LanguageToggle() {
+export function LanguageToggle() {
   const { language, setLanguage } = useLanguage();
   const t = useTranslation();
 

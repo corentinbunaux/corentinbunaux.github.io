@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { OptimizedImage } from "./optimizedImage";
 import { ProjectAccent3D } from "./ProjectAccent3D";
+import { LanguageToggle } from "./navbar";
 import {
   projects,
   localizeProject,
@@ -93,7 +94,10 @@ export function ProjectPage({ project: rawProject }: ProjectPageProps) {
 
   return (
     <main className="project-page mx-auto max-w-6xl px-4 py-8 sm:px-8">
-      <nav aria-label={t.projectPage.breadcrumbLabel} className="mb-6 text-sm text-second-text">
+      <nav
+        aria-label={t.projectPage.breadcrumbLabel}
+        className="mb-6 flex flex-wrap items-center justify-between gap-4 text-sm text-second-text"
+      >
         <ol className="flex flex-wrap items-center gap-2">
           <li>
             <Link href="/" className="hover:text-my-green">
@@ -111,6 +115,7 @@ export function ProjectPage({ project: rawProject }: ProjectPageProps) {
             {project.title}
           </li>
         </ol>
+        <LanguageToggle />
       </nav>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_20rem]">
