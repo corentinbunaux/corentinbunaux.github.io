@@ -2,6 +2,17 @@ import React from 'react';
 import Federer from './federer';
 import '../app/app.css'
 
+const INTERESTS = [
+  'Tennis',
+  'Escalade',
+  'Natation',
+  'Course',
+  'Échecs',
+  'Jeu vidéo',
+  'Sudoku',
+  'Code',
+];
+
 function AboutMe() {
   function TennisBallAnim() {
     document.getElementById('tennisball').classList.add('ball')
@@ -24,6 +35,17 @@ function AboutMe() {
               <p>Pendant dix ans, ma constante participation à des tournois a renforcé ma persévérance et mon esprit de compétition de manière significative.</p>
               <br></br>
               <p>Depuis peu, je pratique d'autres sports tels que l'escalade, la natation ou la course à pieds.</p>
+              <ul className='mt-8 grid grid-cols-2 gap-6 sm:grid-cols-4' aria-label="Centres d'intérêt">
+                {INTERESTS.map((interest) => (
+                  <li key={interest} className='flex flex-col items-center gap-2 text-center'>
+                    <span
+                      aria-hidden='true'
+                      className='h-12 w-12 rounded-full border border-second bg-surface'
+                    />
+                    <span className='text-sm text-second-text'>{interest}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
           <div className='h-1/2 lg:h-full flex flex-col items-center justify-center'>
