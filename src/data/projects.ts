@@ -54,6 +54,14 @@ export interface ProjectPageContent {
   readonly mainPart: readonly ProjectSection[];
 }
 
+/**
+ * Broad grouping used by the projects section filter (PORT-011): Pro
+ * (employment — jobs and internships), Recherche, École (coursework, incl.
+ * classes préparatoires) and Perso (personal projects with no institution
+ * behind them).
+ */
+export type ProjectCategory = "pro" | "recherche" | "ecole" | "perso";
+
 export interface Project {
   /** Entity or project name, shown on the card and as the page heading. */
   readonly title: string;
@@ -61,6 +69,7 @@ export interface Project {
   readonly href: string;
   /** One-line subtitle shown under the title. */
   readonly description: string;
+  readonly category: ProjectCategory;
   /** Logo of the company or school, or `null` for personal projects. */
   readonly entityLogo: string | null;
   /** Public repository URL, or `null` when there is none. */
@@ -74,6 +83,8 @@ export interface Project {
   readonly period?: ProjectPeriod;
   /** Omitted where the location is not confirmed. */
   readonly location?: string;
+  /** Set only on the one project shown as the double-width highlighted card. */
+  readonly featured?: true;
   readonly pageContent: ProjectPageContent;
 }
 
@@ -82,6 +93,8 @@ export const projects = [
     title: "GCII / Enedis",
     href: "work/gcii",
     description: "Ingénieur logiciel fullstack",
+    category: "pro",
+    featured: true,
     entityLogo: null,
     githubRepo: null,
     techLogos: ["python", "react"],
@@ -115,6 +128,7 @@ export const projects = [
     title: "Safran",
     href: "internships/safran",
     description: "Stage de fin d'études",
+    category: "pro",
     entityLogo: "/logos/safran",
     githubRepo: null,
     techLogos: ["typescript", "react", "git", "linux"],
@@ -147,6 +161,7 @@ export const projects = [
     title: "SNCF",
     href: "research/sncf",
     description: "Projet de recherche",
+    category: "recherche",
     entityLogo: "/logos/sncf",
     githubRepo: "https://github.com/corentinbunaux/projet-recherche-SNCF",
     techLogos: ["java", "git"],
@@ -178,6 +193,7 @@ export const projects = [
     title: "CCTV",
     href: "personnal/cctv",
     description: "Projet de vidéo surveillance",
+    category: "perso",
     entityLogo: null,
     githubRepo: null,
     techLogos: ["arduino", "python", "react"],
@@ -209,6 +225,7 @@ export const projects = [
     title: "Android",
     href: "emse/android",
     description: "Développement d'une application mobile",
+    category: "ecole",
     img: "/img/android",
     entityLogo: "/logos/emse",
     githubRepo: null,
@@ -235,6 +252,7 @@ export const projects = [
     title: "Démineur",
     href: "emse/minesweeper",
     description: "Développement d'un jeu de démineur",
+    category: "ecole",
     img: "/img/minesweeper",
     entityLogo: "/logos/emse",
     githubRepo: "https://github.com/corentinbunaux/minesweeper",
@@ -261,6 +279,7 @@ export const projects = [
     title: "Quimesis",
     href: "internships/quimesis",
     description: "Stage d'ingénierie logicielle",
+    category: "pro",
     img: "/img/quimesis",
     entityLogo: "/logos/quimesis",
     githubRepo: null,
@@ -293,6 +312,7 @@ export const projects = [
     title: "Kusmi Tea",
     href: "internships/kusmitea",
     description: "Stage ouvrier",
+    category: "pro",
     img: "/img/kusmitea",
     entityLogo: "/logos/kusmi-tea",
     githubRepo: null,
@@ -320,6 +340,7 @@ export const projects = [
     title: "Dévelopement Web",
     href: "personnal/web",
     description: "Site web portfolio",
+    category: "perso",
     img: "/img/web",
     entityLogo: null,
     githubRepo: null,
@@ -341,6 +362,7 @@ export const projects = [
     title: "Programmation",
     href: "emse/programming",
     description: "Algorithmie et structure de données",
+    category: "ecole",
     img: "/img/programming",
     entityLogo: "/logos/emse",
     githubRepo: "https://github.com/dylan-bernhardt/dactylo-race",
@@ -372,6 +394,7 @@ export const projects = [
     title: "Systèmes Embarqués",
     href: "emse/embedded",
     description: "Projet Robot",
+    category: "ecole",
     img: "/img/embedded",
     entityLogo: "/logos/emse",
     githubRepo: null,
@@ -398,6 +421,7 @@ export const projects = [
     title: "Robotique",
     href: "cpge_tipe",
     description: "Élaboration d'un bras d'exosquelette",
+    category: "ecole",
     img: "/img/tipe",
     entityLogo: "/logos/ac-normandie",
     githubRepo: null,
