@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { OptimizedImage } from "./optimizedImage";
+import { ProjectAccent3D } from "./ProjectAccent3D";
 import {
   projects,
   type Project,
@@ -118,6 +119,7 @@ export function ProjectPage({ project }: ProjectPageProps) {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_20rem]">
         <div className="min-w-0">
           <header className="mb-8">
+            <ProjectAccent3D href={project.href} />
             <h1 className="mb-2 text-3xl font-bold text-main-text sm:text-4xl">
               {project.title}
             </h1>
