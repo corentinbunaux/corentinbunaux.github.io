@@ -158,6 +158,39 @@ body {
   border-radius: 2px;
 }
 
+/* Hero icon wheel (homepage.jsx RoundContainer). Was driven by a 10ms
+   setInterval re-rendering React state 100x/second — Lighthouse measured
+   13.1s of main-thread work from it alone (PORT-007). A CSS animation
+   produces the same -12deg/s rotation on the compositor thread instead:
+   the wheel itself spins one way, each icon spins the opposite way at the
+   same speed so it stays upright while orbiting. */
+@keyframes wheel-spin {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes wheel-item-counter-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.wheel-spin {
+  animation: wheel-spin 30s linear infinite;
+}
+
+.wheel-item-counter-spin {
+  animation: wheel-item-counter-spin 30s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wheel-spin,
+  .wheel-item-counter-spin {
+    animation: none;
+  }
+}
+
 .project-page-container,
 .banner-section {
   overflow-x: hidden;
