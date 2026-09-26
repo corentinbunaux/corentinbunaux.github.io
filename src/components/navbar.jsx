@@ -35,28 +35,28 @@ function Navbar(props) {
   }, [handleClick]);
 
   return (
-    <nav className="p-2 md:p-4 md:ms-4 fixed top-0" style={{ backdropFilter: 'blur(4px)', width : "100vw", zIndex:"100" }}>
+    <nav className="p-2 md:p-4 md:ms-4 fixed top-0 w-screen" style={{ backdropFilter: 'blur(4px)', zIndex:"100" }}>
       <div className="container mx-auto">
         <ul className="flex space-x-6 md:space-x-12 items-center md:justify-start justify-center">
           <li>
-            <div className="cursor-pointer" onClick={() => { handleClick(0) }}>
+            <button type="button" className="cursor-pointer" onClick={() => { handleClick(0) }}>
               Accueil
-            </div>
+            </button>
           </li>
           <li>
-            <div className="cursor-pointer" onClick={() => { handleClick(1) }}>
+            <button type="button" className="cursor-pointer" onClick={() => { handleClick(1) }}>
               Profil
-            </div>
+            </button>
           </li>
           <li>
-            <div className="cursor-pointer" onClick={() => { handleClick(2) }}>
+            <button type="button" className="cursor-pointer" onClick={() => { handleClick(2) }}>
               Portfolio
-            </div>
+            </button>
           </li>
           <li>
-            <div className="cursor-pointer" onClick={() => { handleClick(3) }}>
+            <button type="button" className="cursor-pointer" onClick={() => { handleClick(3) }}>
               À propos
-            </div>
+            </button>
           </li>
         </ul>
       </div>
