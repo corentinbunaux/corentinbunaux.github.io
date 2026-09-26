@@ -5,21 +5,24 @@
 
 ## Purpose
 
-A single-page Next.js portfolio for Corentin Bunaux. One route (`/`) renders a
-stack of sections — home, profile, projects, about, footer — that scroll-link
-via `id` anchors. It does not have a backend, a database, or any per-project
-subpages beyond the static case-study pages under `src/app/*`.
+A single-page Next.js portfolio for Corentin Bunaux, rebuilt against the
+"REFONTE" Canva mockup (`design/mockups/02-refonte.png`, `docs/CADRAGE.md`).
+One route (`/`) renders a stack of sections (hero, profile, career timeline,
+projects, about, footer) that scroll-link via `id` anchors, plus one static
+route per project under `src/app/*`. No backend, no database, no CMS.
 
 ## Map
 
 | Path | Holds | Notes |
 | --- | --- | --- |
-| `src/app/page.tsx` | The single-page layout: assembles the sections and tracks their scroll offsets for the navbar | Client component (`"use client"`) |
+| `src/app/page.tsx` | Assembles the six home sections and measures each one's `offsetTop` for the navbar's scroll-spy | Client component (`"use client"`) |
 | `src/app/layout.tsx` | Root HTML shell, page metadata | |
-| `src/app/{cpge_tipe,emse,internships,personnal,research}/**` | Static case-study pages, one per project (e.g. `internships/safran`, `emse/minesweeper`) | Each is its own route; every one is a 5-line wrapper around `<Project />` |
-| `src/app/lab/hero-3d/` | Throwaway spike route (PORT-003) prototyping a three.js hero mesh | Not linked from the real site; delete once its GO/NO-GO verdict is acted on |
-| `src/data/projects.ts` | Typed single source of truth for all 12 projects (11 case studies + the current GCII/Enedis role) | `projectsSection.jsx` and `project.tsx` both import from here |
-| `src/components/` | Shared section components (`homepage`, `navbar`, `profileSection`, `projectsSection`, `aboutmeSection`, `footer`, `project`, `federer`, `optimizedImage`) | Mix of `.jsx` and `.tsx` |
+| `src/app/{cpge_tipe,emse,internships,personnal,research,work}/**` | One static route per project (12 total, including `work/gcii`) | Each imports `projects` from `src/data/projects.ts`, resolves its own entry by `href`, and renders `<ProjectPage project={...} />` |
+| `src/app/lab/hero-3d/` | Throwaway spike route (PORT-003) prototyping a three.js hero mesh | Not linked from the real site; GO/NO-GO verdict still pending Corentin's own test — delete once PORT-019/020 settle it either way |
+| `src/data/projects.ts` | Typed single source of truth for all 12 projects | `category`/`featured` (PORT-011, drives the Projets filters), `period`/`location` (PORT-008/010, drives the Parcours timeline), `role`/`team`/`result` (PORT-012/013, drives each project page's "En bref" card) |
+| `src/components/ProjectPage.tsx` | The project-page template: breadcrumb, sticky "En bref" card, header visual, numbered body sections, gallery, prev/next nav (array order, `UNROUTED_HREFS` guard for any future data-ahead-of-route entry) | Replaces the old `project.tsx` (deleted, PORT-013) — no more `window.location.pathname` sniffing |
+| `src/components/journeySection.tsx` | The Parcours timeline (zone ②) | Reads `period`/`location` off `src/data/projects.ts`; not wired into the navbar's scroll-spy (see Known weak points) |
+| `src/components/` (rest) | `homepage`, `navbar`, `profileSection`, `projectsSection`, `aboutmeSection`, `footer`, `federer`, `optimizedImage`, `Banner` | Mix of `.jsx` and `.tsx` |
 | `scripts/optimize-images.mjs` | Generates `public/img` + `public/logos` (AVIF + WebP) from `assets/images-src/` via `sharp` | Run with `npm run optimize:images`; idempotent |
 | `assets/images-src/` | Original, full-resolution image masters | Never served directly; not touched by the build |
 | `public/img/`, `public/logos/` | Generated, web-ready images (AVIF + WebP pairs, one `.svg`) | Rebuilt from `assets/images-src/`; do not edit by hand |
@@ -28,29 +31,35 @@ subpages beyond the static case-study pages under `src/app/*`.
 ## Data flow
 
 Fully static/client-side: no API routes, no external data fetching. Content
-(text, images) is hardcoded in the section components and the per-project
-pages under `src/app/`. The only runtime logic is DOM measurement (`useEffect`
-+ `offsetTop`) to drive the navbar's scroll-spy behaviour.
+lives in `src/data/projects.ts` (structured) and directly in JSX (prose that
+isn't per-project). The only runtime logic is DOM measurement (`useEffect` +
+`offsetTop`) driving the navbar's scroll-spy, and the hero icon wheel's CSS
+animation (no JS driving it — see Key decisions).
 
 ## Key decisions
 
 | Date | Decision | Why | Alternatives rejected |
 | --- | --- | --- | --- |
 | — | Next.js App Router with a single scrolling page plus separate static routes per project | Simple portfolio, no need for a CMS or dynamic routing | — |
-| 2026-09-26 | Next.js 16 + React 19, ESLint flat config (`eslint.config.mjs`) | Next 16 is the current stable release; it removes `next lint`, so the ESLint CLI and flat config are mandatory, not optional | Staying on Next 15 (maintenance only) |
+| 2026-09-26 | Next.js 16 + React 19, ESLint flat config (`eslint.config.mjs`) | Next 16 is the current stable release; it removes `next lint`, so the ESLint CLI and flat config are mandatory | Staying on Next 15 (maintenance only) |
 | 2026-09-26 | ESLint pinned to `^9`, not `^10` | `eslint-config-next@16.3.6` crashes on ESLint 10 (`scopeManager.addGlobals is not a function`) | ESLint 10, which the peer range allows but the plugin does not support |
-| 2026-09-26 | Design tokens for surfaces/border/focus in `app.css`; `--second-text` raised to `#999999` | `next.config.mjs` forces `images: { unoptimized: true }` for static export, and the old `#666666` failed WCAG AA (2.5–3.0:1) | `#8f8f8f` as originally proposed — fails AA on `--surface-raised` (4.44:1); `#999999` passes everywhere (5.0–6.1:1) |
-| 2026-09-26 | Images: masters in `assets/images-src/`, `scripts/optimize-images.mjs` (sharp) generates AVIF+WebP into `public/`, served via `<OptimizedImage>`'s `<picture>` | `next/image` performs no format conversion at all under `images.unoptimized: true` — the static-export constraint makes it purely a layout helper, not an optimizer | `next/image` alone (saves 0 bytes here); AVIF-only `src` (breaks on Safari < 16.4, a silent-fallback violation) |
-| 2026-09-26 | Project data extracted to typed `src/data/projects.ts` | Single source of truth for 12 projects, verified by the compiler (`satisfies readonly Project[]`) instead of an untyped array | Keeping the array inline in `projectsSection.jsx` with a separate `.d.ts` |
+| 2026-09-26 | Design tokens for surfaces/border/focus in `app.css`; `--second-text` raised to `#999999` | `#666666` failed WCAG AA (2.5–3.0:1) | `#8f8f8f` as originally proposed — fails AA on `--surface-raised` (4.44:1) |
+| 2026-09-26 | Images: masters in `assets/images-src/`, `scripts/optimize-images.mjs` (sharp) generates AVIF+WebP into `public/`, served via `<OptimizedImage>`'s `<picture>` | `next/image` performs no format conversion at all under `images.unoptimized: true` (mandatory for static export) — it's purely a layout helper here, not an optimizer | `next/image` alone (saves 0 bytes); AVIF-only `src` (breaks on Safari < 16.4, a silent-fallback violation) |
+| 2026-09-26 | Project data extracted to typed `src/data/projects.ts` | Single source of truth, verified by the compiler (`satisfies readonly Project[]`) instead of an untyped array | Keeping the array inline in `projectsSection.jsx` with a separate `.d.ts` |
+| 2026-09-26 | Project pages: new component + explicit prop, not a dynamic `[slug]` route | A dynamic route would need `generateStaticParams()` and redirects for all 12 already-shared URLs (CV, LinkedIn) — out of proportion for what's really just "stop reading `window.location`" | `src/app/projects/[slug]/page.tsx` with `generateStaticParams()` |
+| 2026-09-26 | Hero icon wheel (`RoundContainer`) rotates via CSS `@keyframes`, not a JS interval | The old `setInterval(fn, 10)` re-rendered React 100×/second forever — Lighthouse measured 13.1s of main-thread work from it alone | Throttling the interval (still JS-driven, still forces reflows) |
+| 2026-09-26 | Nav restructured to Profil/Expériences/Projets/À propos, wired to `journeyTop` | Matches the mockup's 4 nav entries; "Expériences" needed a real scroll target once the Parcours section existed | Keeping "Accueil" as a 5th item (mockup drops it — the hero is already what's on screen at the top) |
+| 2026-09-26 | No "Télécharger le CV" button anywhere (hero or footer) | No CV PDF exists yet; a dead link is worse than no button | Linking to a placeholder path like `/cv.pdf` |
 
 ## Invariants
 
-- The four section anchors (`#home`, `#profile`, `#portfolio`, `#about`) must
-  keep those exact `id`s — `navbar.jsx` and `page.tsx` depend on them for
-  scroll-spy offsets.
-- No backend/API routes — this app is meant to stay static-hostable (GitHub
-  Pages style); `output: "export"` + `images.unoptimized: true` in
-  `next.config.mjs` enforce this at build time.
+- The six section anchors (`#home`, `#profile`, `#journey`, `#portfolio`,
+  `#about`, `#footer`) must keep those exact `id`s — `page.tsx` measures all
+  of them via `offsetTop`; `navbar.jsx` only scroll-links four of the six
+  (`journeyTop` is measured but has no nav-spy entry of its own beyond the
+  "Expériences" link — see Known weak points for what's *not* wired up).
+- No backend/API routes — `output: "export"` + `images.unoptimized: true` in
+  `next.config.mjs` enforce static-hostability at build time.
 - Every real photo/logo goes through `<OptimizedImage src="/img/<name>" />`
   (no extension) — it throws at render time if `<name>` has no entry in
   `src/data/imageManifest.json`, rather than shipping a broken image. Adding
@@ -59,17 +68,33 @@ pages under `src/app/`. The only runtime logic is DOM measurement (`useEffect`
 - `TechLogoId` in `src/data/projects.ts` is a closed union that must stay in
   sync with the ids `bannerElmts` resolves in `src/components/Banner.jsx`;
   that module silently drops an id it does not recognize.
+- Every project page goes through `ProjectPage.tsx` — there is no more
+  per-project bespoke component (`project.tsx` is deleted).
 
 ## Known weak points
 
 - No test suite (`npm test` is not defined) — regressions are caught only by
   manual/visual checks and by the `ci.yml` build/lint/typecheck gate.
 - Scroll-offset logic recomputes on `resize` only, not on content/image load,
-  so late-loading images can throw off `navbar` highlighting.
-- `project.tsx` still identifies the current project by parsing
-  `window.location.pathname` instead of a route parameter — the pattern
-  PORT-012 replaces. It also calls `setState` synchronously inside its mount
-  effect (as does `Banner.jsx`), flagged by `react-hooks/set-state-in-effect`
-  and downgraded to a lint warning until that rewrite lands.
-- `/src/app/lab/hero-3d` is a spike, not production code — a reminder to
-  delete it once PORT-019/PORT-020 settle three.js's fate.
+  so late-loading images can throw off scroll-spy accuracy.
+- **Smooth scroll is broken site-wide** (PORT-022): every `window.scroll({
+  behavior: "smooth" })` call — nav clicks, the "Voir mes projets" CTA — is a
+  silent no-op (`scrollY` stays 0); `behavior: "auto"` and setting
+  `documentElement.scrollTop` directly both work fine. Root cause not yet
+  found (isolated to `behavior: "smooth"` specifically, not a scroll-container
+  mismatch as first suspected). Every click still "works" functionally in the
+  sense that nothing errors — it just doesn't scroll.
+- **Heading hierarchy is invalid site-wide** (PORT-023, Lighthouse
+  Accessibility 98/100): every section uses `h1` for its title and `h3` as a
+  body-text style class, skipping `h2` everywhere. Needs a real pass across
+  every component, not a local patch.
+- **The "En bref" card's `position: sticky` doesn't visually stick**
+  (found in PORT-012, confirmed in PORT-013): `body { overflow-x: hidden }`
+  in `app.css` makes `body` a CSSOM scroll container, which becomes the
+  sticky positioning context instead of the viewport. Recommended fix:
+  `overflow-x: clip` instead of `hidden`.
+- `/src/app/lab/hero-3d` is a spike, not production code — delete once
+  PORT-019/PORT-020 settle three.js's fate (GO/NO-GO still pending Corentin's
+  own hands-on test of that route).
+- No CV PDF exists — the mockup's "Télécharger le CV" CTA is absent from both
+  the hero and the footer until one is provided.
