@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "../app/app.css";
 import Image from "next/image";
 import { OptimizedImage } from "./optimizedImage";
+import { HeroCanvas } from "./HeroCanvas";
 
 const iconsWheel = {
   knightChess:
@@ -54,6 +55,7 @@ export function GithubLogo(props) {
 function Homepage({ portfolioTop }) {
   return (
     <div className="container-fluid h-full">
+      <HeroCanvas />
       <div
         className="absolute h-1/4 md:h-1/3 w-full top-1/3 md:top-1/3"
         style={{

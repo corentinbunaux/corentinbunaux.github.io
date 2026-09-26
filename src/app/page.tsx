@@ -49,7 +49,7 @@ export default function Home() {
   return (
     <>
       <Navbar allTops={allTops} />
-      <section id="home">
+      <section id="home" className="relative">
         <Homepage portfolioTop={allTops.portfolioTop} />
       </section>
       <section id="profile">
