@@ -4,7 +4,7 @@ title: "CSS — overflow-x: clip, scroll fluide natif, hauteur d'en-tête en tok
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: in-progress
 resumeAt: null
 priority: P1
 estimate: 0.25
