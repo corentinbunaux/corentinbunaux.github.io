@@ -4,7 +4,7 @@ title: "Footer — retirer la phrase « Ouvert aux missions… » et pointer « 
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: done
 resumeAt: null
 priority: P2
 estimate: 0.1
@@ -67,7 +67,41 @@ Commit : `fix(footer): drop the availability line, link Profil to #home`
 
 ## Journal d'exécution
 
-_(à remplir)_
+**npm run lint** (dernières 5 lignes):
+```
+✖ 3 problems (0 errors, 3 warnings)
+```
+Warnings pré-existants dans LanguageContext.tsx.
+
+**npm run build** (dernières 5 lignes):
+```
+○  (Static)  prerendered as static content
+```
+Build réussi.
+
+**npx tsc --noEmit** (après build):
+```
+npm notice run next-app@0.1.0 npx
+npm notice run tsc --noEmit
+```
+Succès (pas d'erreur).
+
+**grep -rn "availability" src**:
+Aucun résultat (clé supprimée avec succès).
+
+**Vérification visuelle**: NON faite, outil claude-in-chrome indisponible.
+
+**Étapes réalisées**:
+- ✓ Étape 1: Paragraphe d'availability supprimé de footer.jsx
+- ✓ Étape 2: Lien "Profil" changé de #profile à #home
+- ✓ Étape 3: Clé availability supprimée du dictionnaire i18n (interface, footerFr, footerEn)
+- ✓ Étape 4: Vérification grep OK
+- ✓ Étape 5: lint, tsc, build OK
+
+**Critères d'acceptation**:
+- ✓ La phrase n'apparaît plus (supprimée du JSX et du dictionnaire i18n)
+- ✓ Le lien « Profil » du footer mène en haut de la home (#home)
+- ✓ lint / tsc / build passent
 
 ## Notes pour la consolidation
 
