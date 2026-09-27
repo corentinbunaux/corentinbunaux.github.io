@@ -4,7 +4,7 @@ title: "Hero — globe filaire 3D avec les icônes de l'ancienne roue en orbite"
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: review
 resumeAt: null
 priority: P2
 estimate: 1
@@ -89,16 +89,79 @@ Commit : `feat(hero): wireframe globe with orbiting icons next to the avatar`
 
 ## Critères d'acceptation
 
-- [ ] Globe + 15 icônes en orbite à côté de l'avatar (≥ 1024 px).
-- [ ] Avatar seul sur mobile / réduction des animations, sans three chargé.
-- [ ] Guide 3D §4 respecté.
-- [ ] lint / tsc / build passent.
+- [x] Globe + 15 icônes en orbite à côté de l'avatar (≥ 1024 px).
+- [x] Avatar seul sur mobile / réduction des animations, sans three chargé
+      (voir écart ci-dessous : vrai en production, un `<script async>` du
+      chunk apparaît en dev).
+- [x] Guide 3D §4 respecté.
+- [x] lint / tsc / build passent.
 
 ## Journal d'exécution
 
-_(à remplir)_
+Commandes (dans `../wt-PORT-044`, après `npm ci` propre) :
+
+- `npm run lint` → 0 erreur, 6 warnings (baseline pré-existante, fichiers non
+  touchés par ce ticket : `ThemeContext.tsx`, `useThemeColors.ts`,
+  `SiteHeader.tsx` — `react-hooks/set-state-in-effect`, déjà présents avant
+  ce ticket).
+- `npm run build` → `✓ Compiled successfully`, `Running TypeScript` OK, 15
+  pages statiques générées, aucune erreur.
+- `npx tsc --noEmit` (après le build, worktree neuve) → aucune sortie, propre.
+
+Vérification visuelle : `claude-in-chrome` non connecté. Chrome installé
+piloté en headless via le protocole DevTools (WebSocket natif Node 24,
+script jetable dans le dossier scratchpad, `--use-angle=swiftshader
+--enable-unsafe-swiftshader`, `--user-data-dir` dédié, arrêté ensuite par
+PID exact — jamais par nom d'image) sur mon propre `npm run dev` (port 3002,
+3000/3001 déjà pris par d'autres agents) :
+
+1. 1280×800, thème sombre et clair : globe filaire + 15 icônes en orbite à
+   côté de l'avatar, cadré dans le panneau, texte du hero lisible et non
+   masqué (captures `shot-1280-dark.png` / `shot-1280-light.png`). Couleur
+   `colors.blue` lisible sur `--surface` clair et sombre.
+2. Console : aucune erreur/avertissement three ou WebGL sur les deux thèmes.
+3. FPS (~5 s, `requestAnimationFrame`) : ~120-143 fps sur la machine de dev,
+   largement au-dessus de la cible 50 fps.
+4. Défilement hors écran puis retour : aucune erreur, la scène reprend
+   (pause hors écran gérée par `ThreeStage`, non modifiée ici).
+5. Home → `/internships/safran` → home, 3 fois : aucune erreur console,
+   pas de « Too many active WebGL contexts ».
+6. 360×800 : `HeroVisual` ne rend que l'avatar (`document.querySelectorAll
+   ('canvas').length === 0` vérifié en DOM), aucun saut de mise en page.
+   Souris : le globe s'incline doucement vers le pointeur (implémenté selon
+   la formule du ticket, testé visuellement via un mouvement simulé — le
+   lissage et la borne ±0.25 rad sont couverts par relecture du code).
+
+**Écart constaté et investigué (pas un bug de ce ticket)** : à 360 px, sous
+`npm run dev` (Turbopack), l'onglet Réseau montre bien une requête vers le
+chunk `HeroGlobe_tsx_....js`. Investigation : c'est un comportement de
+Turbopack **dev uniquement** — la page HTML initiale contient un
+`<script async>` vers **tous** les chunks `next/dynamic` atteignables depuis
+la page, qu'ils se rendent ou non. Vérifié identique sur l'existant : la
+page `/internships/safran` (PORT-045, déjà fusionné, même patron
+`useDesktopMotionGate` + rendu conditionnel) script-tag pareillement son
+chunk de démo à 360 px en dev. Le DOM confirme que le composant ne
+**s'exécute** jamais à 360 px (0 canvas, aucun contexte WebGL). Vérifié sur
+le build de production (`npm run build`, HTML statique de `/`) :
+`grep -c "HeroGlobe" ` sur le HTML généré → **0** occurrence. Le
+comportement réel (site statique exporté) est donc conforme au critère
+d'acceptation ; seul le mode dev de Turbopack est bruyant sur ce point, pour
+toutes les démos 3D du site, pas seulement celle-ci.
+
+Serveur de dev arrêté proprement à la fin (PID exact, jamais par nom
+d'image).
 
 ## Notes pour la consolidation
 
 - ARCHITECTURE.md : décision « hero three.js revient sous forme de globe +
   icônes dans le panneau droit (PORT-044), réutilise ThreeStage ».
+- ARCHITECTURE.md / point faible connu : en `npm run dev` (Turbopack), tout
+  chunk `next/dynamic({ssr:false})` atteignable depuis une page reçoit un
+  `<script async>` dans le HTML initial même s'il ne se rend jamais
+  (vérifié identique pour PORT-045). N'affecte pas la production (export
+  statique) : à vérifier si un futur ticket veut un contrôle strict du
+  Network en dev.
+- Point de jugement humain (`human_checkpoint`) : le globe est volontairement
+  discret (fil de fer, opacité 0.55, rotation lente 0.12 rad/s) et positionné
+  à droite du texte, jamais devant — captures jointes dans le dossier
+  scratchpad de la session pour revue.
