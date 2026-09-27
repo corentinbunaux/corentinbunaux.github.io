@@ -1,0 +1,14 @@
+/** Every demo the site knows about. One id = one component in registry.ts
+ * and one { title, caption } entry in src/i18n/namespaces/demos.ts. */
+export type DemoId =
+  | "safran-earth"
+  | "quimesis-fragments"
+  | "quimesis-jaw"
+  | "sncf-train"
+  | "sncf-spacetime"
+  | "minesweeper"
+  | "guards"
+  | "typing"
+  | "predict"
+  | "parking-car"
+  | "exo-arm";

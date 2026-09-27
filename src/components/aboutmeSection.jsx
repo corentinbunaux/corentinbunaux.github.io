@@ -2,18 +2,67 @@ import React from 'react';
 import Federer from './federer';
 import '../app/app.css'
 import { useTranslation } from '../i18n/dictionary';
+import { Code, Crown, Footprints, Gamepad2, Mountain, Waves } from 'lucide-react';
+
+function TennisBallIcon(props) {
+  return (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      viewBox='0 0 24 24'
+      fill='none'
+      stroke='currentColor'
+      strokeWidth={2}
+      strokeLinecap='round'
+      strokeLinejoin='round'
+      aria-hidden='true'
+      {...props}
+    >
+      <circle cx='12' cy='12' r='10' />
+      <path d='M5 4.9a10 10 0 0 1 0 14.2' />
+      <path d='M19 4.9a10 10 0 0 0 0 14.2' />
+    </svg>
+  );
+}
+
+function InterestList({ labelId, label, items, archived }) {
+  return (
+    <div className='mt-6'>
+      <p id={labelId} className='text-sm font-semibold uppercase tracking-wider text-second-text'>
+        {label}
+      </p>
+      <ul aria-labelledby={labelId} className='mt-3 grid grid-cols-2 gap-6 sm:grid-cols-4'>
+        {items.map(({ label: itemLabel, Icon }) => (
+          <li key={itemLabel} className='flex flex-col items-center gap-2 text-center'>
+            <span
+              aria-hidden='true'
+              className={`flex h-12 w-12 items-center justify-center rounded-full border ${
+                archived
+                  ? 'border-dashed border-second-text text-second-text'
+                  : 'border-second bg-surface text-my-green'
+              }`}
+            >
+              <Icon className='h-6 w-6' />
+            </span>
+            <span className='text-sm text-second-text'>{itemLabel}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 function AboutMe() {
   const t = useTranslation();
-  const interests = [
-    t.about.interests.tennis,
-    t.about.interests.climbing,
-    t.about.interests.swimming,
-    t.about.interests.running,
-    t.about.interests.chess,
-    t.about.interests.videoGames,
-    t.about.interests.sudoku,
-    t.about.interests.code,
+  const activeInterests = [
+    { label: t.about.interests.tennis, Icon: TennisBallIcon },
+    { label: t.about.interests.running, Icon: Footprints },
+    { label: t.about.interests.videoGames, Icon: Gamepad2 },
+    { label: t.about.interests.code, Icon: Code },
+  ];
+  const archivedInterests = [
+    { label: t.about.interests.swimming, Icon: Waves },
+    { label: t.about.interests.climbing, Icon: Mountain },
+    { label: t.about.interests.chess, Icon: Crown },
   ];
 
   function TennisBallAnim() {
@@ -26,7 +75,7 @@ function AboutMe() {
         <div className='absolute w-5/6 h-5/6'>
           <div id="tennisball" className='z-50'></div>
         </div>
-        <div className='columns-1 lg:columns-2 h-full'>
+        <div className='grid grid-cols-1 lg:grid-cols-2 h-full'>
           <div className='h-1/2 lg:h-full'>
             <div className='h-1/6 flex justify-center items-center'>
               <h1 className='outlined-text'>{t.about.title}</h1>
@@ -37,17 +86,20 @@ function AboutMe() {
               <p>{t.about.tournaments}</p>
               <br></br>
               <p>{t.about.otherSports}</p>
-              <ul className='mt-8 grid grid-cols-2 gap-6 sm:grid-cols-4' aria-label={t.about.interestsLabel}>
-                {interests.map((interest) => (
-                  <li key={interest} className='flex flex-col items-center gap-2 text-center'>
-                    <span
-                      aria-hidden='true'
-                      className='h-12 w-12 rounded-full border border-second bg-surface'
-                    />
-                    <span className='text-sm text-second-text'>{interest}</span>
-                  </li>
-                ))}
-              </ul>
+              <div role='group' aria-label={t.about.interestsLabel}>
+                <InterestList
+                  labelId='interests-active'
+                  label={t.about.activeLabel}
+                  items={activeInterests}
+                  archived={false}
+                />
+                <InterestList
+                  labelId='interests-archived'
+                  label={t.about.archivedLabel}
+                  items={archivedInterests}
+                  archived
+                />
+              </div>
             </div>
           </div>
           <div className='h-1/2 lg:h-full flex flex-col items-center justify-center'>
