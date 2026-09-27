@@ -17,6 +17,37 @@ const LANGUAGES: readonly Language[] = ["fr", "en"];
 const CONTROL_CLASS =
   "flex h-9 items-center justify-center rounded-full border border-second bg-surface text-main-text hover:bg-surface-raised";
 
+/**
+ * Which home section is currently in the middle band of the viewport.
+ * The band (45%-50% from the top) is thin on purpose: exactly one section
+ * crosses it at a time, and the previous value is kept while none does.
+ */
+function useActiveSection(enabled: boolean): NavSectionId | null {
+  const [active, setActive] = useState<NavSectionId | null>(null);
+
+  useEffect(() => {
+    if (!enabled) return;
+    const elements = NAV_SECTION_IDS.map((id) => document.getElementById(id));
+    const missing = NAV_SECTION_IDS.filter((_, index) => elements[index] === null);
+    if (missing.length > 0) {
+      throw new Error(`SiteHeader: missing section(s) #${missing.join(", #")} on the home page.`);
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActive(entry.target.id as NavSectionId);
+        }
+      },
+      { rootMargin: "-45% 0px -50% 0px" },
+    );
+    for (const element of elements) observer.observe(element as HTMLElement);
+    return () => observer.disconnect();
+  }, [enabled]);
+
+  return active;
+}
+
 function LanguageMenu() {
   const { language, setLanguage } = useLanguage();
   const t = useTranslation();
@@ -129,18 +160,22 @@ export function SiteHeader({ variant }: SiteHeaderProps) {
     about: t.common.about,
   };
 
+  const spiedSection = useActiveSection(variant === "home");
+  const activeId: NavSectionId | null = variant === "project" ? "portfolio" : spiedSection;
+
   const renderLink = (
     id: NavSectionId,
     className: string,
     children: ReactNode,
     ariaLabel?: string,
+    ariaCurrent?: "location",
   ) =>
     variant === "home" ? (
-      <a href={`#${id}`} data-nav-id={id} className={className} aria-label={ariaLabel}>
+      <a href={`#${id}`} data-nav-id={id} className={className} aria-label={ariaLabel} aria-current={ariaCurrent}>
         {children}
       </a>
     ) : (
-      <Link href={`/#${id}`} data-nav-id={id} className={className} aria-label={ariaLabel}>
+      <Link href={`/#${id}`} data-nav-id={id} className={className} aria-label={ariaLabel} aria-current={ariaCurrent}>
         {children}
       </Link>
     );
@@ -168,11 +203,22 @@ export function SiteHeader({ variant }: SiteHeaderProps) {
           className="col-span-2 row-start-2 md:col-span-1 md:col-start-2 md:row-start-1"
         >
           <ul className="flex justify-between gap-2 text-sm md:justify-center md:gap-8 md:text-base">
-            {NAV_SECTION_IDS.map((id) => (
-              <li key={id}>
-                {renderLink(id, "relative inline-block py-1 text-main-text hover:text-my-green", labels[id])}
-              </li>
-            ))}
+            {NAV_SECTION_IDS.map((id) => {
+              const isActive = id === activeId;
+              return (
+                <li key={id}>
+                  {renderLink(
+                    id,
+                    `relative inline-block py-1 hover:text-my-green after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-left after:rounded-full after:bg-my-green after:transition-transform after:duration-300 motion-reduce:after:transition-none ${
+                      isActive ? "text-my-green after:scale-x-100" : "text-main-text after:scale-x-0"
+                    }`,
+                    labels[id],
+                    undefined,
+                    isActive ? "location" : undefined,
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </nav>
 
