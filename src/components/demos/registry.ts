@@ -60,7 +60,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
     {
       id: "sncf-train",
       kind: "3d",
-      ready: false,
+      ready: true,
       Component: SncfTrainDemo,
     },
 
