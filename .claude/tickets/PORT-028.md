@@ -4,7 +4,7 @@ title: "En-tête commun SiteHeader — nav en ancres, bouton langue globe + code
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: review
 resumeAt: null
 priority: P1
 estimate: 1
@@ -355,7 +355,74 @@ Le soulignement de la section courante (PORT-034). La refonte du hero
 
 ## Journal d'exécution
 
-_(à remplir)_
+Worktree `../wt-PORT-028`, branche `feat/PORT-028-site-header`, depuis
+`refonte-2026` (ca11ec0). `npm ci` : OK (437 packages, aucune erreur — 2
+scripts d'install bloqués par `allowScripts`, sans rapport avec le ticket).
+
+Étapes 1 à 5 du ticket suivies telles quelles : `header.ts` remplacé,
+`navbar.ts` allégé (retrait de `languageGroupLabel`), `SiteHeader.tsx` créé
+tel quel (avec l'ajustement suggéré par la note : `aria-label` déplacé sur
+le lien/`<Link>` via un 4ᵉ paramètre optionnel `ariaLabel` de `renderLink`,
+plutôt que sur le `<span>`), `page.tsx` et `ProjectPage.tsx` mis à jour,
+`navbar.jsx` supprimé (`git rm`).
+
+`grep -rn "navbar\"\|navbar'\|LanguageToggle" src` → une seule occurrence
+restante, `src/i18n/dictionary.ts:15` (`import { type NavbarDict, ... }
+from "./namespaces/navbar"`), attendue et normale (le namespace `navbar`
+reste, seule sa clé `languageGroupLabel` a disparu).
+
+Vérifications (procédure §4), dans la worktree :
+
+```
+npm run lint
+```
+→ `✖ 5 problems (0 errors, 5 warnings)`. Les 5 warnings (`react-hooks/set-state-in-effect`)
+sont dans `src/theme/ThemeContext.tsx`, `src/theme/useThemeColors.ts` et
+`src/app/page.tsx` (effets `updateTops`/navigation déjà présents avant ce
+ticket) — aucun ne vient de `SiteHeader.tsx` ni de mes modifications.
+
+```
+npm run build
+```
+→ `✓ Compiled successfully in 14.7s`, `Finished TypeScript in 3.3s`,
+`✓ Generating static pages using 7 workers (15/15) in 455ms`, 14 routes
+générées en statique (home + 12 pages projet + `/_not-found`).
+
+```
+npx tsc --noEmit
+```
+(lancé après le build, comme demandé) → aucune sortie, aucune erreur.
+
+Vérification visuelle : **NON faite, outil indisponible** —
+`mcp__claude-in-chrome__list_connected_browsers` renvoie `[]` (aucun
+navigateur connecté), essayé une seule fois comme demandé. À la place,
+`npm run dev` lancé en tâche de fond (port 3000 pris par un autre agent,
+Next a basculé sur le port 3002 automatiquement, aucun serveur existant
+n'a été touché) puis vérifié par `curl` :
+- `curl http://localhost:3002/` contient bien « Corentin Bunaux »,
+  « Navigation principale », « Changer de langue », « Passer au thème ».
+- `curl http://localhost:3002/internships/safran` contient le même
+  en-tête (mêmes chaînes), confirmant l'en-tête commun home/projet.
+Le serveur de dev a été arrêté à la fin (`taskkill` sur le PID du port
+3002). Les critères à juger visuellement (deux thèmes, 1280 px/360 px,
+égalité des largeurs FR/EN, navigation clavier, soulignement au focus)
+n'ont **pas** pu être vérifiés à l'œil — à faire par Corentin ou une
+session avec navigateur connecté (`human_checkpoint` du ticket couvre une
+partie de ce jugement).
+
+Après le premier build, `next dev` a régénéré le `CLAUDE.md` racine
+(bloc nextjs-agent-rules) : `git checkout -- CLAUDE.md` fait avant chaque
+commit, jamais committé (confirmé par `git status --porcelain` après
+chaque commit).
+
+Deux commits, comme demandé par le ticket :
+1. `74785a7` — `feat(header): add a shared SiteHeader with language and theme controls`
+2. `726adcd` — `refactor(nav): replace navbar.jsx with SiteHeader on home and project pages`
+
+Écarts par rapport au ticket : aucun. `renderLink` a un 4ᵉ paramètre
+`ariaLabel` optionnel comme la note du ticket l'anticipait (pas de warning
+lint constaté sur ce point de toute façon, mais l'ajustement rend le code
+plus sûr et évite un `aria-label` sur un `<span>` non interactif).
 
 ## Notes pour la consolidation
 
@@ -363,3 +430,7 @@ _(à remplir)_
   invariant « nav = ancres natives `#home/#journey/#portfolio/#about`,
   `scroll-margin-top: var(--header-height)` » ; décision « LanguageToggle
   dupliqué » → remplacée par « un seul SiteHeader (variant home/project) ».
+- Vérification visuelle (thèmes clair/sombre, 1280 px/360 px, clavier,
+  largeur FR/EN du bouton langue) non faite faute de navigateur connecté à
+  claude-in-chrome pendant cette session : à refaire avant de clore le
+  `human_checkpoint`.
