@@ -4,7 +4,7 @@ title: "Démo — dictionnaire de prédiction (autocomplétion par préfixe, app
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: in-progress
 resumeAt: null
 priority: P2
 estimate: 0.5
