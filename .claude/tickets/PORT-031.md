@@ -4,7 +4,7 @@ title: "Section « Démo » des pages projet — registre, socle three.js commun
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: in-progress
 resumeAt: null
 priority: P1
 estimate: 1
