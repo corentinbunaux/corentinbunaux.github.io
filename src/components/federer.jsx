@@ -1,6 +1,6 @@
-export default function Federer(){
+export default function Federer({ ref }){
     return(
-    <svg xmlns="http://www.w3.org/2000/svg"  id="game" viewBox="0 0 64 64" style={{width : '80%'}}>
+    <svg ref={ref} xmlns="http://www.w3.org/2000/svg"  id="game" viewBox="0 0 64 64" style={{width : '80%'}}>
     <g>
     <g>
     <g>
