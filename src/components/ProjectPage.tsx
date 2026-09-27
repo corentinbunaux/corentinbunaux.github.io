@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { TechBadge } from "./TechBadge";
 import { OptimizedImage } from "./optimizedImage";
 import { ProjectAccent3D } from "./ProjectAccent3D";
 import { LanguageToggle } from "./navbar";
@@ -141,15 +142,10 @@ export function ProjectPage({ project: rawProject }: ProjectPageProps) {
               </div>
             )}
 
-            {stack.length > 0 && (
+            {project.techLogos.length > 0 && (
               <ul className="flex flex-wrap gap-2">
-                {stack.map((label) => (
-                  <li
-                    key={label}
-                    className="rounded-full border border-second bg-surface px-3 py-1 text-sm text-main-text"
-                  >
-                    {label}
-                  </li>
+                {project.techLogos.map((id) => (
+                  <TechBadge key={id} id={id} label={TECH_LABELS[id]} />
                 ))}
               </ul>
             )}
