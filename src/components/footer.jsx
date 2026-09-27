@@ -60,7 +60,7 @@ function Footer() {
   const t = useTranslation()
 
   const NAV_LINKS = [
-    { label: t.common.profile, href: '#profile' },
+    { label: t.common.profile, href: '#home' },
     { label: t.common.projects, href: '#portfolio' },
     { label: t.common.about, href: '#about' },
   ]
@@ -71,9 +71,6 @@ function Footer() {
         <div className="flex flex-col gap-6 border-b border-second pb-10 md:flex-row md:items-start md:justify-between">
           <div className="max-w-md">
             <h2 className="text-xl font-semibold">{t.footer.workTogether}</h2>
-            <p className="mt-2 text-second-text">
-              {t.footer.availability}
-            </p>
             <a
               href={`mailto:${EMAIL}`}
               className={`mt-4 inline-flex items-center gap-2 rounded-md bg-my-green px-4 py-2 font-medium text-main hover:underline ${FOCUS_RING}`}
