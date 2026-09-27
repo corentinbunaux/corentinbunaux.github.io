@@ -78,7 +78,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
     {
       id: "minesweeper",
       kind: "2d",
-      ready: false,
+      ready: true,
       Component: MinesweeperDemo,
     },
   ],
@@ -88,7 +88,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
     {
       id: "guards",
       kind: "2d",
-      ready: false,
+      ready: true,
       Component: GuardsDemo,
     },
 
@@ -96,7 +96,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
     {
       id: "typing",
       kind: "2d",
-      ready: false,
+      ready: true,
       Component: TypingDemo,
     },
 
