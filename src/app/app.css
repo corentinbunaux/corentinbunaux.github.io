@@ -887,6 +887,71 @@ p {
   }
 }
 
+/* Tennis player swing (PORT-043). #federer-arm holds both arms and the
+   racket; its transform-origin (the shoulder) is set inline in federer.jsx.
+   Angles are softer than the ticket's -35/+50: beyond them the racket
+   crosses the face and the arm detaches from the sleeve. */
+@keyframes federer_swing {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  40% {
+    transform: rotate(-20deg);
+  }
+
+  70% {
+    transform: rotate(35deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.federer-swing #federer-arm {
+  animation: federer_swing 0.6s ease-out both;
+}
+
+/* Linear correction added on top of ball_path (same duration and easing)
+   so the ball ends on the racket. --ball-aim-x/y are measured in
+   aboutmeSection.jsx when PUSH is clicked. */
+@keyframes ball_aim {
+  from {
+    transform: translate(0, 0);
+  }
+
+  to {
+    transform: translate(var(--ball-aim-x), var(--ball-aim-y));
+  }
+}
+
+.ball-aim {
+  animation: ball_aim 1s ease-out both;
+}
+
+/* Struck ball: fades out around the forward swing (70% of 0.6s). */
+.ball.ball-struck {
+  opacity: 0;
+  transition: opacity 0.2s ease-out 0.35s;
+}
+
+.btn_federer-done {
+  animation: endBtnFederer_pt1 0.3s ease-in-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .federer-swing #federer-arm,
+  .ball,
+  .ball-aim,
+  .btn_federer-done {
+    animation: none;
+  }
+
+  .btn_federer-done {
+    visibility: hidden;
+  }
+}
 
 /* Native anchor navigation (PORT-025/028): land section titles below the
    fixed header instead of underneath it. */

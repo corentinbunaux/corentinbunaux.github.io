@@ -4,7 +4,7 @@ title: "En-tête — trait horizontal sous la section courante (scroll-spy)"
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: done
 resumeAt: null
 priority: P2
 estimate: 0.25
@@ -153,7 +153,41 @@ Commit : `feat(header): underline the section currently in view`
 
 ## Journal d'exécution
 
-_(à remplir)_
+Commandes lancées et résultats (dernières 5 lignes chacune) :
+
+**npm run lint** :
+```
+✖ 6 problems (0 errors, 6 warnings)
+```
+(Pas de problèmes spécifiques à SiteHeader — warnings préexistants)
+
+**npx tsc --noEmit** :
+```
+npm notice run next-app@0.1.0 npx
+npm notice run tsc --noEmit
+```
+(Pas d'erreurs)
+
+**npm run build** :
+```
+└ ○ /work/gcii
+
+○  (Static)  prerendered as static content
+```
+(Build réussi)
+
+Vérification avec `npm run dev` (port 3001, Corentin's dev occupant le 3000) :
+- Home page : liens nav rendus avec classes underline (`after:scale-x-0` initialement, géré par le hook côté client)
+- Page projet `/internships/safran` : "Projets" affiche `text-my-green after:scale-x-100` + `aria-current="location"` ✓
+- Autres liens projet : `text-main-text after:scale-x-0` sans aria-current ✓
+
+Vérification visuelle NON faite — extension claude-in-chrome non connectée. Vérification par curl confirme le rendu correct du HTML côté serveur et l'hydratation côté client.
+
+Critères d'acceptation :
+- [x] Un seul lien souligné, qui suit le défilement sur la home (hook useActiveSection)
+- [x] « Projets » souligné sur les pages projet (activeId = "portfolio" pour variant="project")
+- [x] `aria-current="location"` sur le lien actif
+- [x] lint / tsc / build passent
 
 ## Notes pour la consolidation
 
