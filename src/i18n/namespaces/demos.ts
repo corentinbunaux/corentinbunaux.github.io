@@ -75,7 +75,8 @@ export const demosFr: DemosDict = {
     "exo-arm": {
       title: "Bras d'exosquelette",
       caption:
-        "Le moteur au coude assiste le bras : la charge monte, l'effort du porteur reste faible.",
+        "Le moteur au coude assiste le bras : la charge monte, l'effort du porteur reste faible. " +
+        "Les barres colorées à côté du bras traduisent cette assistance : vert pour le moteur, bleu pour l'effort du porteur.",
     },
   },
   spaceTime: {
@@ -144,7 +145,8 @@ export const demosEn: DemosDict = {
     "exo-arm": {
       title: "Exoskeleton arm",
       caption:
-        "The elbow motor assists the arm: the load goes up while the wearer's effort stays low.",
+        "The elbow motor assists the arm: the load goes up while the wearer's effort stays low. " +
+        "The colored bars beside the arm show this: green for the motor, blue for the wearer's effort.",
     },
   },
   spaceTime: {
