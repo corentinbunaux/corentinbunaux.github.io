@@ -4,7 +4,7 @@ title: "Démo — graphique espace-temps SNCF animé (SVG, données fictives)"
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: review
 resumeAt: null
 priority: P2
 estimate: 0.5
@@ -254,7 +254,29 @@ Commit : `feat(demos): animated space-time diagram for the SNCF page`
 
 ## Journal d'exécution
 
-_(à remplir)_
+**Lint (5 dernières lignes):**
+```
+✖ 6 problems (0 errors, 6 warnings)
+```
+
+**Build (5 dernières lignes):**
+```
+├ ○ /personnal/cctv
+├ ○ /research/sncf
+└ ○ /work/gcii
+
+○  (Static)  prerendered as static content
+```
+
+**tsc --noEmit (5 dernières lignes):**
+```
+npm notice run next-app@0.1.0 npx
+npm notice run tsc --noEmit
+```
+
+**Vérifications visuelles:**
+- Vérification visuelle NON faite, extension claude-in-chrome non connectée.
+- Vérification par curl : `/research/sncf` contient la section Démo avec 5 SVG (viewBox présents, confirmés par grep).
 
 ## Notes pour la consolidation
 

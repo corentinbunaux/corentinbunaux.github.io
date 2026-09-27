@@ -68,7 +68,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
     {
       id: "sncf-spacetime",
       kind: "2d",
-      ready: false,
+      ready: true,
       Component: SpaceTimeDemo,
     },
   ],
