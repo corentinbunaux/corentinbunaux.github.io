@@ -96,7 +96,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
     {
       id: "typing",
       kind: "2d",
-      ready: false,
+      ready: true,
       Component: TypingDemo,
     },
 
