@@ -25,7 +25,7 @@ export const demosFr: DemosDict = {
     "safran-earth": {
       title: "La Terre et sa constellation",
       caption:
-        "Des satellites en orbite autour de la Terre, clin d'œil au secteur aérospatial de Safran.",
+        "Des satellites en orbite autour de la Terre, clin d'œil au secteur aérospatial de Safran. Texture : NASA Blue Marble. Restez un peu : un visiteur inattendu finit par passer.",
     },
     "quimesis-fragments": {
       title: "Mes débuts en 3D",
@@ -94,7 +94,8 @@ export const demosEn: DemosDict = {
   items: {
     "safran-earth": {
       title: "Earth and its constellation",
-      caption: "Satellites orbiting Earth, a nod to Safran's aerospace sector.",
+      caption:
+        "Satellites orbiting Earth, a nod to Safran's aerospace sector. Texture: NASA Blue Marble. Stay a while: an unexpected visitor eventually flies by.",
     },
     "quimesis-fragments": {
       title: "My first steps in 3D",
