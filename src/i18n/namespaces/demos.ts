@@ -9,6 +9,12 @@ export interface DemosDict {
   sectionTitle: string;
   desktopOnly: string;
   items: Record<DemoId, DemoText>;
+  spaceTime: {
+    chartLabel: string;
+    timeAxis: string;
+    stopping: string;
+    nonStop: string;
+  };
 }
 
 export const demosFr: DemosDict = {
@@ -72,6 +78,13 @@ export const demosFr: DemosDict = {
         "Le moteur au coude assiste le bras : la charge monte, l'effort du porteur reste faible.",
     },
   },
+  spaceTime: {
+    chartLabel:
+      "Graphique espace-temps fictif : cinq trains entre les gares A et F sur deux heures.",
+    timeAxis: "min",
+    stopping: "Omnibus (arrêts en gare)",
+    nonStop: "Direct",
+  },
 };
 
 export const demosEn: DemosDict = {
@@ -133,5 +146,12 @@ export const demosEn: DemosDict = {
       caption:
         "The elbow motor assists the arm: the load goes up while the wearer's effort stays low.",
     },
+  },
+  spaceTime: {
+    chartLabel:
+      "Fictional space-time diagram: five trains between stations A and F over two hours.",
+    timeAxis: "min",
+    stopping: "Stopping service",
+    nonStop: "Non-stop",
   },
 };
