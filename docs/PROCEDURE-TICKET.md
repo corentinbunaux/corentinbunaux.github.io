@@ -34,20 +34,20 @@
 
 ## 1. Démarrer
 
-```bash
-cd C:/Users/coren/Documents/corentinbunaux.github.io
-git fetch --all --prune   # sans effet si pas de remote, pas grave
-git checkout refonte-2026
-git pull --ff-only 2>/dev/null || true
-```
+Le dépôt principal (`C:/Users/coren/Documents/corentinbunaux.github.io`)
+reste **toujours** sur `refonte-2026` : le serveur de dev de Corentin y tourne
+et d'autres agents y fusionnent en même temps. **Ne jamais** y faire
+`git checkout` d'une autre branche, ni y modifier un fichier à la main : tout
+le travail (y compris la mise à jour du ticket) se fait dans la worktree.
 
 1. Ouvrir le ticket `.claude/tickets/PORT-0XX.md`.
-2. Vérifier que **chaque** ticket listé dans `depends_on` est `status: done`
-   **et** que sa branche est fusionnée dans `refonte-2026` :
-   `git branch --merged refonte-2026 | grep PORT-0YY`. Si ce n'est pas le cas :
-   stop, ne pas commencer.
-3. Passer le ticket en `status: in-progress` (frontmatter) — ne pas committer
-   ce changement seul, il partira avec le travail.
+2. Vérifier que chaque ticket de `depends_on` est **fusionné** dans
+   `refonte-2026` : `git log --oneline refonte-2026 | grep "PORT-0YY"` doit
+   montrer son commit de fusion (son `status` peut être `done` **ou**
+   `review` : un checkpoint humain en attente ne bloque pas la suite). Si une
+   dépendance n'est pas fusionnée : stop, ne pas commencer.
+3. Le passage en `status: in-progress` se fait dans la worktree (étape 2) et
+   partira avec le travail.
 
 ## 2. Worktree isolée (obligatoire quand plusieurs tickets tournent en même temps)
 
@@ -60,6 +60,10 @@ npm ci            # node_modules n'est pas partagé entre worktrees
 
 Toutes les commandes suivantes se lancent **dans** `../wt-PORT-0XX`.
 Si `npm ci` échoue : stop, noter l'erreur exacte dans le journal du ticket.
+
+Passer le ticket en `status: in-progress` dans la worktree (il partira avec
+le premier commit). Un ticket bloqué : `status: blocked` + section « Blocked
+by » dans la worktree, commit, **pas de fusion**, rapport à l'orchestrateur.
 
 ## 3. Implémenter
 
@@ -83,9 +87,11 @@ pas prétendre l'avoir lancé. Copier les 5 dernières lignes de sortie de chaqu
 commande dans le « Journal d'exécution » du ticket.
 
 Vérification visuelle (obligatoire pour tout ticket qui change l'affichage) :
-lancer `npm run dev` dans la worktree (il prendra le port 3001 ou suivant si
-3000 est pris), ouvrir la page au navigateur (outil `claude-in-chrome` si
-disponible), vérifier chaque critère d'acceptance **en thème sombre ET clair**
+lancer `npm run dev` dans la worktree, en tâche de fond (il prendra le port
+libre suivant si 3000 est pris — ne **jamais** tuer un autre serveur), ouvrir
+la page dans **un nouvel onglet à soi** (outil `claude-in-chrome` si
+disponible ; d'autres agents utilisent le même navigateur : ne pas toucher à
+leurs onglets, fermer le sien à la fin, arrêter son serveur de dev à la fin), vérifier chaque critère d'acceptance **en thème sombre ET clair**
 (à partir de PORT-026), à 1280 px et à 360 px de large. Si aucun navigateur
 n'est disponible, l'écrire explicitement dans le journal : « vérification
 visuelle NON faite, outil indisponible » — ne jamais écrire « vérifié » sans
@@ -113,13 +119,42 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
   `recette-utilisateur.md` (propriété de Corentin).
 - Un commit par changement logique. Le ticket peut en prévoir plusieurs.
 
-## 6. Fusionner dans `refonte-2026` (c'est au modèle qui exécute le ticket de le faire)
+## 6. Clôturer le ticket, puis fusionner dans `refonte-2026` (c'est au modèle qui exécute le ticket de le faire)
+
+**a. Clôturer dans la worktree** (le ticket part avec la fusion) — dans
+`.claude/tickets/PORT-0XX.md` :
+
+- `status: review` si le ticket a un `human_checkpoint` non nul, sinon `done`.
+- Remplir « Journal d'exécution » : commandes lancées + sortie, ce qui a été
+  vérifié visuellement (ou pas), écarts par rapport au ticket.
+- Remplir « Notes pour la consolidation » : ce que PORT-051 devra reporter
+  dans `ARCHITECTURE.md` (nouveau fichier, décision, point faible).
+- Commit : `docs(tickets): close PORT-0XX`.
+
+**b. Intégrer `refonte-2026` dans la branche, dans la worktree** (d'autres
+tickets ont pu être fusionnés entre-temps ; les conflits se règlent ici, jamais
+dans le dépôt principal) :
 
 ```bash
-cd C:/Users/coren/Documents/corentinbunaux.github.io   # le dépôt principal
-git checkout refonte-2026
+git merge refonte-2026            # dans ../wt-PORT-0XX
+# conflits éventuels : voir la table ci-dessous, puis git add + git commit
+npm run lint && npx tsc --noEmit && npm run build   # re-vérifier après intégration
+```
+
+**c. Fusionner dans le dépôt principal** (qui est déjà sur `refonte-2026` ;
+ne PAS faire de checkout) :
+
+```bash
+cd C:/Users/coren/Documents/corentinbunaux.github.io
+git branch --show-current          # doit afficher refonte-2026, sinon STOP
+# Un autre agent fusionne peut-être en même temps : attendre la fin de son verrou
+for i in 1 2 3 4 5 6 7 8 9 10; do [ -f .git/index.lock ] || break; sleep 20; done
 git merge --no-ff <branche> -m "Merge PORT-0XX: <titre court>"
 ```
+
+Si ce merge signale un conflit (un autre ticket a été fusionné entre b et c) :
+`git merge --abort`, retourner en **b**, recommencer. Si `index.lock` persiste
+après 10 essais : ne pas le supprimer, passer en `blocked` et le signaler.
 
 ### En cas de conflit
 
@@ -135,26 +170,25 @@ Les zones à risque connues (plusieurs tickets les touchent) :
 | `src/app/page.tsx` | 028, 037 | 037 réécrit l'assemblage ; partir de la version 037 et ré-appliquer 028 s'il manque. |
 | `package.json` / `package-lock.json` | 026 seulement | Ne devrait pas conflicter. Si oui : garder les deux dépendances puis `npm install` pour régénérer le lock. |
 
-Procédure : ouvrir chaque fichier en conflit, résoudre selon la règle,
-`git add`, `git commit`. Puis **relancer** `npm run lint && npx tsc --noEmit
-&& npm run build` sur `refonte-2026`. Si la résolution n'est pas évidente
+Procédure (dans la worktree, étape 6b) : ouvrir chaque fichier en conflit,
+résoudre selon la règle, `git add`, `git commit`, puis relancer
+`npm run lint && npx tsc --noEmit && npm run build`. Si la résolution n'est pas évidente
 (les deux côtés modifient la même ligne avec des intentions différentes) :
 `git merge --abort`, noter le conflit dans le journal, passer le ticket en
 `blocked`, s'arrêter.
 
-## 7. Nettoyer et clôturer
+## 7. Nettoyer
 
 ```bash
-git worktree remove ../wt-PORT-0XX
+cd C:/Users/coren/Documents/corentinbunaux.github.io
+git worktree remove ../wt-PORT-0XX   # arrêter d'abord son npm run dev
 git branch -d <branche>        # -d (pas -D) : refuse si non fusionnée, c'est voulu
 ```
 
-Dans le ticket (sur `refonte-2026`, commit `docs(tickets): close PORT-0XX`) :
-
-- `status: review` si le ticket a un `human_checkpoint` non nul, sinon `done`.
-- Remplir « Journal d'exécution » : commandes lancées + sortie, ce qui a été
-  vérifié visuellement (ou pas), écarts par rapport au ticket.
-- Remplir « Notes pour la consolidation » : ce que PORT-051 devra reporter
-  dans `ARCHITECTURE.md` (nouveau fichier, décision, point faible).
-
 Pas de `git push` sauf si Corentin l'a demandé dans la session.
+
+## 8. Rapport final (à rendre à l'orchestrateur)
+
+Statut final du ticket, SHA du commit de fusion, 5 dernières lignes de
+lint / tsc / build, ce qui a été vérifié visuellement et ce qui ne l'a pas
+été, écarts par rapport au ticket, notes pour la consolidation.
