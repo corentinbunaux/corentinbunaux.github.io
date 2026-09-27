@@ -4,7 +4,7 @@ title: "Articles des projets en Markdown (un fichier FR + un fichier EN par proj
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: review
 resumeAt: null
 priority: P1
 estimate: 1
@@ -290,10 +290,10 @@ Commits :
 
 ## Critères d'acceptation
 
-- [ ] 24 fichiers Markdown, 41 sections par langue, texte identique à avant.
-- [ ] `pageContent` n'existe plus dans le code.
-- [ ] Une incohérence FR/EN fait échouer le build avec un message clair.
-- [ ] lint / tsc / build passent.
+- [x] 24 fichiers Markdown, 41 sections par langue, texte identique à avant.
+- [x] `pageContent` n'existe plus dans le code.
+- [x] Une incohérence FR/EN fait échouer le build avec un message clair.
+- [x] lint / tsc / build passent.
 
 ## Hors périmètre
 
@@ -302,7 +302,96 @@ Gras, liens, listes, images dans les articles. Corriger les fautes du texte
 
 ## Journal d'exécution
 
-_(à remplir)_
+Environnement : pas de navigateur connecté à l'étape 1. Remplacée par
+l'extraction du texte visible des pages exportées (`out/research/sncf.html`,
+`out/emse/programming.html`) avant/après modification, comme indiqué par
+l'orchestrateur.
+
+1. `npm ci` : OK, 437 packages installés (warnings npm audit habituels, sans
+   rapport avec le ticket).
+2. `npm run build` (référence, avant modification) : succès, 14 routes
+   générées. Texte visible de `out/research/sncf.html` et
+   `out/emse/programming.html` extrait dans un dossier temporaire hors dépôt.
+3. `node scripts/extract-articles.mts` : 24 fichiers `.md` générés (vérifié
+   `CONTEXT_HEADING` = `{fr: "Contexte", en: "Context"}` contre
+   `src/i18n/namespaces/projectPage.ts`, correspond, aucune correction
+   nécessaire). `find content/projects -name "*.md" | wc -l` → 24.
+   `grep -c "^## " content/projects -r` : 41 sections FR, 41 EN.
+   `grep -rn "Ã\|â€" content` → aucun résultat (pas de mojibake).
+   Script supprimé après usage (non committé).
+4. `content/projects/README.md` créé tel que spécifié par le ticket.
+5. `src/lib/articleTypes.ts` et `src/lib/articles.ts` créés tels que fournis
+   par le ticket.
+6. Les 12 routes `src/app/**/page.tsx` modifiées : import `loadArticle` avec
+   le même préfixe relatif que l'import `data/projects` du fichier,
+   `const article = loadArticle(project.href);` après le garde `if
+   (!project)`, `<ProjectPage project={project} article={article} />`.
+7. `src/components/ProjectPage.tsx` : import de `Article`, prop `article`
+   ajoutée et déstructurée, `const sections = article[language];`, section
+   contexte + `mainPart.map` remplacés par le rendu unifié `sections.map(...)`
+   du ticket, `DemoSection number={sections.length + 1}`.
+8. `src/data/projects.ts` : suppression des 12 blocs `pageContent` via la
+   commande `node -e ...` fournie — elle a affiché `13 blocks` (et non `12`)
+   car le motif matchait aussi le bloc `pageContent: { ... }` du corps de
+   `localizeProject` (même indentation à 4 espaces) ; ce bloc devait de toute
+   façon être supprimé par cette même étape du ticket (« le bloc
+   `pageContent: { … }` de `localizeProject` »), donc les 13 suppressions
+   sont correctes et attendues. Vérifié après coup : `grep -n "pageContent"
+   src/data/projects.ts` ne renvoie plus que les 4 lignes de types/Omit/
+   commentaire, supprimées manuellement ensuite (interfaces
+   `ProjectSection`/`ProjectPageContent`, champ `Project.pageContent`, entrée
+   `"pageContent"` de l'`Omit`, champ `pageContent` de `LocalizedProject`,
+   commentaire de tête mis à jour). `grep -rn "pageContent" src` → aucun
+   résultat après ces changements.
+
+Vérifications (§4 de la procédure) :
+
+- `npm run lint` : 0 erreur, 6 avertissements — tous préexistants
+  (`react-hooks/set-state-in-effect` dans `ThemeContext.tsx`,
+  `useThemeColors.ts`, `Banner.jsx`, `LanguageContext.tsx`, un avertissement
+  `no-location-assign-relative-destination` dans `src/app/page.tsx`, un
+  `jsx-a11y/role-supports-aria-props` dans `GuardsDemo.tsx`), aucun dans les
+  fichiers touchés par ce ticket.
+- `npm run build` : succès, 14 routes générées, dont les 12 pages projet.
+- `npx tsc --noEmit` (lancé après `npm run build`, comme demandé) : aucune
+  sortie, propre.
+- Test d'échec volontaire : ajout de `## Test` + une ligne à
+  `content/projects/research/sncf.fr.md`, `npm run build` → échec avec
+  `content/projects/research/sncf: 5 FR sections vs 4 EN sections — keep
+  both languages aligned.` Fichier restauré avec `git checkout --
+  content/projects/research/sncf.fr.md`.
+- Comparaison au rendu de référence : texte extrait de
+  `out/research/sncf.html` et `out/emse/programming.html` après modification,
+  comparé par `diff` au texte extrait avant modification (FR uniquement, cf.
+  note ci-dessous) → **identique** dans les deux cas (`IDENTICAL`).
+  Pour l'anglais : comparaison directe entre `content/projects/research/
+  sncf.en.md` / `content/projects/emse/programming.en.md` et les valeurs `en`
+  de `git show refonte-2026:src/data/projects.ts` pour ces deux projets →
+  texte et titres de section identiques mot pour mot.
+- Test humain simulé : `sed` a préfixé le premier paragraphe de
+  `content/projects/research/sncf.fr.md` avec `MODIF-TEST-PORT-036`,
+  `npm run dev` lancé en tâche de fond (port 3000, libre), `curl
+  http://localhost:3000/research/sncf` a bien renvoyé le texte modifié dans
+  le HTML rendu. Fichier restauré ensuite (`git checkout -- content/projects/
+  research/sncf.fr.md`), serveur de dev arrêté (`taskkill /F /PID <pid>` —
+  processus que je venais de démarrer moi-même sur le port 3000, aucun autre
+  agent affecté), `CLAUDE.md` racine restauré (`git checkout -- CLAUDE.md`,
+  regénéré par `next dev`).
+- Vérification visuelle en thème sombre/clair et à 1280 px / 360 px : **NON
+  faite** — aucun navigateur `claude-in-chrome` connecté dans cette session.
+  Seule une vérification via `curl` (texte HTML brut) a été possible ; le
+  rendu visuel (mise en forme du nouveau bloc de sections, thèmes, largeurs)
+  n'a pas été inspecté dans un navigateur.
+
+Écarts par rapport au ticket : aucun changement de fond, seulement
+l'adaptation de l'étape 1 (pas de navigateur) et de la vérification visuelle
+finale, comme prévu par les instructions de l'orchestrateur pour cet
+environnement.
+
+Commits dans la worktree :
+- `b41aaf7` feat(content): move project articles to Markdown files
+- `4ad13fc` refactor(project-page): read articles from content/ at build time
+- (ce commit) docs(tickets): close PORT-036
 
 ## Notes pour la consolidation
 
