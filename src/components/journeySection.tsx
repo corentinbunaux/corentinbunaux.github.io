@@ -6,9 +6,11 @@ import {
   type Project,
   type ProjectPeriod,
 } from "../data/projects";
+import { education, type EducationEntry } from "../data/education";
 import { useTranslation } from "../i18n/dictionary";
 import { useLanguage } from "../i18n/LanguageContext";
 import type { Dictionary } from "../i18n/dictionary";
+import { TrackIcon, type TrackKind } from "./journey/TrackIcon";
 
 /**
  * A project that has a confirmed `period`. `projects` models "dates not
@@ -22,9 +24,9 @@ function hasPeriod(project: Project): project is JourneyProject {
   return project.period !== undefined;
 }
 
-// Oldest first: chronological order reads as "how I got here", ending on the
-// current position. Sorting on the `YYYY-MM` string works because lexical
-// order matches chronological order for that format.
+// Newest first: the most recent position is what a recruiter looks for first
+// (Corentin's feedback, 2026-09-26). Sorting on the `YYYY-MM` string works
+// because lexical order matches chronological order for that format.
 // `projects` is typed via `satisfies readonly Project[]`, which keeps each
 // element's literal type instead of widening to `Project`. That defeats
 // `Array.prototype.filter`'s type-predicate overload (it requires the
@@ -37,7 +39,7 @@ const allProjects: readonly Project[] = projects;
 const journeyEntries: readonly JourneyProject[] = allProjects
   .filter(hasPeriod)
   .slice()
-  .sort((a, b) => a.period.start.localeCompare(b.period.start));
+  .sort((a, b) => b.period.start.localeCompare(a.period.start));
 
 function formatMonthYear(yearMonth: string, months: readonly string[]): string {
   const [year, month] = yearMonth.split("-").map(Number);
@@ -96,18 +98,91 @@ function JourneyEntryRow({
         href={`/${entry.href}`}
         className="block flex-1 rounded-md pb-6 focus-visible:outline-none"
       >
-        <h2 className="text-lg font-semibold text-main-text hover:underline">
+        <h3 className="text-lg font-semibold text-main-text hover:underline">
           {localized.title}
           {isOngoing && (
             <span className="ml-2 rounded-full bg-my-green/20 px-2 py-0.5 text-xs font-normal text-my-green">
               {t.journey.currentBadge}
             </span>
           )}
-        </h2>
+        </h3>
         <p className="text-second-text">{subtitle}</p>
         <p className="text-sm text-second-text">{formatPeriod(entry.period, t)}</p>
       </Link>
     </li>
+  );
+}
+
+function formatYears({ start, end }: EducationEntry["years"]): string {
+  return start === end ? String(start) : `${start} – ${end}`;
+}
+
+function EducationRow({
+  entry,
+  isLast,
+  language,
+}: {
+  entry: EducationEntry;
+  isLast: boolean;
+  language: "fr" | "en";
+}) {
+  const body = (
+    <>
+      <h3 className="text-lg font-semibold text-main-text">
+        {entry.title[language]}
+      </h3>
+      {entry.detail && <p className="text-second-text">{entry.detail[language]}</p>}
+      <p className="text-second-text">
+        {entry.institution} · {entry.location}
+      </p>
+      <p className="text-sm text-second-text">{formatYears(entry.years)}</p>
+    </>
+  );
+
+  return (
+    <li className="flex gap-4">
+      <div className="flex flex-col items-center">
+        <span className="mt-1.5 h-3 w-3 shrink-0 rounded-full bg-second-text" aria-hidden="true" />
+        {!isLast && <span className="w-px flex-1 bg-second" aria-hidden="true" />}
+      </div>
+      {entry.href ? (
+        <Link
+          href={`/${entry.href}`}
+          className="block flex-1 rounded-md pb-6 hover:[&_h3]:underline focus-visible:outline-none"
+        >
+          {body}
+        </Link>
+      ) : (
+        <div className="flex-1 pb-6">{body}</div>
+      )}
+    </li>
+  );
+}
+
+function Track({
+  kind,
+  headingId,
+  title,
+  children,
+}: {
+  kind: TrackKind;
+  headingId: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section
+      aria-labelledby={headingId}
+      className="rounded-lg border border-second bg-surface-raised p-6 md:p-8"
+    >
+      <div className="mb-6 flex items-center gap-3">
+        <TrackIcon kind={kind} />
+        <h2 id={headingId} className="text-xl font-semibold text-main-text">
+          {title}
+        </h2>
+      </div>
+      <ol className="flex flex-col">{children}</ol>
+    </section>
   );
 }
 
@@ -117,8 +192,8 @@ function JourneySection() {
   return (
     <div className="container mx-auto px-[var(--section-padding-x)] py-[var(--section-padding-y)]">
       <h1 className="outlined-text">{t.journey.title}</h1>
-      <div className="mt-8 rounded-lg border border-second bg-surface-raised p-6 md:p-8">
-        <ol className="flex flex-col">
+      <div className="mt-8 grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
+        <Track kind="experience" headingId="journey-experience" title={t.journey.experienceTrack}>
           {journeyEntries.map((entry, index) => (
             <JourneyEntryRow
               key={entry.href}
@@ -128,7 +203,17 @@ function JourneySection() {
               language={language}
             />
           ))}
-        </ol>
+        </Track>
+        <Track kind="education" headingId="journey-education" title={t.journey.educationTrack}>
+          {education.map((entry, index) => (
+            <EducationRow
+              key={entry.id}
+              entry={entry}
+              isLast={index === education.length - 1}
+              language={language}
+            />
+          ))}
+        </Track>
       </div>
     </div>
   );
