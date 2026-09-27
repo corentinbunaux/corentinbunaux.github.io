@@ -4,7 +4,7 @@ title: "GCII / Enedis — aperçu illustré (réseau électrique stylisé sur l'
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: review
 resumeAt: null
 priority: P2
 estimate: 0.25
@@ -172,7 +172,20 @@ Commits :
 
 ## Journal d'exécution
 
-_(à remplir)_
+1. Created `scripts/generate-gcii-illustration.mjs` with exact content from ticket.
+2. Generated SVG: `node scripts/generate-gcii-illustration.mjs`
+   - Output: `wrote assets/images-src/img/gcii-grid.svg: 46 nodes, 82 lines, 7 hubs`
+3. Ran image pipeline: `npm run optimize:images`
+   - `gcii-grid.svg` copied verbatim to `public/img/`
+   - Manifest updated with `/img/gcii-grid: { "svg": true }`
+4. Updated `src/data/projects.ts`: changed `img: null,` to `img: "/img/gcii-grid",` for GCII entry
+5. Verification:
+   - `npm run lint`: 3 warnings (unrelated to changes), 0 errors
+   - `npx tsc --noEmit`: CSS import errors (pre-existing, not caused by changes)
+   - `npm run build`: succeeded, page `/work/gcii` prerendered
+   - Visual verification NON faite, outil indisponible
+6. Determinism check: script is deterministic (seeded PRNG with seed 2026)
+7. No real Enedis data: illustration is fictional (seeded random nodes and edges)
 
 ## Notes pour la consolidation
 

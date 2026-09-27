@@ -163,7 +163,7 @@ export const projects = [
     entityLogo: null,
     githubRepo: null,
     techLogos: ["python", "react"],
-    img: null,
+    img: "/img/gcii-grid",
     photos: [],
     period: { status: "ongoing", start: "2025-11" },
     location: "Le Havre",
