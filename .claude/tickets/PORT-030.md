@@ -4,7 +4,7 @@ title: "Parcours — ordre décroissant, deux pistes Expérience / Formation, é
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: review
 resumeAt: null
 priority: P1
 estimate: 0.5
@@ -321,7 +321,39 @@ Les icônes 3D (PORT-050). Toute modification de `src/data/projects.ts`.
 
 ## Journal d'exécution
 
-_(à remplir)_
+**Lint** (last 5 lines):
+```
+✖ 5 problems (0 errors, 5 warnings)
+```
+No errors in modified files.
+
+**tsc --noEmit** (output):
+```
+npm notice run next-app@0.1.0 npx
+npm notice run tsc --noEmit
+```
+No type errors.
+
+**npm run build** (last 5 lines):
+```
+├ ○ /research/sncf
+└ ○ /work/gcii
+
+○  (Static)  prerendered as static content
+```
+Build successful.
+
+**Vérification visuelle** : NON faite, outil indisponible.
+
+**Implémentation** :
+- ✅ Créé `src/data/education.ts` avec 4 entrées (Mines, PSI, PCSI, Bac) — orthographe vérifiée (Guillaume avec deux L, François Ier, Saint-Étienne)
+- ✅ Updated `src/i18n/namespaces/journey.ts` : ajout `experienceTrack` et `educationTrack` (FR et EN)
+- ✅ Créé `src/components/journey/TrackIcon.tsx` : BriefcaseBusiness et GraduationCap
+- ✅ Modifié `src/components/journeySection.tsx` :
+  - Sort order inverted (descending)
+  - h2 → h3 in JourneyEntryRow
+  - Added formatYears, EducationRow, Track components
+  - Two-track layout (experience left, education right)
 
 ## Notes pour la consolidation
 
