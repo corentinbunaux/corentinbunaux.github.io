@@ -114,7 +114,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
     {
       id: "parking-car",
       kind: "3d",
-      ready: false,
+      ready: true,
       Component: ParkingCarDemo,
     },
   ],
