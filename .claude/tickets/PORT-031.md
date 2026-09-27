@@ -4,7 +4,7 @@ title: "Section « Démo » des pages projet — registre, socle three.js commun
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: done
 resumeAt: null
 priority: P1
 estimate: 1
@@ -654,16 +654,59 @@ Commits :
 
 ## Critères d'acceptation
 
-- [ ] API `ThreeStage` / `DEMOS` / `DemoId` conforme à ce ticket.
-- [ ] 11 démos déclarées, 2 prêtes (Safran, fragments Quimesis).
-- [ ] Section Démo numérotée à la suite de l'article, absente s'il n'y a rien.
-- [ ] 3D : message sur mobile/réduction des animations, pas de chunk chargé.
-- [ ] `ProjectAccent3D.tsx` supprimé.
-- [ ] lint / tsc / build passent.
+- [x] API `ThreeStage` / `DEMOS` / `DemoId` conforme à ce ticket.
+- [x] 11 démos déclarées, 2 prêtes (Safran, fragments Quimesis).
+- [x] Section Démo numérotée à la suite de l'article, absente s'il n'y a rien.
+- [x] 3D : message sur mobile/réduction des animations, pas de chunk chargé.
+- [x] `ProjectAccent3D.tsx` supprimé.
+- [x] lint / tsc / build passent.
 
 ## Journal d'exécution
 
-_(à remplir)_
+2026-09-27 — worktree `../wt-PORT-031` depuis `refonte-2026` (ca11ec0), `npm ci` OK.
+Dépendances PORT-024 (6a33ed2) et PORT-026 (ca11ec0) fusionnées.
+
+Étapes 1 à 7 appliquées telles quelles (blocs de code du ticket repris à
+l'identique ; `registry.ts` non reformaté par ESLint, une propriété par ligne
+conservée ; `cpge_tipe` laissé entre guillemets, ESLint ne dit rien).
+`grep -rn ProjectAccent3D src` : aucun résultat. `grep -n "Ã\|â€"` sur les
+fichiers créés : aucun résultat.
+
+`npm run lint` (5 warnings, tous préexistants : page.tsx, Banner.jsx,
+LanguageContext.tsx, ThemeContext.tsx, useThemeColors.ts — aucun dans
+`src/components/demos/`) :
+```
+  47 |   }, [theme]);
+  48 |   return colors;
+  49 | }  react-hooks/set-state-in-effect
+
+✖ 5 problems (0 errors, 5 warnings)
+```
+`npm run build` :
+```
+├ ○ /research/sncf
+└ ○ /work/gcii
+
+
+○  (Static)  prerendered as static content
+```
+`npx tsc --noEmit` (après le build) : sortie vide, exit 0.
+
+Vérification visuelle NON faite, outil indisponible (extension
+claude-in-chrome non connectée). À la place, `npm run dev` de la worktree
+(port 3001) + `curl` du HTML prérendu :
+- `/internships/safran` : `<h2 id="demo-heading">Démo</h2>`, numéros de
+  section 01…05 (Démo = 05), 1 `<figure>` dans un cadre `aspect-video`, titre
+  « La Terre et sa constellation » ; plus de `float-right mb-4 ml-6` (accent
+  flottant) ; aucun `<script src>` contenant « three » dans le HTML initial.
+- `/internships/quimesis` : section Démo, 1 seule figure (« Mes débuts en 3D ») ;
+  la mâchoire n'apparaît pas.
+- `/research/sncf`, `/emse/programming` : aucune section Démo.
+Non vérifié (navigateur requis) : rendu effectif de la scène WebGL, message
+desktopOnly à 360 px et absence de chunk three dans l'onglet Réseau, recréation
+de la scène au changement de thème, absence d'erreur console en quittant la page.
+
+Écarts : aucun par rapport au code du ticket.
 
 ## Notes pour la consolidation
 
@@ -672,3 +715,7 @@ _(à remplir)_
   `ThreeStage` = socle three.js commun : resize, pause hors écran, dispose,
   couleurs du thème) ; invariant « une démo = un id dans `demoIds.ts` + une
   entrée dans `registry.ts` + un texte dans `namespaces/demos.ts` ».
+- `ThreeStage.tsx` n'est encore utilisé par aucune démo (Safran/Quimesis
+  enveloppent les anciens accents) : premier usage attendu en PORT-045.
+- Les critères 4 à 6 (360 px, changement de thème, console) n'ont pas pu être
+  vérifiés au navigateur : à contrôler lors de la recette.

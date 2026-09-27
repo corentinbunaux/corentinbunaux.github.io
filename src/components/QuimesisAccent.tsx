@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { readThemeColors } from "../theme/useThemeColors";
 
 /**
  * Contextual 3D accent for the Quimesis project page (PORT-020): a loose
@@ -25,6 +26,7 @@ export function QuimesisAccent() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const colors = readThemeColors();
     const container = containerRef.current;
     if (!container) return;
 
@@ -44,7 +46,7 @@ export function QuimesisAccent() {
     camera.lookAt(0, 0, 0);
 
     const material = new THREE.MeshBasicMaterial({
-      color: 0x81a3a7,
+      color: new THREE.Color(colors.green),
       wireframe: true,
       transparent: true,
       opacity: 0.7,
