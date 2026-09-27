@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Homepage from "../components/homepage";
-import Navbar from "../components/navbar";
+import { SiteHeader } from "../components/SiteHeader";
 import ProfileSection from "../components/profileSection";
 import JourneySection from "../components/journeySection";
 import "./app.css";
@@ -48,7 +48,7 @@ export default function Home() {
 
   return (
     <>
-      <Navbar allTops={allTops} />
+      <SiteHeader variant="home" />
       <section id="home" className="relative">
         <Homepage portfolioTop={allTops.portfolioTop} />
       </section>
