@@ -4,7 +4,7 @@ title: "À propos — retirer sudoku, activités actives/archivées avec icônes
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: review
 resumeAt: null
 priority: P2
 estimate: 0.5
@@ -195,9 +195,23 @@ Commit : `feat(about): split interests into active/archived with icons`
 
 ## Journal d'exécution
 
-_(à remplir)_
+**Implémentation (9e059d0)** :
+- Worktree créée depuis `refonte-2026` avec branche `feat/PORT-029-about-interests`
+- `npm ci` : ok (warnings non-bloquants sur install-scripts)
+- Modifications :
+  - `src/i18n/namespaces/about.ts` : suppression sudoku, ajout activeLabel/archivedLabel, mise à jour otherSports (FR/EN)
+  - `src/components/aboutmeSection.jsx` : imports lucide, composants TennisBallIcon et InterestList, grille active/archived
+  - Changement layout : `columns-1 lg:columns-2` → `grid grid-cols-1 lg:grid-cols-2`
+
+**Vérifications** :
+- `npm run lint` : ✓ (5 warnings pré-existantes, aucun nouvele erreur)
+- `npm run build` : ✓ (Static prerendered as static content)
+- `npx tsc --noEmit` : ✓ (aucune erreur type)
+
+**Vérification visuelle** : NON faite, outil indisponible (claude-in-chrome non connecté).
+
+**Écarts** : Aucun. Toutes les étapes du ticket ont été exécutées.
 
 ## Notes pour la consolidation
 
-- ARCHITECTURE.md : icônes via `lucide-react` (dépendance approuvée),
-  icône tennis dessinée à la main dans `aboutmeSection.jsx`.
+- ARCHITECTURE.md : icônes via `lucide-react` (dépendance approuvée), icône tennis dessinée à la main dans `aboutmeSection.jsx`.
