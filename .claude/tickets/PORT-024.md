@@ -4,7 +4,7 @@ title: "i18n — découper dictionary.ts en un fichier par namespace (+ namespac
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: done
 resumeAt: null
 priority: P1
 estimate: 0.5
@@ -225,10 +225,49 @@ inutilisée.
 
 ## Journal d'exécution
 
-_(à remplir par le modèle exécutant)_
+### Commandes exécutées
+
+**npm run lint** (dernières lignes):
+```
+✖ 3 problems (0 errors, 3 warnings)
+```
+Lint passes (warnings only, pre-existing).
+
+**npx tsc --noEmit** (dernières lignes):
+```
+src/app/layout.tsx(2,8): error TS2882: Cannot find module or type declarations for side-effect import of './app.css'.
+src/app/page.tsx(8,8): error TS2882: Cannot find module or type declarations for side-effect import of './app.css'.
+src/components/journeySection.tsx(2,8): error TS2882: Cannot find module or type declarations for side-effect import of '../app/app.css'.
+```
+No errors related to i18n, dictionary, or namespaces. Pre-existing CSS import errors.
+
+**npm run build** (dernières lignes):
+```
+├ ○ /internships/safran
+└ ○ /research/sncf
+
+○  (Static)  prerendered as static content
+```
+Build succeeds.
+
+### Contrôles
+
+- Contrôle anti-perte: Avant = 189, Après = 188, acceptable (188 >= 187).
+- Encodage: ✓ Pas de mojibake détecté.
+- 15 fichiers dans `src/i18n/namespaces/`: ✓ (9 existants + 6 futurs)
+- `dictionary.ts` = 96 lignes < 120: ✓
+- Imports cassés: ✓ None (`useTranslation`, `type Dictionary` toujours exportés)
+
+### Vérification visuelle
+
+Vérification visuelle NON faite, outil indisponible (Claude in Chrome extension not connected).
 
 ## Notes pour la consolidation
 
 - ARCHITECTURE.md, ligne `src/i18n/` : `dictionary.ts` assemble les
   namespaces de `src/i18n/namespaces/*.ts` ; un ticket = un fichier de
   namespace.
+- Chaque namespace futur (header, demos, minesweeper, guards, typing, predict)
+  est pré-enregistré comme un fichier vide, prêt à être rempli par son ticket
+  respectif. Cela élimine les conflits de merge liés à l'ajout de nouvelles
+  entrées au dictionnaire principal.
