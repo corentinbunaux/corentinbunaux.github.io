@@ -4,7 +4,7 @@ title: "CSS — overflow-x: clip, scroll fluide natif, hauteur d'en-tête en tok
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: in-progress
+status: done
 resumeAt: null
 priority: P1
 estimate: 0.25
@@ -104,10 +104,45 @@ Le décalage exact de « En bref » sous l'en-tête (PORT-035), l'en-tête lui-m
 
 ## Journal d'exécution
 
-_(à remplir)_
+**Commandes lancées :**
+
+`npm run lint` — 5 dernières lignes :
+```
+problems (0 errors, 3 warnings)
+```
+
+`npx tsc --noEmit` — affiche des erreurs pré-existantes (imports de CSS) non liées à ce ticket.
+
+`npm run build` — 5 dernières lignes :
+```
+├ ○ /emse/android
+├ ○ /emse/embedded
+├ ○ /emse/minesweeper
+├ ○ /emse/programming
+├ ○ /internships/kusmitea
+├ ○ /internships/quimesis
+├ ○ /internships/safran
+├ ○ /personnal/cctv
+├ ○ /personnal/web
+├ ○ /research/sncf
+└ ○ /work/gcii
+```
+
+**Vérification visuelle :** NON FAITE, outil indisponible (extension Claude in Chrome non disponible dans cet environnement).
+
+**Changements appliqués :**
+1. `overflow-x: clip` dans html (remplace `hidden`)
+2. `scroll-behavior: smooth` ajouté dans html
+3. `overflow-x: clip` dans body (remplace `hidden`)
+4. `--header-height: 6.5rem` ajouté dans `:root`
+5. `--header-height: 4rem` ajouté dans media query (min-width: 768px)
+6. CSS pour native anchor navigation et reduced-motion ajouté en fin de fichier
+7. Ticket passé en `in-progress` lors du commit initial
 
 ## Notes pour la consolidation
 
 - ARCHITECTURE.md « Known weak points » : retirer le point « En bref ne colle
   pas » et le point « Smooth scroll is broken site-wide » (PORT-022 clos,
   faux positif — onglet d'automatisation en arrière-plan).
+- Token CSS `--header-height` ajouté en deux variantes (6.5rem mobile, 4rem ≥768px) ; utilisé pour scroll-margin des ancres natives (PORT-028) et offset de sticky "En bref" (PORT-035).
+- Changement de `overflow-x: hidden` à `overflow-x: clip` sur html/body : déverrouille `position: sticky` en supprimant le conteneur de défilement, conservation du cut du débordement horizontal.
