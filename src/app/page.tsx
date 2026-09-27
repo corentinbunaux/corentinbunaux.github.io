@@ -8,12 +8,13 @@ import "./app.css";
 import AboutMe from "../components/aboutmeSection";
 import ProjectsSection from "../components/projectsSection";
 import Footer from "../components/footer";
-import React from "react";
+import { redirect } from 'next/navigation'
 
 export default function Home() {
+
   useEffect(() => {
     if (performance.navigation.type === 1) {
-      window.location.href = "/";
+      redirect('/')
     }
   }, []);
 
