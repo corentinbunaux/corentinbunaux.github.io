@@ -6,6 +6,8 @@ export interface AboutDict {
   tournaments: string;
   otherSports: string;
   interestsLabel: string;
+  activeLabel: string;
+  archivedLabel: string;
   pushButton: string;
   interests: {
     tennis: string;
@@ -14,7 +16,6 @@ export interface AboutDict {
     running: string;
     chess: string;
     videoGames: string;
-    sudoku: string;
     code: string;
   };
 }
@@ -28,8 +29,10 @@ export const aboutFr: AboutDict = {
   tournaments:
     "Pendant dix ans, ma constante participation à des tournois a renforcé ma persévérance et mon esprit de compétition de manière significative.",
   otherSports:
-    "Depuis peu, je pratique d'autres sports tels que l'escalade, la natation ou la course à pieds.",
+    "Je pratique aussi la course à pied. Pendant mes études, je me suis essayé à l'escalade, à la natation et aux échecs.",
   interestsLabel: "Centres d'intérêt",
+  activeLabel: "Aujourd'hui",
+  archivedLabel: "Archivées — pratiquées pendant mes études",
   pushButton: "PUSH !",
   interests: {
     tennis: "Tennis",
@@ -38,7 +41,6 @@ export const aboutFr: AboutDict = {
     running: "Course",
     chess: "Échecs",
     videoGames: "Jeu vidéo",
-    sudoku: "Sudoku",
     code: "Code",
   },
 };
@@ -52,8 +54,10 @@ export const aboutEn: AboutDict = {
   tournaments:
     "For ten years, my ongoing participation in tournaments significantly strengthened my perseverance and competitive spirit.",
   otherSports:
-    "More recently, I have taken up other sports such as climbing, swimming, and running.",
+    "I also go running. During my studies, I tried my hand at climbing, swimming and chess.",
   interestsLabel: "Interests",
+  activeLabel: "Today",
+  archivedLabel: "Archived — tried during my studies",
   pushButton: "PUSH!",
   interests: {
     tennis: "Tennis",
@@ -62,7 +66,6 @@ export const aboutEn: AboutDict = {
     running: "Running",
     chess: "Chess",
     videoGames: "Video games",
-    sudoku: "Sudoku",
     code: "Code",
   },
 };
