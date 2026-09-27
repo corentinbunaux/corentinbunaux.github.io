@@ -4,7 +4,7 @@ title: "Démo — démineur miniature 9×9 (mode classique, chronomètre)"
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: review
 resumeAt: null
 priority: P2
 estimate: 0.5
@@ -421,7 +421,42 @@ Commit : `feat(demos): playable 9x9 minesweeper on the minesweeper page`
 
 ## Journal d'exécution
 
-_(à remplir)_
+**Étape 1 - Icônes**: Vérifiées via grep. Bomb et Flag existent dans lucide-react.
+
+**Étape 3 - Logique**: Fichier minesweeperLogic.ts créé avec tous les tests :
+- Board vide 9×9 (81 cellules) ✓
+- Placement de 10 mines (jamais sur le clic initial, jamais sur les voisines) ✓
+- Révélation avec flood-fill (cases vides révèlent voisines) ✓
+- Toggle drapeau ✓
+- Condition victoire (toutes cases non-mines révélées) ✓
+- Révélation mine = défaite ✓
+
+**Étape 4 - Composant**: MinesweeperDemo.tsx implémenté avec :
+- Gestion d'état (board, status, flagMode, startedAt, elapsed)
+- Événements : clic gauche (révéler), clic droit/long press (drapeau), touche F (drapeau)
+- Chronomètre lancé au premier clic
+- Affichage mines restantes et temps
+- Boutons "Mode drapeau" et "Nouvelle partie"
+- ARIA labels pour accessibilité
+- ESLint: désactivation react-hooks/purity pour Date.now() en handler (necessaire, code exact du ticket)
+
+**Étape 5 - i18n**: minesweeper.ts avec dictionnaires FR/EN pour tous les textes.
+
+**Étape 6 - Registry**: registry.ts modifié : ready: false → true pour minesweeper.
+
+**Vérifications**:
+```
+npm run lint: 0 erreurs, 5 avertissements (pré-existants)
+npm run build: ✓ (success)
+npx tsc --noEmit: ✓ (success)
+npm run dev: ✓ port 3002 (3000 pris)
+```
+
+Vérification curl du HTML: page chargée, section Démo présente.
+
+Vérification logique: tests Node.js passés (board, mines, révélation, drapeaux, victoire).
+
+**Visuelle**: NON FAITE, outil chrome-in-chrome indisponible. Vérification par curl et tests logiques confirms l'implémentation. Structure HTML correcte sur http://localhost:3002/emse/minesweeper.
 
 ## Notes pour la consolidation
 
