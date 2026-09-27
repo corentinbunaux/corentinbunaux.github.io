@@ -1,6 +1,8 @@
 import React from "react";
 import "./app.css";
 import { LanguageProvider } from "../i18n/LanguageContext";
+import { ThemeProvider } from "../theme/ThemeContext";
+import { THEME_INIT_SCRIPT } from "../theme/themeScript";
 
 export const metadata = {
   title: "Portfolio - Corentin Bunaux",
@@ -9,9 +11,16 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="fr">
+    // data-theme is set by THEME_INIT_SCRIPT before hydration, so the server
+    // HTML and the client DOM legitimately differ on this one attribute.
+    <html lang="fr" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body>
-        <LanguageProvider>{children}</LanguageProvider>
+        <ThemeProvider>
+          <LanguageProvider>{children}</LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

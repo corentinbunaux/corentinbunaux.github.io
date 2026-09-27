@@ -3,6 +3,8 @@
 @tailwind utilities;
 
 :root {
+  color-scheme: dark;
+
   /* Base surfaces, from the darkest page background upwards. */
   --main: #1a1a1a;
   --secondary: #333333;
@@ -45,6 +47,27 @@
     --card-min-height: 13rem;
     --header-height: 4rem;
   }
+}
+
+/* Light theme (PORT-026). Same token names, so every utility and rule follows.
+   Contrast ratios against --main / --surface / --surface-raised:
+     --main-text   16.23 / 17.40 / 15.10
+     --second-text  6.23 /  6.69 /  5.80
+     --my-green     5.13 /  5.50 /  4.77  (also usable as text)
+     --my-blue      6.35 /  6.81 /  5.91
+   --main on --my-green (PUSH button, badges): 5.13. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --main: #f7f7f5;
+  --secondary: #e2e2dd;
+  --surface: #ffffff;
+  --surface-raised: #efefeb;
+  --border: #d6d6d0;
+  --my-green: #4a6f74;
+  --my-blue: #3f5f70;
+  --main-text: #1a1a1a;
+  --second-text: #5c5c5c;
+  --focus: #3f5f70;
 }
 
 /* smartphones */

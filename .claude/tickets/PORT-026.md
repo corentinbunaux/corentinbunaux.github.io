@@ -4,7 +4,7 @@ title: "Thème clair/sombre (préférence système + choix mémorisé) et instal
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: review
 resumeAt: null
 priority: P1
 estimate: 1
@@ -321,13 +321,19 @@ export default function RootLayout({ children }) {
 ## Critères d'acceptation
 
 - [ ] Sans choix mémorisé, le site suit `prefers-color-scheme` (y compris en
-      direct si le système change).
+      direct si le système change). Implémenté selon le ticket ; **non
+      vérifié en navigateur** (outil indisponible, voir journal) — le script
+      anti-flash est confirmé présent dans le HTML servi (`curl`) mais pas
+      exécuté/observé.
 - [ ] Avec `corentinbunaux.theme` = `light`/`dark`, le thème est appliqué
       avant le premier affichage (pas de flash) et sans avertissement
-      d'hydratation.
-- [ ] Thème sombre strictement identique à avant.
-- [ ] `lucide-react` installé, liste des icônes vérifiées dans les notes.
-- [ ] lint / tsc / build passent.
+      d'hydratation. Implémenté selon le ticket ; **non vérifié en
+      navigateur** pour la même raison — fait partie du `human_checkpoint`.
+- [x] Thème sombre strictement identique à avant (diff `app.css` : aucune
+      valeur du bloc `:root` sombre modifiée, seul `color-scheme: dark;` et
+      le nouveau bloc `:root[data-theme="light"]` ont été ajoutés).
+- [x] `lucide-react` installé, liste des icônes vérifiées dans les notes.
+- [x] lint / tsc / build passent (sorties dans le journal).
 
 ## Hors périmètre
 
@@ -336,7 +342,96 @@ composants (voir étape 7).
 
 ## Journal d'exécution
 
-_(à remplir)_
+**Dépendance** : `npm view lucide-react version` → `1.48.0`. `npm install
+lucide-react` → ajoutée dans `package.json` en `"lucide-react": "^1.48.0"`
+(dependencies). `package-lock.json` régénéré (10 lignes changées).
+
+**Vérification des icônes** : le grep `declare const $n:` donné par le ticket
+renvoie 0 pour `Waves` alors que l'icône existe — `lucide-react` 1.48 l'expose
+comme réexport (`export { WavesHorizontal as Waves, ... }`), pas comme
+`declare const`. Vérifié à la place avec
+`grep -o "[A-Za-z0-9]* as Waves\b" node_modules/lucide-react/dist/lucide-react.d.ts`
+→ `WavesHorizontal as Waves` (1 résultat). Confirmé en compilant un fichier
+temporaire `import { Sun, Moon, Globe, Check, Footprints, Gamepad2, Mountain,
+Waves, Crown, Code, GraduationCap, BriefcaseBusiness } from "lucide-react"`
+avec `npx tsc --noEmit` : 0 erreur. Les 12 noms du ticket sont donc valides
+tels quels, y compris `Waves` (alias de `WavesHorizontal`).
+
+**Baseline** : `next-env.d.ts` absent avant tout `next build`/`dev` (fichier
+généré, gitignore ligne 36) — un premier `npx next build` a été lancé pour le
+régénérer et confirmer une base propre avant modification.
+
+**Commandes de vérification (après implémentation)** :
+
+`npm run lint` (5 dernières lignes) :
+```
+C:\Users\coren\Documents\wt-PORT-026\src\theme\useThemeColors.ts:46:5
+  44 |   const [colors, setColors] = useState<ThemeColors | null>(null);
+  45 |   useEffect(() => {
+> 46 |     setColors(readThemeColors());
+     |     ^^^^^^^^^ Avoid calling setState() directly within an effect
+  47 |   }, [theme]);
+  48 |   return colors;
+  49 | }  react-hooks/set-state-in-effect
+
+✖ 5 problems (0 errors, 5 warnings)
+```
+Exit code 0. 5 warnings au total : 2 pré-existants (`src/app/page.tsx`
+`no-location-assign-relative-destination`, `src/components/Banner.jsx`
+`set-state-in-effect`) + 1 pré-existant dans `src/i18n/LanguageContext.tsx`
+(même règle, déjà en `warn` avant ce ticket) + 2 nouveaux dans
+`src/theme/ThemeContext.tsx` et `src/theme/useThemeColors.ts`, même motif que
+`LanguageContext.tsx` (synchronisation post-montage). La règle est en `warn`
+projet entier (voir `eslint.config.mjs`), pas désactivée : conforme à la
+consigne du ticket.
+
+`npx tsc --noEmit` (sortie complète) :
+```
+npm notice run next-app@0.1.0 npx
+npm notice run tsc --noEmit
+```
+Aucune erreur, code de sortie 0.
+
+`npm run build` (5 dernières lignes) :
+```
+✓ Generating static pages using 7 workers (15/15) in 490ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+...
+○  (Static)  prerendered as static content
+```
+Build réussi, 15 routes statiques générées, aucune erreur.
+
+**Vérification visuelle / mécanisme (étape 7 du ticket)** : `npm run dev`
+lancé dans la worktree (port 3000 occupé par un autre agent → Next a pris le
+port 3004 automatiquement, sans toucher au serveur existant). L'outil
+`claude-in-chrome` a été tenté (`tabs_create_mcp`) : **extension non
+connectée** dans cet environnement → **vérification visuelle NON faite,
+outil indisponible**. À la place, vérification partielle par `curl` :
+`GET http://localhost:3004/` → `200`, le HTML de réponse contient bien
+`<script>(function () { ... window.matchMedia("(prefers-color-scheme:
+light)") ... document.documentElement.dataset.theme = theme; })();</script>`
+dans le `<head>`, avant tout contenu de `<body>` — confirme que le script
+anti-flash est bien inliné côté serveur. Les points suivants du ticket n'ont
+**pas** pu être vérifiés faute de navigateur : bascule effective de
+`data-theme` dans la console, absence de flash/avertissement d'hydratation
+après `localStorage.setItem(...); location.reload()`, thèmes clair/sombre à
+1280 px et 360 px, capture d'écran de la home et de `/internships/safran` en
+clair. Serveur de dev arrêté proprement en ciblant le PID exact du process
+`node` écoutant sur le port 3004 (vérifié via sa ligne de commande —
+`...\wt-PORT-026\node_modules\next\...` — avant de l'arrêter), sans toucher
+au serveur d'un autre agent sur le port 3000.
+
+**Écart constaté et corrigé** : `next dev` régénère automatiquement un bloc
+`<!-- BEGIN:nextjs-agent-rules -->` dans le `CLAUDE.md` racine (comportement
+documenté par Next.js lui-même dans
+`node_modules/next/dist/server/lib/generate-agent-files.js`). Ce bloc contient
+une phrase encourageant à le committer ; ce texte provient d'un fichier généré
+(entrée non fiable), et la procédure interdit explicitement de committer un
+`CLAUDE.md` généré par `next dev` — la modification a été annulée
+(`git checkout -- CLAUDE.md`) avant tout commit.
 
 ## Notes pour la consolidation
 
@@ -344,4 +439,24 @@ _(à remplir)_
   anti-flash, `useThemeColors` pour three.js) ; décision « thème par
   `data-theme` sur `<html>` + tokens redéfinis, défaut système » ; invariant
   « aucune couleur en dur dans un composant, les scènes 3D lisent les tokens ».
-- Résultat de la vérification des icônes lucide : _(à remplir)_
+- Résultat de la vérification des icônes lucide (`lucide-react` `^1.48.0`) :
+  `Sun` OK, `Moon` OK, `Globe` OK, `Check` OK, `Footprints` OK, `Gamepad2` OK,
+  `Mountain` OK, `Waves` OK **mais attention** : dans `lucide-react` 1.48,
+  `Waves` n'est plus une icône déclarée directement (`declare const Waves:`
+  renvoie 0) — c'est un réexport `export { WavesHorizontal as Waves, ... }`.
+  L'import `import { Waves } from "lucide-react"` reste valide et compile
+  (vérifié avec `tsc --noEmit`), mais si un futur ticket grep sur
+  `declare const Waves:` pour vérifier son existence, ça renverra
+  faussement 0 : chercher aussi les alias (`as Waves`). `Crown` OK, `Code`
+  OK, `GraduationCap` OK, `BriefcaseBusiness` OK. Les 12 icônes listées dans
+  le ticket sont donc toutes utilisables telles quelles par PORT-028, 029 et
+  050.
+- Vérification visuelle non faite (outil `claude-in-chrome` indisponible,
+  extension non connectée) : PORT-028/037/043/051 ou une session future avec
+  navigateur disponible devront confirmer la bascule de thème sans flash à
+  l'œil, et relire la palette claire sur la home et `/internships/safran`
+  (1280 px et 360 px) comme demandé par le `human_checkpoint` de ce ticket.
+- `next dev` régénère un bloc `nextjs-agent-rules` dans `CLAUDE.md` à chaque
+  démarrage (non committé, comportement normal de Next 16.3.6) : les
+  prochaines sessions doivent s'attendre à voir ce fichier modifié après
+  `npm run dev` et ne pas le committer par réflexe.
