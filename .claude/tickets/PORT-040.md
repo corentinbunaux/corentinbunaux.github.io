@@ -4,7 +4,7 @@ title: "Démo — Dactylo Race en version solo (vitesse et précision de frappe)
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: review
 resumeAt: null
 priority: P2
 estimate: 0.5
@@ -290,7 +290,38 @@ Commit : `feat(demos): single-player Dactylo Race typing demo`
 
 ## Journal d'exécution
 
-_(à remplir)_
+1. Dépendance PORT-031 vérifiée : fusionnée dans refonte-2026.
+2. Worktree créée : `git worktree add ../wt-PORT-040 -b feat/PORT-040-typing-demo refonte-2026`
+3. `npm ci` : OK (437 packages added)
+4. Fichiers créés/modifiés selon ticket :
+   - Créé : `src/components/demos/typingSentences.ts` (8 phrases FR + 8 EN)
+   - Remplacé : `src/i18n/namespaces/typing.ts` (interface + traductions)
+   - Remplacé : `src/components/demos/TypingDemo.tsx` (composant, variante avec `key={language}` appliquée car ESLint signalait `react-hooks/set-state-in-effect`)
+   - Modifié : `src/components/demos/registry.ts` (ready: true pour "typing")
+
+5. Lint : 5 warnings (aucun nouveau depuis la modification de PORT-040)
+   ```
+   ✖ 5 problems (0 errors, 5 warnings)
+   ```
+
+6. Type check : OK
+   ```
+   (aucune erreur)
+   ```
+
+7. Build : OK
+   ```
+   ○ (Static) prerendered as static content
+   ```
+
+8. Vérification visuelle :
+   - Serveur lancé sur port 3001
+   - Page `/emse/programming` accessible
+   - Section "Démo" présente avec titre "Démo"
+   - Extension chrome-in-chrome non disponible : vérification par curl + chargement page
+   - Note : la vérification complète des critères d'acceptance en thème clair/sombre et responsive nécessiterait l'outil chrome-in-chrome ou navigateur.
+
+Écarts : aucun. Variante avec clé appliquée car recommandée par ESLint, conforme au ticket.
 
 ## Notes pour la consolidation
 

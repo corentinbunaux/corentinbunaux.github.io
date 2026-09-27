@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { readThemeColors } from "../theme/useThemeColors";
 
 /**
  * Contextual 3D accent for the Safran project page (PORT-020): a wireframe
@@ -21,6 +22,7 @@ export function SafranAccent() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const colors = readThemeColors();
     const container = containerRef.current;
     if (!container) return;
 
@@ -42,7 +44,7 @@ export function SafranAccent() {
     const hub = new THREE.Mesh(
       new THREE.SphereGeometry(HUB_RADIUS, 16, 12),
       new THREE.MeshBasicMaterial({
-        color: 0xa7bcc7,
+        color: new THREE.Color(colors.blue),
         wireframe: true,
         transparent: true,
         opacity: 0.6,
@@ -53,7 +55,7 @@ export function SafranAccent() {
     const satellites = Array.from({ length: SATELLITE_COUNT }, (_, i) => {
       const mesh = new THREE.Mesh(
         new THREE.SphereGeometry(0.09, 12, 8),
-        new THREE.MeshBasicMaterial({ color: 0x81a3a7 }),
+        new THREE.MeshBasicMaterial({ color: new THREE.Color(colors.green) }),
       );
       scene.add(mesh);
       return {

@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { TechBadge } from "./TechBadge";
 import { OptimizedImage } from "./optimizedImage";
-import { ProjectAccent3D } from "./ProjectAccent3D";
-import { LanguageToggle } from "./navbar";
+import { DemoSection } from "./demos/DemoSection";
+import { SiteHeader } from "./SiteHeader";
 import {
   projects,
   localizeProject,
@@ -94,10 +94,12 @@ export function ProjectPage({ project: rawProject }: ProjectPageProps) {
   const stack = project.techLogos.map((id) => TECH_LABELS[id]);
 
   return (
-    <main className="project-page mx-auto max-w-6xl px-4 py-8 sm:px-8">
+    <>
+      <SiteHeader variant="project" />
+      <main className="project-page mx-auto max-w-6xl px-4 pb-8 pt-[calc(var(--header-height)+2rem)] sm:px-8">
       <nav
         aria-label={t.projectPage.breadcrumbLabel}
-        className="mb-6 flex flex-wrap items-center justify-between gap-4 text-sm text-second-text"
+        className="mb-6 flex flex-wrap items-center gap-4 text-sm text-second-text"
       >
         <ol className="flex flex-wrap items-center gap-2">
           <li>
@@ -107,7 +109,7 @@ export function ProjectPage({ project: rawProject }: ProjectPageProps) {
           </li>
           <li aria-hidden="true">/</li>
           <li>
-            <Link href="/#section-portfolio" className="hover:text-my-green">
+            <Link href="/#portfolio" className="hover:text-my-green">
               {t.common.projects}
             </Link>
           </li>
@@ -116,13 +118,11 @@ export function ProjectPage({ project: rawProject }: ProjectPageProps) {
             {project.title}
           </li>
         </ol>
-        <LanguageToggle />
       </nav>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_20rem]">
         <div className="min-w-0">
           <header className="mb-8">
-            <ProjectAccent3D href={project.href} />
             <h1 className="mb-2 text-3xl font-bold text-main-text sm:text-4xl">
               {project.title}
             </h1>
@@ -182,6 +182,11 @@ export function ProjectPage({ project: rawProject }: ProjectPageProps) {
                 </section>
               );
             })}
+
+            <DemoSection
+              href={project.href}
+              number={project.pageContent.mainPart.length + 2}
+            />
 
             {project.photos.length > 0 && (
               <section aria-labelledby="gallery-heading">
@@ -323,6 +328,7 @@ export function ProjectPage({ project: rawProject }: ProjectPageProps) {
           </div>
         </aside>
       </div>
-    </main>
+      </main>
+    </>
   );
 }
