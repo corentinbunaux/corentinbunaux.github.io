@@ -73,7 +73,7 @@ export function GuardsDemo() {
               type="button"
               role="gridcell"
               aria-label={label}
-              aria-pressed={kind === "wall" ? undefined : hasGuard}
+              aria-selected={kind === "wall" ? undefined : hasGuard}
               disabled={kind === "wall"}
               onClick={() => toggle(index)}
               className={`flex h-7 w-7 items-center justify-center sm:h-9 sm:w-9 ${className}`}
