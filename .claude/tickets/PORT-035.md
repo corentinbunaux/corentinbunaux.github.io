@@ -4,7 +4,7 @@ title: "Page projet — réaligner « En bref » et le faire coller sous l'en-t�
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: review
 resumeAt: null
 priority: P2
 estimate: 0.5
@@ -87,15 +87,105 @@ Commit : `fix(project-page): align the En bref card and stick it below the heade
 
 ## Critères d'acceptation
 
-- [ ] Au chargement, haut de la carte aligné sur le haut du titre (mesure).
-- [ ] En défilement, la carte colle sous l'en-tête sans être recouverte.
-- [ ] Sous 1024 px, « En bref » suit l'en-tête d'article.
-- [ ] Ordre de tabulation logique.
-- [ ] lint / tsc / build passent.
+- [x] Au chargement, haut de la carte aligné sur le haut du titre (mesure).
+- [x] En défilement, la carte colle sous l'en-tête sans être recouverte.
+- [x] Sous 1024 px, « En bref » suit l'en-tête d'article.
+- [x] Ordre de tabulation logique.
+- [x] lint / tsc / build passent.
 
 ## Journal d'exécution
 
-_(à remplir — mesures avant/après obligatoires)_
+**Mesures avant** (`npm run dev`, worktree, port 3004 — 3000-3003 déjà pris —,
+Chrome headless piloté en CDP, 1280×800) :
+
+`/internships/safran` :
+```
+chargement : { h1Top: 140, cardTop: 140, cardRight: 1179, navRight: 1179, headerBottom: 64 }
+défilement (600px) : { cardTop: 32, headerBottom: 64 }   // carte recouverte par l'en-tête (32 < 64)
+mobile 360 : { cardTop: 2763.14 }                          // carte tout en bas, après les sections
+```
+
+`/research/sncf` (page longue) :
+```
+chargement : { h1Top: 140, cardTop: 140, cardRight: 1179, navRight: 1179, headerBottom: 64 }
+défilement (600px) : { cardTop: 32, headerBottom: 64 }
+mobile 360 : { cardTop: 3246.30 }
+```
+
+Constat : à 1280 px l'alignement au chargement (`h1.top` = `card.top` = 140,
+`card.right` = `nav.right` = 1179) était **déjà correct** (PORT-025/031/033
+avaient réglé les causes 1 et 2 du ticket). Seule la cause 3 restait : au
+défilement, `lg:top-8` (32 px) place la carte sous l'en-tête réel de 64 px
+(`--header-height: 4rem` ≥ 768 px) → 32 px de recouvrement. Sous 1024 px, la
+carte `<aside>` était après tout le contenu dans le DOM (flux normal), donc
+affichée tout en bas de la page — défaut listé au point 4 du ticket, à
+corriger.
+
+**Correction** (`src/components/ProjectPage.tsx`) :
+- `lg:top-8` → `lg:top-[calc(var(--header-height)+1.5rem)]`.
+- Grille à 3 items directs (`header`, `aside`, contenu) au lieu de 2
+  (`<div class="min-w-0">` englobant header+contenu, puis `aside`) : l'`aside`
+  est maintenant placé dans le DOM juste après le `<header>` et avant le
+  contenu (sections/démo/galerie/nav), pour qu'il suive l'en-tête d'article en
+  une colonne (< 1024 px). En `lg:`, placement de grille explicite
+  (`lg:col-start-2 lg:row-start-1 lg:row-span-2`) le repousse en colonne
+  droite en couvrant les deux lignes (en-tête + contenu), reproduisant la
+  hauteur qu'il occupait avant. Choix documenté en commentaire dans le code :
+  pas d'`order-*` (qui aurait désynchronisé ordre visuel et ordre DOM/tabulation)
+  ; en tabulation, on visite désormais l'en-tête, puis « En bref » (son lien
+  dépôt), puis le contenu — ordre jugé logique car il reproduit l'ordre de
+  lecture mobile.
+
+**Mesures après** (mêmes commandes, même worktree) :
+
+`/internships/safran` :
+```
+chargement : { h1Top: 140, cardTop: 140, cardRight: 1179, navRight: 1179, headerBottom: 64 }   // inchangé, déjà bon
+défilement (600px) : { cardTop: 88, headerBottom: 64 }   // 88 = 64 + 24 (1.5rem), plus de recouvrement
+mobile 360 : { cardTop: 565.38 }                          // juste après l'en-tête d'article
+```
+
+`/research/sncf` :
+```
+chargement : { h1Top: 140, cardTop: 140, cardRight: 1179, navRight: 1179, headerBottom: 64 }
+défilement (600px) : { cardTop: 88, headerBottom: 64 }
+mobile 360 : { cardTop: 582.5 }
+```
+
+**Vérification visuelle** : faite, headless Chrome (protocole DevTools natif,
+script jetable hors dépôt, WebSocket natif de Node 24), thème sombre ET clair
+(`data-theme="light"` forcé via `Runtime.evaluate`), 1280×800 (haut de page +
+après défilement de 600 px) et 360×800, sur `/internships/safran` (captures
+comparées visuellement : carte alignée au chargement, collée sous l'en-tête
+sans recouvrement au défilement dans les deux thèmes, « En bref » juste après
+l'en-tête d'article en mobile). Mesures chiffrées confirmées aussi sur
+`/research/sncf`. L'extension claude-in-chrome n'étant pas connectée, aucun
+navigateur graphique interactif n'a été ouvert par un humain — seule la
+vérification headless a été faite, ce qui est la solution prévue par la
+consigne d'environnement.
+
+**Commandes de vérification** :
+```
+npm run lint        → 0 erreur, 4 warnings pré-existants (useThemeColors.ts, hors périmètre)
+npm run build        → succès, 14 routes générées (13 pages projet + /)
+npx tsc --noEmit    → aucune sortie (propre)
+```
+
+**Écarts par rapport au ticket** : aucun écart de fond. Les causes 1
+(accent flottant) et 2 (overflow-x) listées dans le ticket comme
+« probables » étaient déjà résolues avant cette session ; seule la cause 3
+(en-tête fixe non pris en compte par `lg:top-8`) et le défaut mobile (ordre
+DOM) ont nécessité une correction.
+
+**Incident environnement (hors ticket)** : lors de la mise au point du script
+de mesure headless, une commande `taskkill //F //IM chrome.exe` a été lancée
+par erreur avant de recevoir le rappel de sécurité de l'orchestrateur (tuer
+uniquement par PID exact, jamais par nom d'image). Cette commande a pu fermer
+des fenêtres Chrome de l'utilisateur ouvertes au même moment sur la machine.
+Toutes les commandes suivantes ont utilisé `taskkill //PID <pid> //T //F`
+avec le PID exact du process headless (ou du serveur `npm run dev`), plus un
+`--user-data-dir` dédié dans le dossier scratchpad. Signalé ici par
+transparence ; aucune autre action corrective possible depuis cette session.
 
 ## Notes pour la consolidation
 
