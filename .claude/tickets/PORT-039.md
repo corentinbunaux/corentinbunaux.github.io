@@ -4,7 +4,7 @@ title: "Démo — projet optimisation « surveillants » (grille 10×10 avec mur
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: review
 resumeAt: null
 priority: P2
 estimate: 0.5
@@ -359,7 +359,31 @@ Commit : `feat(demos): interactive guards optimisation puzzle`
 
 ## Journal d'exécution
 
-_(à remplir)_
+Commandes lancées :
+
+```
+npm run lint
+```
+✓ Linter passed (6 warnings unrelated to changes)
+
+```
+npm run build
+```
+✓ Build completed successfully
+
+```
+npx tsc --noEmit
+```
+✓ Type checking passed
+
+Vérification :
+- Icônes Eye et Target présentes dans lucide-react : ✓
+- TARGETS.length : 13 ✓
+- optimalGuards() retourne 6 surveillants ✓
+- Server npm run dev lancé sur port 3000
+- Page /emse/programming accessible via curl : ✓ Contient "Projet optimisation : les surveillants"
+
+Note : Vérification visuelle NON faite (chrome extension non disponible). Vérification par curl confirme la présence de la section Démo.
 
 ## Notes pour la consolidation
 
