@@ -920,6 +920,31 @@ p {
   }
 }
 
+/* Tennis player swing (PORT-043). #federer-arm holds both arms and the
+   racket; its transform-origin (the shoulder) is set inline in federer.jsx.
+   Angles are softer than the ticket's -35/+50: beyond them the racket
+   crosses the face and the arm detaches from the sleeve. */
+@keyframes federer_swing {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  40% {
+    transform: rotate(-20deg);
+  }
+
+  70% {
+    transform: rotate(35deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.federer-swing #federer-arm {
+  animation: federer_swing 0.6s ease-out both;
+}
 
 /* Native anchor navigation (PORT-025/028): land section titles below the
    fixed header instead of underneath it. */

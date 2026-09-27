@@ -4,7 +4,7 @@ title: "À propos — tennisman : bras et raquette redessinés, frappe animée q
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: in-progress
 resumeAt: null
 priority: P3
 estimate: 1
