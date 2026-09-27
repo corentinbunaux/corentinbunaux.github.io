@@ -12,6 +12,7 @@ import {
   type ProjectPeriod,
   type TechLogoId,
 } from "../data/projects";
+import type { Article } from "../lib/articleTypes";
 import { useTranslation, type Dictionary } from "../i18n/dictionary";
 import { useLanguage } from "../i18n/LanguageContext";
 
@@ -79,12 +80,15 @@ export type ProjectPageProps = {
    * decision this encodes.
    */
   project: Project;
+  /** Read from content/projects at build time by the route (PORT-036). */
+  article: Article;
 };
 
-export function ProjectPage({ project: rawProject }: ProjectPageProps) {
+export function ProjectPage({ project: rawProject, article }: ProjectPageProps) {
   const t = useTranslation();
   const { language } = useLanguage();
   const project = localizeProject(rawProject, language);
+  const sections = article[language];
   const index = projects.findIndex((p) => p.href === rawProject.href);
   const previousRaw = index === -1 ? undefined : findNeighbor(index, -1);
   const nextRaw = index === -1 ? undefined : findNeighbor(index, 1);
@@ -152,40 +156,30 @@ export function ProjectPage({ project: rawProject }: ProjectPageProps) {
           </header>
 
           <div className="space-y-10">
-            <section aria-labelledby="section-context-heading">
-              <p className="mb-1 text-sm font-semibold tracking-widest text-my-green">
-                01
-              </p>
-              <h2
-                id="section-context-heading"
-                className="mb-2 text-xl font-semibold text-main-text"
-              >
-                {t.projectPage.context}
-              </h2>
-              <p className="text-main-text">{project.pageContent.context}</p>
-            </section>
-
-            {project.pageContent.mainPart.map((part, idx) => {
+            {sections.map((section, idx) => {
               const headingId = `section-${idx}-heading`;
               return (
-                <section key={part.title} aria-labelledby={headingId}>
+                <section key={headingId} aria-labelledby={headingId}>
                   <p className="mb-1 text-sm font-semibold tracking-widest text-my-green">
-                    {String(idx + 2).padStart(2, "0")}
+                    {String(idx + 1).padStart(2, "0")}
                   </p>
-                  <h2
-                    id={headingId}
-                    className="mb-2 text-xl font-semibold text-main-text"
-                  >
-                    {part.title}
+                  <h2 id={headingId} className="mb-2 text-xl font-semibold text-main-text">
+                    {section.title}
                   </h2>
-                  <p className="text-main-text">{part.description}</p>
+                  <div className="space-y-4">
+                    {section.paragraphs.map((paragraph, pIdx) => (
+                      <p key={pIdx} className="text-main-text">
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
                 </section>
               );
             })}
 
             <DemoSection
               href={project.href}
-              number={project.pageContent.mainPart.length + 2}
+              number={sections.length + 1}
             />
 
             {project.photos.length > 0 && (
