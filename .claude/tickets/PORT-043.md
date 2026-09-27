@@ -165,8 +165,8 @@ clics répétés (le bouton disparaît après le premier coup, comme avant : un
 seul coup par chargement de page).
 
 **Commandes (dans la worktree)** — `npm run lint` (5 avertissements
-préexistants dans `LanguageContext.tsx`, `ThemeContext.tsx`,
-`useThemeColors.ts`, identiques avant/après) :
+préexistants dans `page.tsx`, `Banner.jsx`, `LanguageContext.tsx`, `ThemeContext.tsx`,
+`useThemeColors.ts`, identiques avant/après ; après intégration de `refonte-2026` : 6, le 6e dans `demos/GuardsDemo.tsx`, venu d'un autre ticket) :
 
 ```
   48 |   return colors;
