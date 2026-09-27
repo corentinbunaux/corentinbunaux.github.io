@@ -4,7 +4,7 @@ title: "Hero façon maquette + fusion de la section Profil (moins d'animation)"
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: review
 resumeAt: null
 priority: P1
 estimate: 1
@@ -280,15 +280,107 @@ Commits :
 
 ## Critères d'acceptation
 
-- [ ] Structure de la zone ① de la maquette, sans bandeau, sans roue, sans mesh.
-- [ ] Contenu du profil (rôle, personnalité, langues, technos) dans le hero.
-- [ ] Section `#profile` supprimée, nav/footer OK.
-- [ ] `HERO_ICONS` disponible pour PORT-044.
-- [ ] lint / tsc / build passent.
+- [x] Structure de la zone ① de la maquette, sans bandeau, sans roue, sans mesh
+      (implémentée selon le ticket ; jugement visuel réel à faire, voir
+      `human_checkpoint` et « vérification visuelle NON faite » ci-dessous).
+- [x] Contenu du profil (rôle, personnalité, langues, technos) dans le hero.
+- [x] Section `#profile` supprimée, nav/footer OK (grep `id="profile"` → aucun
+      résultat dans le HTML rendu ; nav/footer non touchés par ce ticket).
+- [x] `HERO_ICONS` disponible pour PORT-044.
+- [x] lint / tsc / build passent.
 
 ## Journal d'exécution
 
-_(à remplir)_
+Worktree `../wt-PORT-037`, branche `feat/PORT-037-hero-profile-merge`, créée
+depuis `refonte-2026` (commit `2ee1a13`). Dépendances PORT-026/028/033
+vérifiées fusionnées dans `refonte-2026` avant de démarrer.
+
+Étapes 1 à 6 du ticket suivies dans l'ordre :
+- `HERO_ICONS` extrait tel quel dans `src/components/hero/heroIcons.js` ;
+  contrôle `node -e "import(...)"` → `15` (avertissement Node
+  `MODULE_TYPELESS_PACKAGE_JSON`, sans conséquence, import ESM réussi).
+- `hero.ts` : clés `tagline`, `stackLabel`, `languages`, `experienceLabel`,
+  `linkedinLabel`, `githubLabel` ajoutées (FR + EN).
+- `profile.ts` : ne garde que `roleIntro`, `roleClient`, `roleLocation`,
+  `experienceSummary`, `personality` ; vérifié par grep qu'aucun autre
+  fichier que `profileSection.jsx` (supprimé) n'utilisait les clés retirées.
+- `HeroVisual.tsx` créé tel que fourni par le ticket.
+- `homepage.jsx` réécrit tel que fourni ; `GithubLogo` conservé (export
+  toujours utilisé ailleurs, hors périmètre), son `fill="#F5F5F5"` passé en
+  `currentColor` pour le thème clair, comme demandé au § « Points
+  d'attention ». `LinkedInLogo` recréé avec le `d=` du SVG existant.
+- `page.tsx` : import et `<section id="profile">` supprimés, état `allTops`
+  et son `useEffect` supprimés (aucun consommateur restant, vérifié par
+  grep), `<Homepage />` sans prop, effet `performance.navigation` conservé.
+- Suppressions : `git rm src/components/profileSection.jsx
+  src/components/HeroCanvas.tsx src/components/HeroMesh.tsx`. Grep de
+  contrôle `profileSection|HeroCanvas|HeroMesh|RoundContainer|iconsWheel`
+  dans `src` : aucun résultat en dehors de deux commentaires historiques non
+  liés au ticket (`SafranAccent.tsx`, `useDesktopMotionGate.ts`, fichiers non
+  touchés par PORT-037).
+- `app.css` : bloc `wheel-spin` / `wheel-item-counter-spin` et leurs
+  `@keyframes` retirés (seul ce bloc, `grep wheel` → aucun résultat après
+  coup). `useDesktopMotionGate.ts` non touché.
+
+Vérifications (procédure §4), dans la worktree :
+
+```
+npm run lint
+```
+```
+✖ 5 problems (0 errors, 5 warnings)
+```
+(les 5 avertissements `react-hooks/set-state-in-effect` sont préexistants,
+dans `ThemeContext.tsx` / `useThemeColors.ts` / un troisième fichier non
+touchés par ce ticket — 0 erreur).
+
+```
+npm run build
+```
+```
+✓ Compiled successfully in 23.9s
+  Running TypeScript ...
+  Finished TypeScript in 8.2s ...
+✓ Generating static pages using 7 workers (15/15) in 757ms
+  Finalizing page optimization ...
+```
+(15 routes statiques générées, y compris `/`.)
+
+```
+npx tsc --noEmit
+```
+→ aucune sortie, 0 erreur (lancé après `npm run build`, comme requis pour que
+`next-env.d.ts` existe).
+
+Les trois commandes ont été relancées une seconde fois après les deux commits
+finaux (commit 88deaa9 puis 62b358a) avec le même résultat (0 erreur lint,
+build OK, tsc silencieux) et l'arbre de travail est resté propre
+(`git status --porcelain` vide).
+
+Vérification visuelle : l'extension `claude-in-chrome` a été testée
+(`tabs_context_mcp`) et a répondu « Browser extension is not connected » —
+**vérification visuelle NON faite, outil indisponible**. À la place, `npm run
+dev` a été lancé en tâche de fond dans la worktree (port 3002, 3000 étant
+déjà pris — serveur d'un autre agent non touché), et le HTML rendu a été
+récupéré par `curl http://localhost:3002/` pour un contrôle statique :
+- `id="home"` présent, `id="profile"` absent, `id="journey"` présent ;
+- titre « Corentin Bunaux », accroche « Ingénieur logiciel fullstack ·
+  Diplômé de l'École des Mines de Saint-Étienne » présents ;
+- lien `href="#portfolio"` (CTA « Voir mes projets »), `mailto:corentin.
+  bunaux@gmail.com`, liens LinkedIn et GitHub présents ;
+- les 8 pastilles technos (TypeScript, React, Python, Java, C++, SQL, Git,
+  Linux) et les libellés « Technos du quotidien » / « Expériences chez »
+  présents ;
+- aucune occurrence de `wheel-spin` ni de `three` dans le HTML rendu.
+Ceci confirme la présence du contenu et l'absence de bandeau/roue/mesh, mais
+**ne remplace pas** un contrôle visuel réel à 1280 px et 360 px, en clair et
+en sombre — c'est l'objet du `human_checkpoint` du ticket. Le serveur de dev
+de la worktree a été arrêté après ce contrôle (`CLAUDE.md` régénéré par
+`next dev` restauré avec `git checkout -- CLAUDE.md` avant les commits,
+jamais committé).
+
+Écarts par rapport au ticket : aucun. Le contenu et la structure suivent les
+blocs de code fournis à la lettre.
 
 ## Notes pour la consolidation
 
@@ -297,3 +389,15 @@ _(à remplir)_
   lignes HeroMesh/HeroCanvas et la décision « roue CSS » ; ajouter
   `src/components/hero/` ; `HERO_STACK` duplique une partie de
   `TECH_LABELS` (à factoriser dans un ticket séparé si ça gêne).
+- Vérification visuelle non effectuée faute de navigateur connecté
+  (`claude-in-chrome` non connecté) : le `human_checkpoint` du ticket
+  (jugement du hero à 1280 px / mobile, clair/sombre, relecture de la
+  tagline) reste entièrement à faire par un humain ou une session avec
+  navigateur disponible.
+- Deux commentaires de code mentionnent encore `HeroMesh`/`HeroCanvas` par
+  leur ancien nom dans des fichiers non touchés par ce ticket
+  (`src/components/SafranAccent.tsx:11`, prose expliquant un choix
+  d'architecture passé ; `src/components/useDesktopMotionGate.ts:13`,
+  crédite l'origine du hook) : ce sont des notes historiques, pas des
+  imports cassés ; à mettre à jour dans un ticket de nettoyage documentaire
+  si ça gêne.
