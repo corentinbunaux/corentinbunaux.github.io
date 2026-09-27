@@ -84,6 +84,14 @@ Commit : `feat(demos): 3D train looping on a track for the SNCF page`
 
 ## Journal d'exécution
 
+**Intégration `refonte-2026`** : `git merge refonte-2026` dans la worktree
+(après le commit de clôture) a intégré PORT-036 (articles en Markdown),
+PORT-037 (hero) et PORT-043, sans conflit (fusion automatique, aucun des
+fichiers de la table de conflit n'était touché par ce ticket). Re-vérifié
+après fusion : `npm run lint` → 0 erreur / 4 warnings pré-existants
+(`useThemeColors.ts`) ; `npm run build` → compilé avec succès, TypeScript OK,
+15/15 pages statiques ; `npx tsc --noEmit` → aucune sortie.
+
 **Implémentation** : `src/components/demos/SncfTrainDemo.tsx` réécrit selon le
 gabarit du guide 3D. Tracé `CatmullRomCurve3` fermé (8 points, hippodrome
 irrégulier ~9×5, montée jusqu'à y=0.4). Rails = deux `TubeGeometry` sur des
