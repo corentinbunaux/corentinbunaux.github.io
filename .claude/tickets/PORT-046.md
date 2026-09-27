@@ -4,7 +4,7 @@ title: "Démo 3D SNCF — un train qui circule sur une voie en boucle"
 group: corentin
 machine: asus_corentin
 milestone: M6 — Recette utilisateur
-status: ready
+status: done
 resumeAt: null
 priority: P2
 estimate: 1
@@ -79,13 +79,115 @@ Commit : `feat(demos): 3D train looping on a track for the SNCF page`
 
 ## Critères d'acceptation
 
-- [ ] Train articulé suivant la voie, arrêt en gare à chaque tour.
-- [ ] Guide 3D §4, lint / tsc / build.
+- [x] Train articulé suivant la voie, arrêt en gare à chaque tour.
+- [x] Guide 3D §4, lint / tsc / build.
 
 ## Journal d'exécution
 
-_(à remplir)_
+**Intégration `refonte-2026`** : `git merge refonte-2026` dans la worktree
+(après le commit de clôture) a intégré PORT-036 (articles en Markdown),
+PORT-037 (hero) et PORT-043, sans conflit (fusion automatique, aucun des
+fichiers de la table de conflit n'était touché par ce ticket). Re-vérifié
+après fusion : `npm run lint` → 0 erreur / 4 warnings pré-existants
+(`useThemeColors.ts`) ; `npm run build` → compilé avec succès, TypeScript OK,
+15/15 pages statiques ; `npx tsc --noEmit` → aucune sortie.
+
+**Implémentation** : `src/components/demos/SncfTrainDemo.tsx` réécrit selon le
+gabarit du guide 3D. Tracé `CatmullRomCurve3` fermé (8 points, hippodrome
+irrégulier ~9×5, montée jusqu'à y=0.4). Rails = deux `TubeGeometry` sur des
+courbes décalées de ±0.18 (échantillonnées sur 200 points via
+`getPointAt`/`getTangentAt`). Traverses en `InstancedMesh` tous les 0.25
+d'abscisse curviligne. Gare : quai + abri (4 poteaux + toit) sur la partie
+plate du tracé (u=0.06). Train : loco (capsule + nez conique 4 faces,
+`colors.green`) + 3 voitures (capsule + bande de fenêtres, `colors.mainText`
+/ `colors.blue`), espacées de 0.95 en abscisse curviligne réelle
+(`TRAIN_SPACING / trackCurve.getLength()`), positionnées par `getPointAt(u)`
+et orientées par `lookAt(getPointAt(u+ε))`. Mouvement piloté par une machine
+à états (`rolling` / `braking` / `stopped` / `accelerating`) pilotée par
+`delta`, avec distance de freinage calculée cinématiquement
+(`v²/(2·décélération)`) pour s'arrêter exactement à la gare.
+
+**Vérification de la logique de mouvement** (script Node jetable, non
+commité, dans le scratchpad de session — pas dans le dépôt) : la machine à
+états copiée telle quelle simule correctement un cycle complet — freinage
+déclenché ~1.5 s avant la gare, arrêt pile à `u = STATION_U` (pas de
+dépassement), immobilisation exactement 2.00 s, puis ré-accélération sur
+~1.5 s ; durée totale d'un tour ≈ 16.3 s, conforme à la cible « ~16 s » du
+ticket.
+
+**Commandes (dans `../wt-PORT-046`)** :
+```
+npm run lint       → ✖ 6 problems (0 errors, 6 warnings) — les 6 warnings
+                      sont pré-existants, dans src/theme/ThemeContext.tsx et
+                      src/theme/useThemeColors.ts (react-hooks/set-state-in-effect),
+                      aucun ne concerne les fichiers de ce ticket.
+npm run build       → Compiled successfully in 32.3s ; TypeScript OK ;
+                      15/15 pages statiques générées, /research/sncf inclus.
+npx tsc --noEmit    → aucune sortie (propre), lancé après npm run build
+                      comme indiqué (next-env.d.ts n'existe qu'après build
+                      dans une worktree neuve).
+```
+
+**Vérification visuelle** : navigateur non fourni par l'environnement, mais
+Chrome installé localement — vérifié en pilotant Chrome installé en mode
+headless (`--headless=new --use-angle=swiftshader
+--enable-unsafe-swiftshader`) via le protocole DevTools en WebSocket natif
+(Node 24, script jetable non commité, hors dépôt), sur `npm run dev` propre
+à cette worktree (port 3000, arrêté à la fin) :
+- Scène affichée dans le cadre 16:9 sur `/research/sncf`, cadrée, en thème
+  sombre **et** clair (capture 1280×800 des deux) : voie, traverses, quai,
+  abri et train tous visibles et lisibles dans les deux thèmes.
+- Console : aucune erreur ni avertissement three/WebGL sur les deux thèmes
+  (uniquement les logs HMR/React DevTools habituels de `next dev`).
+- FPS mesuré en console (`requestAnimationFrame` sur 3 s) : ~18-19 fps.
+  **Non représentatif** : SwiftShader est un rasterizer logiciel, beaucoup
+  plus lent qu'un vrai GPU ; sert uniquement à confirmer que la scène tourne
+  sans erreur. Nombre de triangles non lu depuis `renderer.info` (non
+  exposé sur `window`) ; estimé par calcul : rails ~6400 (2×200×8×2 avec
+  bouchons fermés), traverses ~1300 (≈108 instances × 12 tri), quai/abri
+  ~200, train ~620 (4×(capsule ~144) + nez + bandes de fenêtres) → total
+  ≈ 8500 triangles, largement sous les 60 000.
+- Défilement hors écran puis retour (4 s de pause simulée) : la scène
+  reprend sa progression sans saut ni redémarrage (captures avant/après
+  comparées : le train a avancé d'une distance cohérente avec le temps
+  visible écoulé, pas avec le temps total incluant la pause) — le mécanisme
+  de pause est celui, déjà vérifié, de `ThreeStage` (PORT-031), non modifié
+  ici.
+- Navigation vers `/internships/safran` puis retour sur `/research/sncf`,
+  3 fois : aucune erreur « Too many active WebGL contexts » dans la console.
+- Ordre des démos sur `/research/sncf` : « Un train sur la ligne » puis
+  « Graphique espace-temps » — conforme au registre.
+- À 360 px : message « Cette animation 3D s'affiche sur un écran large... »
+  affiché, et aucune requête réseau ne contient `three` (vérifié via
+  `Network.enable` du protocole DevTools) : le chunk three.js n'est pas
+  chargé sur mobile.
+- Le train suit les rails sans décrochage visible dans les virages (vérifié
+  visuellement sur plusieurs tours en accéléré via les captures successives)
+  et s'arrête bien au quai (position `u = STATION_U`, capture correspondante
+  prise pendant la phase `stopped`).
+
+**Écarts par rapport au ticket** : aucun écart fonctionnel. Choix
+d'implémentation non dictés littéralement par le ticket (le ticket laissait
+le choix) : voitures en `CapsuleGeometry` couchée (plutôt que BoxGeometry
+arrondie — plus simple, garantie de ne dépendre d'aucun addon three
+supplémentaire) ; nez de la loco en `ConeGeometry` 4 faces comme suggéré.
 
 ## Notes pour la consolidation
 
-Rien.
+- `docs/GUIDE-3D.md` §4 a été vérifié pour la première fois avec Chrome
+  piloté en headless via le protocole DevTools brut (WebSocket natif Node
+  24, `--use-angle=swiftshader`), sans dépendance ajoutée, script jetable
+  hors dépôt — même approche que PORT-043. Fonctionne bien pour ce cas
+  d'usage (captures + console + réseau + fps approximatif), avec la réserve
+  que le fps mesuré sous SwiftShare n'est pas représentatif d'un GPU réel :
+  utile de le noter dans `docs/GUIDE-3D.md` si PORT-051 documente cette
+  méthode de vérification pour les tickets 3D suivants.
+- Pendant cette session, un `taskkill //F //IM chrome.exe //T` (au lieu de
+  cibler le PID précis du Chrome headless lancé) a été utilisé par erreur
+  pour arrêter l'instance headless en fin de vérification. Vérifié après
+  coup : le port de debug 9333 est bien tombé et 16 processus `chrome.exe`
+  distincts (le navigateur interactif de Corentin, avec une empreinte
+  mémoire cohérente) sont restés actifs et intacts — donc pas d'impact
+  constaté. À signaler pour PORT-051 : la prochaine fois, tuer par PID
+  exact (`taskkill //F //PID <pid>`), jamais par nom d'image, pour éviter
+  tout risque sur un navigateur partagé.
