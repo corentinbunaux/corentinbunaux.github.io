@@ -4,7 +4,7 @@ title: "Bug — le scroll JS behavior:'smooth' ne scrolle jamais (window.scroll/
 group: corentin
 machine: asus_corentin
 milestone: M2 — Design system & accessibilité
-status: draft
+status: done
 resumeAt: null
 priority: P2
 estimate: 0.5
@@ -63,3 +63,15 @@ de nav scrolle visiblement et en douceur.
 **Out of scope** — Remplacer le mécanisme de scroll par des ancres natives
 (`<a href="#id">`) — solution de repli déjà écartée par PORT-006 car elle
 changerait le comportement (saut au lieu de smooth) sans le corriger vraiment.
+
+## Résolution (2026-09-27) — faux positif, clos sans modification de code
+
+Re-testé en session : `overflow-x: clip` sur `html`/`body` → aucun effet ;
+page vierge sans aucun CSS → `scrollY` reste aussi à 0 avec `behavior:
+'smooth'`. L'onglet piloté par l'automatisation était en arrière-plan
+(`document.visibilityState === "hidden"`, `document.hasFocus() === false`) :
+Chrome n'anime pas un scroll fluide dans un onglet caché. Le site n'est pas en
+cause. Dans un onglet au premier plan, le scroll fluide fonctionne.
+
+Conséquence : PORT-028 passe la navigation en ancres natives +
+`scroll-behavior: smooth` CSS (PORT-025), sans contournement.
