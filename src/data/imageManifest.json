@@ -1,8 +1,4 @@
 {
-  "/img/cv": {
-    "width": 1080,
-    "height": 1080
-  },
   "/img/embedded-1": {
     "width": 364,
     "height": 640
@@ -42,6 +38,9 @@
   "/img/embedded": {
     "width": 1600,
     "height": 1068
+  },
+  "/img/gcii-grid": {
+    "svg": true
   },
   "/img/kusmitea": {
     "width": 1600,
