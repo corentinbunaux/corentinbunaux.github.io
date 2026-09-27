@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import Federer from './federer';
 import '../app/app.css'
 import { useTranslation } from '../i18n/dictionary';
 import { Code, Crown, Footprints, Gamepad2, Mountain, Waves } from 'lucide-react';
+
+// Final horizontal offset of @keyframes ball_path, in ball widths (3230%).
+const BALL_PATH_END_X = 32.3;
+// federer.jsx draws in a 64x64 viewBox; the racket strings are centred here.
+const FEDERER_VIEWBOX = 64;
+const RACKET_CENTER = { x: 46.15, y: 8.43 };
 
 function TennisBallIcon(props) {
   return (
@@ -65,15 +71,53 @@ function AboutMe() {
     { label: t.about.interests.chess, Icon: Crown },
   ];
 
-  function TennisBallAnim() {
-    document.getElementById('tennisball').classList.add('ball')
-    setTimeout(() => { document.querySelector('.btn_federer').style.animation = 'endBtnFederer_pt1 .3s ease-in-out both' }, 1200)
+  // idle -> flying (ball on its way) -> hit (player swings, button leaves).
+  const [phase, setPhase] = useState('idle');
+  const [aim, setAim] = useState(null);
+  const trackRef = useRef(null);
+  const federerRef = useRef(null);
+
+  function pushBall() {
+    if (phase !== 'idle') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setPhase('hit');
+      return;
+    }
+    const track = trackRef.current.getBoundingClientRect();
+    const svg = federerRef.current.getBoundingClientRect();
+    const ballSize = 2.5 * parseFloat(getComputedStyle(document.documentElement).fontSize);
+    // Where ball_path leaves the ball's centre: translate(3230%, 0%) of its
+    // own size, from its resting box (left edge, top: 50% of the track).
+    const endX = track.left + BALL_PATH_END_X * ballSize + ballSize / 2;
+    const endY = track.top + track.height / 2 + ballSize / 2;
+    // Centre of the racket strings, viewBox units -> pixels (square viewBox).
+    const scale = svg.width / FEDERER_VIEWBOX;
+    const targetX = svg.left + RACKET_CENTER.x * scale;
+    const targetY = svg.top + RACKET_CENTER.y * scale;
+    setAim({ x: targetX - endX, y: targetY - endY });
+    setPhase('flying');
+  }
+
+  function onBallAnimationEnd(event) {
+    if (event.target === event.currentTarget && event.animationName === 'ball_path') {
+      setPhase('hit');
+    }
   }
 
   return (
       <div className="container h-5/6">
-        <div className='absolute w-5/6 h-5/6'>
-          <div id="tennisball" className='z-50'></div>
+        <div ref={trackRef} className='absolute w-5/6 h-5/6'>
+          {/* The wrapper adds a linear correction to ball_path so the ball
+              ends on the racket whatever the viewport width. */}
+          <div
+            className={`pointer-events-none absolute inset-0 z-50 ${aim ? 'ball-aim' : ''}`}
+            style={aim ? { '--ball-aim-x': `${aim.x}px`, '--ball-aim-y': `${aim.y}px` } : undefined}
+          >
+            <div
+              className={`z-50 ${aim ? 'ball' : ''} ${phase === 'hit' && aim ? 'ball-struck' : ''}`}
+              onAnimationEnd={onBallAnimationEnd}
+            ></div>
+          </div>
         </div>
         <div className='grid grid-cols-1 lg:grid-cols-2 h-full'>
           <div className='h-1/2 lg:h-full'>
@@ -103,8 +147,15 @@ function AboutMe() {
             </div>
           </div>
           <div className='h-1/2 lg:h-full flex flex-col items-center justify-center'>
-            <button onClick={TennisBallAnim} className='btn_federer mb-10 p-2 rounded-lg hidden xl:block'>{t.about.pushButton}</button>
-            <Federer />
+            <button
+              onClick={pushBall}
+              className={`btn_federer mb-10 p-2 rounded-lg hidden xl:block ${phase === 'hit' ? 'btn_federer-done' : ''}`}
+            >
+              {t.about.pushButton}
+            </button>
+            <div className={`flex w-full justify-center ${phase === 'hit' ? 'federer-swing' : ''}`}>
+              <Federer ref={federerRef} />
+            </div>
           </div>
         </div>
       </div>
