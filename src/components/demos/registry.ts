@@ -104,7 +104,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
     {
       id: "predict",
       kind: "2d",
-      ready: false,
+      ready: true,
       Component: PredictDemo,
     },
   ],
