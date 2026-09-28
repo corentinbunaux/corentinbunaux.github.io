@@ -4,7 +4,7 @@ title: "Registre des démos — placement « demo » (section numérotée) ou «
 group: corentin
 machine: asus_corentin
 milestone: M7 — Recette utilisateur, 2e passe
-status: ready
+status: done
 resumeAt: null
 priority: P1
 estimate: 0.5
@@ -158,14 +158,49 @@ Commit : `feat(demos): add demo/inline placement to the registry`
 
 ## Critères d'acceptation
 
-- [ ] `DemoEntry.placement` existe, les 11 entrées existantes l'ont à `"demo"`.
-- [ ] `InlineVisual` exporté, rendu `null` tant qu'aucune entrée n'est `"inline"`.
-- [ ] Aucun changement visuel sur les pages existantes.
-- [ ] lint / tsc / build passent.
+- [x] `DemoEntry.placement` existe, les 11 entrées existantes l'ont à `"demo"`.
+- [x] `InlineVisual` exporté, rendu `null` tant qu'aucune entrée n'est `"inline"`.
+- [x] Aucun changement visuel sur les pages existantes.
+- [x] lint / tsc / build passent.
 
 ## Journal d'exécution
 
-_(à remplir)_
+- Worktree `../wt-PORT-053`, branche `feat/PORT-053-demo-placement`, créée
+  depuis `refonte-2026` (13c7a8e). `npm ci` OK (437 packages).
+- `registry.ts` : champ `placement: "demo" | "inline"` et `inlineClassName?`
+  ajoutés à `DemoEntry` ; `placement: "demo",` ajouté aux 11 entrées.
+  Vérifié : `grep -c "ready: true," registry.ts` = 11,
+  `grep -c 'placement: "demo",' registry.ts` = 11.
+- `DemoSection.tsx` : filtre `demo.ready && demo.placement === "demo"` ;
+  `DemoStage` accepte un `className?` optionnel (remplace la classe par
+  défaut du conteneur 3D quand fourni) ; export `InlineVisualProps` /
+  `InlineVisual` ajouté tel que spécifié par le ticket.
+- `ProjectPage.tsx` : import `Fragment` (`react`) et `InlineVisual` ; la
+  boucle `sections.map` retourne un `Fragment` (clé déplacée depuis
+  `<section>`) suivi de `{idx === 0 && <InlineVisual href={project.href} />}`.
+- `npm run lint` : 0 erreur, 4 warnings pré-existants et sans rapport
+  (`react-hooks/set-state-in-effect` dans `ThemeContext.tsx` /
+  `useThemeColors.ts`, fichiers non touchés par ce ticket).
+- `npm run build` : « Compiled successfully in 32.4s », TypeScript intégré
+  au build OK, 14 routes générées en statique (○), aucune erreur.
+- `npx tsc --noEmit` (après le build, comme demandé) : aucune sortie, donc
+  aucune erreur.
+- Vérification visuelle : `next dev` de la worktree lancé en tâche de fond
+  (port 3000 déjà pris par un autre serveur → 3003 attribué automatiquement,
+  aucun serveur existant arrêté). Comparaison structurelle avant/après :
+  - « avant » = serveur `next dev` déjà en cours sur le port 3000 dans le
+    dépôt principal (même base `refonte-2026`, avant ce ticket) ;
+  - « après » = worktree sur le port 3003 ;
+  - `/internships/safran` et `/research/sncf` : même nombre de sections
+    `aria-labelledby="demo-heading"` (1) et de `<figure>` (1 pour Safran, 2
+    pour SNCF) avant/après ; texte visible extrait des deux pages
+    (balises retirées) : `diff` vide dans les deux cas → aucun changement
+    visible. Serveur de la worktree arrêté ensuite (processus
+    `next dev`/`node` de `wt-PORT-053` uniquement).
+- `CLAUDE.md` réécrit par `next dev` : `git checkout -- CLAUDE.md` fait
+  avant le `git add`, non commité.
+- Aucun écart par rapport au ticket : les 3 fichiers modifiés sont
+  exactement ceux listés, le code reprend les blocs donnés tels quels.
 
 ## Notes pour la consolidation
 

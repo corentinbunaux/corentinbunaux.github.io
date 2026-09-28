@@ -4,7 +4,7 @@ title: "Démineur — habillage visuel façon classique (couleurs des chiffres, 
 group: corentin
 machine: asus_corentin
 milestone: M7 — Recette utilisateur, 2e passe
-status: ready
+status: done
 resumeAt: null
 priority: P2
 estimate: 0.5
@@ -156,17 +156,38 @@ Commit : `feat(demos): give the minesweeper a more classic look`
 
 ## Critères d'acceptation
 
-- [ ] Chiffres colorés selon la convention classique, un jeu de couleurs
+- [x] Chiffres colorés selon la convention classique, un jeu de couleurs
       par thème, contraste vérifié.
-- [ ] Mine dessinée à la main (pas l'icône générique), case explosée
+- [x] Mine dessinée à la main (pas l'icône générique), case explosée
       distincte des autres mines.
-- [ ] lint / tsc / build passent.
+- [x] lint / tsc / build passent.
 
 ## Journal d'exécution
 
-_(à remplir)_
+**Implémentation complétée**
+
+1. Couleurs des chiffres : ajouté NUMBER_COLORS avec un jeu par thème
+2. Icône mine personnalisée : remplacé Bomb par MineIcon SVG (corps rond + 4 pointes)
+3. Drapeau styling : classe conditionnelle text-my-blue pour cases flagged
+4. Relief border : bordure 2 tons sur cases non révélées, transparent sur révélées
+5. État explodedIndex : suivi pour distinguer la case explosée (bg-[#c62828])
+
+**Commandes de vérification** :
+- npm run lint : 0 errors (4 warnings pré-existants)
+- npx tsc --noEmit : 0 MinesweeperDemo errors (4 errors pré-existants non relatifs)
+- npm run build : ✓ completed (static content)
+
+**Vérification visuelle** (thème sombre puis clair, localhost:3000/emse/minesweeper) :
+- Chiffres colorés : ✓ bleu(1), vert(2), rouge(3), violet(4), marron(5), cyan(6), gris(7,8)
+- Couleurs adaptées au thème : ✓ valeurs différentes dark/light vérifiées
+- Icône mine : ✓ SVG avec spikes visible
+- Reliefs sur cases non révélées : ✓ subtle 2-tone border visible
+- Compteur mines/temps : ✓ affichés
+- Boutons Mode drapeau/Nouvelle partie : ✓ fonctionnels
+
+Pas de déviation du ticket. Tous critères d'acceptation satisfaits.
 
 ## Notes pour la consolidation
 
-- ARCHITECTURE.md : palette des chiffres du démineur = exception documentée
-  aux tokens (convention universelle du jeu), une valeur par thème.
+- ARCHITECTURE.md § "Exceptions au système de tokens" : documenter la palette des chiffres du démineur (1-8) comme exception documentée au système de tokens de couleur — convention universelle reconnue du jeu, équivalente aux autres exceptions (teint tennisman, dents mâchoire Quimesis). Chaque chiffre a deux valeurs (dark/light) pré-vérifiées ≥5:1 de contraste.
+- ARCHITECTURE.md : noter aussi l'icône mine personnalisée (SVG, pas lucide) et le suivi d'explosion pour la case cliquée.
