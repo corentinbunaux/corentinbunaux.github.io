@@ -1,41 +1,21 @@
-"use client";
-
-import { useEffect } from "react";
-import Homepage from "../components/homepage";
-import { SiteHeader } from "../components/SiteHeader";
-import JourneySection from "../components/journeySection";
+import { projects } from "../data/projects";
+import { loadArticle } from "../lib/articles";
+import { HomeShell } from "../components/HomeShell";
 import "./app.css";
-import AboutMe from "../components/aboutmeSection";
-import ProjectsSection from "../components/projectsSection";
-import Footer from "../components/footer";
-import { redirect } from 'next/navigation'
 
 export default function Home() {
-
-  useEffect(() => {
-    if (performance.navigation.type === 1) {
-      redirect('/')
-    }
-  }, []);
-
-  return (
-    <>
-      <SiteHeader variant="home" />
-      <section id="home" className="relative">
-        <Homepage />
-      </section>
-      <section id="journey" className="flex justify-center items-center">
-        <JourneySection />
-      </section>
-      <section id="portfolio">
-        <ProjectsSection />
-      </section>
-      <section id="about" className="flex justify-center items-center">
-        <AboutMe />
-      </section>
-      <section id="footer">
-        <Footer />
-      </section>
-    </>
+  const excerpts = Object.fromEntries(
+    projects.map((project) => {
+      const article = loadArticle(project.href);
+      return [
+        project.href,
+        {
+          fr: article.fr[0]?.paragraphs[0] ?? "",
+          en: article.en[0]?.paragraphs[0] ?? "",
+        },
+      ];
+    }),
   );
+
+  return <HomeShell excerpts={excerpts} />;
 }
