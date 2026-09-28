@@ -11,6 +11,13 @@ export interface DemoEntry {
   /** false = declared but not implemented yet: DemoSection skips it. */
   readonly ready: boolean;
   readonly Component: ComponentType;
+  /** "demo" (section « Démo » numérotée, comportement actuel) ou "inline"
+   * (petit visuel posé près du contexte de l'article par ProjectPage, sans
+   * titre « Démo » ni numérotation). */
+  readonly placement: "demo" | "inline";
+  /** Classes Tailwind de taille pour le placement "inline" (ignoré sinon).
+   * Sans valeur, InlineVisual applique "mx-auto aspect-square w-full max-w-xs". */
+  readonly inlineClassName?: string;
 }
 
 const SafranEarthDemo = dynamic(() => import("./SafranEarthDemo").then((m) => m.SafranEarthDemo), { ssr: false });
@@ -33,6 +40,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
       id: "safran-earth",
       kind: "3d",
       ready: true,
+      placement: "demo",
       Component: SafranEarthDemo,
     },
   ],
@@ -43,6 +51,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
       id: "quimesis-fragments",
       kind: "3d",
       ready: true,
+      placement: "demo",
       Component: QuimesisFragmentsDemo,
     },
 
@@ -51,6 +60,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
       id: "quimesis-jaw",
       kind: "3d",
       ready: true,
+      placement: "demo",
       Component: QuimesisJawDemo,
     },
   ],
@@ -61,6 +71,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
       id: "sncf-train",
       kind: "3d",
       ready: true,
+      placement: "demo",
       Component: SncfTrainDemo,
     },
 
@@ -69,6 +80,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
       id: "sncf-spacetime",
       kind: "2d",
       ready: true,
+      placement: "demo",
       Component: SpaceTimeDemo,
     },
   ],
@@ -79,6 +91,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
       id: "minesweeper",
       kind: "2d",
       ready: true,
+      placement: "demo",
       Component: MinesweeperDemo,
     },
   ],
@@ -89,6 +102,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
       id: "guards",
       kind: "2d",
       ready: true,
+      placement: "demo",
       Component: GuardsDemo,
     },
 
@@ -97,6 +111,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
       id: "typing",
       kind: "2d",
       ready: true,
+      placement: "demo",
       Component: TypingDemo,
     },
 
@@ -105,6 +120,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
       id: "predict",
       kind: "2d",
       ready: true,
+      placement: "demo",
       Component: PredictDemo,
     },
   ],
@@ -115,6 +131,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
       id: "parking-car",
       kind: "3d",
       ready: true,
+      placement: "demo",
       Component: ParkingCarDemo,
     },
   ],
@@ -125,6 +142,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
       id: "exo-arm",
       kind: "3d",
       ready: true,
+      placement: "demo",
       Component: ExoArmDemo,
     },
   ],
