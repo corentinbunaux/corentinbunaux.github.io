@@ -50,7 +50,7 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
     {
       id: "quimesis-jaw",
       kind: "3d",
-      ready: false,
+      ready: true,
       Component: QuimesisJawDemo,
     },
   ],
