@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Bomb, Flag } from "lucide-react";
+import type { SVGProps } from "react";
+import { Flag } from "lucide-react";
+import { useTheme } from "../../theme/ThemeContext";
 import { useTranslation } from "../../i18n/dictionary";
 import {
   COLS,
@@ -18,17 +20,40 @@ import {
 
 const LONG_PRESS_MS = 450;
 
+/** Classic minesweeper number colours — one set per theme, both verified at
+ * >=5:1 contrast against --surface. Not a design-token violation: this is a
+ * universally recognised game convention, the same documented exception as
+ * the tennis player's skin tone or the jaw demo's teeth. */
+const NUMBER_COLORS: Record<"dark" | "light", Record<number, string>> = {
+  dark: { 1: "#5b9bff", 2: "#6fcf6f", 3: "#ff6b6b", 4: "#8f7bff", 5: "#e08a4f", 6: "#5fd0d0", 7: "#e6e6e6", 8: "#9a9a9a" },
+  light: { 1: "#1857c4", 2: "#1f7d1f", 3: "#c62828", 4: "#3a2fa0", 5: "#8a3b17", 6: "#0f7a7a", 7: "#1a1a1a", 8: "#5c5c5c" },
+};
+
+function MineIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
+      {[0, 45, 90, 135].map((deg) => (
+        <rect key={deg} x="11" y="2" width="2" height="20" rx="1" transform={`rotate(${deg} 12 12)`} />
+      ))}
+      <circle cx="12" cy="12" r="7" />
+      <circle cx="9.5" cy="9.5" r="1.6" fill="var(--surface)" fillOpacity="0.6" />
+    </svg>
+  );
+}
+
 function fill(template: string, values: Record<string, string | number>): string {
   return template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key]));
 }
 
 export function MinesweeperDemo() {
   const t = useTranslation();
+  const { theme } = useTheme();
   const [board, setBoard] = useState<Board>(emptyBoard());
   const [status, setStatus] = useState<GameStatus>("ready");
   const [flagMode, setFlagMode] = useState(false);
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const [elapsed, setElapsed] = useState(0);
+  const [explodedIndex, setExplodedIndex] = useState<number | null>(null);
   const longPressTimer = useRef<number | null>(null);
   const longPressFired = useRef(false);
 
@@ -48,6 +73,7 @@ export function MinesweeperDemo() {
     setStatus("ready");
     setStartedAt(null);
     setElapsed(0);
+    setExplodedIndex(null);
   };
 
   const flagAt = (index: number) => {
@@ -67,6 +93,7 @@ export function MinesweeperDemo() {
     }
     const next = reveal(current, index);
     if (next[index].mine) {
+      setExplodedIndex(index);
       setBoard(revealAllMines(next));
       setStatus("lost");
       return;
@@ -145,17 +172,23 @@ export function MinesweeperDemo() {
               onPointerDown={(event) => startLongPress(index, event.pointerType)}
               onPointerUp={cancelLongPress}
               onPointerLeave={cancelLongPress}
-              className={`flex h-8 w-8 select-none items-center justify-center text-sm font-bold sm:h-9 sm:w-9 ${
+              className={`flex h-8 w-8 select-none items-center justify-center text-sm font-bold sm:h-9 sm:w-9 border-t border-l border-b border-r ${
                 cell.revealed
                   ? cell.mine
-                    ? "bg-my-green text-main"
-                    : "bg-surface text-main-text"
-                  : "bg-surface-raised text-my-green hover:bg-surface"
+                    ? index === explodedIndex
+                      ? "bg-[#c62828] text-white border-transparent"
+                      : "bg-my-green text-main border-transparent"
+                    : "bg-surface text-main-text border-transparent"
+                  : `bg-surface-raised hover:bg-surface border-t-[color:var(--main-text)]/20 border-l-[color:var(--main-text)]/20 border-b-[color:var(--main)]/40 border-r-[color:var(--main)]/40 ${
+                      cell.flagged ? "text-my-blue" : "text-my-green"
+                    }`
               }`}
             >
               {cell.flagged && !cell.revealed && <Flag aria-hidden="true" className="h-4 w-4" />}
-              {cell.revealed && cell.mine && <Bomb aria-hidden="true" className="h-4 w-4" />}
-              {cell.revealed && !cell.mine && cell.adjacent > 0 && cell.adjacent}
+              {cell.revealed && cell.mine && <MineIcon aria-hidden="true" className="h-4 w-4" />}
+              {cell.revealed && !cell.mine && cell.adjacent > 0 && (
+                <span style={{ color: NUMBER_COLORS[theme][cell.adjacent] }}>{cell.adjacent}</span>
+              )}
             </button>
           );
         })}

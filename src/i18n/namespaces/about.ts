@@ -17,6 +17,7 @@ export interface AboutDict {
     chess: string;
     videoGames: string;
     code: string;
+    moviesMusic: string;
   };
 }
 
@@ -32,7 +33,7 @@ export const aboutFr: AboutDict = {
     "Je pratique aussi la course à pied. Pendant mes études, je me suis essayé à l'escalade, à la natation et aux échecs.",
   interestsLabel: "Centres d'intérêt",
   activeLabel: "Aujourd'hui",
-  archivedLabel: "Archivées — pratiquées pendant mes études",
+  archivedLabel: "Pratiquées pendant mes études",
   pushButton: "PUSH !",
   interests: {
     tennis: "Tennis",
@@ -42,6 +43,7 @@ export const aboutFr: AboutDict = {
     chess: "Échecs",
     videoGames: "Jeu vidéo",
     code: "Code",
+    moviesMusic: "Films / Musique",
   },
 };
 
@@ -57,7 +59,7 @@ export const aboutEn: AboutDict = {
     "I also go running. During my studies, I tried my hand at climbing, swimming and chess.",
   interestsLabel: "Interests",
   activeLabel: "Today",
-  archivedLabel: "Archived — tried during my studies",
+  archivedLabel: "Tried during my studies",
   pushButton: "PUSH!",
   interests: {
     tennis: "Tennis",
@@ -67,5 +69,6 @@ export const aboutEn: AboutDict = {
     chess: "Chess",
     videoGames: "Video games",
     code: "Code",
+    moviesMusic: "Movies / Music",
   },
 };
