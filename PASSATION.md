@@ -21,12 +21,10 @@ cassé. Aucune couleur en dur restante hors les deux exceptions documentées
 
 ## What failed / is blocked
 
-- `src/components/SafranAccent.tsx` reste présent : mort depuis PORT-045
-  (plus importé nulle part) mais `git rm` **refusé deux fois** par le
-  classifieur de permissions du mode auto (« Irreversible Local
-  Destruction »), y compris en session reprise ; pas de contournement
-  tenté. À supprimer manuellement (Corentin, ou une session future avec
-  cette permission).
+- `src/components/SafranAccent.tsx` (mort depuis PORT-045, `git rm` refusé
+  deux fois par le classifieur du mode auto en sous-agent) a été supprimé
+  après coup par l'orchestrateur de la session (permission accordée hors
+  sous-agent) — `9145acb`. Lint/build re-vérifiés propres.
 - Lighthouse non lancé (étape 6) : aucun navigateur/CLI Lighthouse
   disponible. Dernière valeur connue : 82-86/100 Performance mobile
   (mesurée en M1-M5, pas re-vérifiée sur l'état `refonte-2026` actuel).
@@ -56,5 +54,4 @@ main ; repasser ESLint en `^10` ; committer le `CLAUDE.md` que `next dev` rééc
 ## Next step
 
 Recette manuelle de Corentin sur `refonte-2026` (tous les `human_checkpoint`
-ci-dessus), puis suppression de `SafranAccent.tsx`, puis un Lighthouse réel
-quand un navigateur est disponible.
+ci-dessus), puis un Lighthouse réel quand un navigateur est disponible.

@@ -31,7 +31,6 @@ under `src/app/*`. No backend, no database, no CMS.
 | `src/components/demos/` | `ThreeStage.tsx` (shared three.js scaffold: renderer, resize, off-screen pause, dispose, theme-triggered remount), `DemoSection.tsx` (16:9 frame, desktop gate for 3D demos, `demos.desktopOnly` fallback text on mobile), `registry.ts` (`DEMOS: Record<href, DemoEntry[]>`, `ready` flag per demo), `demoIds.ts`, one component (+ optional stateless `<name>Logic.ts`) per demo | PORT-031 laid the scaffold; every demo ticket (038-050) fills only its own file and flips only its own `ready: true` line — see `docs/GUIDE-3D.md` |
 | `src/components/demos/*Demo.tsx` (12 demos across 7 projects) | `SafranEarthDemo` (Earth + satellites + stylized fighter), `QuimesisFragmentsDemo` (kept as Corentin's original animation), `QuimesisJawDemo` (interactive: `OrbitControls` + a hand-rolled `THREE.Curve` tooth arch), `SncfTrainDemo` + `SpaceTimeDemo` (2D), `MinesweeperDemo` (9×9, 10 mines), `GuardsDemo` (10×10 grid, one surveillant per target square allowed), `TypingDemo` (solo Dactylo Race), `PredictDemo` (autocomplete), `ParkingCarDemo`, `ExoArmDemo` | `kind: "3d"` demos are desktop-only; `kind: "2d"` demos (minesweeper, guards, typing, predict, space-time) run everywhere |
 | `src/components/QuimesisAccent.tsx` | Still used — wrapped by `QuimesisFragmentsDemo.tsx`, the one contextual accent the plan explicitly kept as-is | |
-| `src/components/SafranAccent.tsx` | **Dead code**: superseded by `SafranEarthDemo.tsx` (PORT-045), no longer imported anywhere, but the file itself could not be deleted — see Known weak points | |
 | `src/components/ProjectPage.tsx` | Project-page template: breadcrumb, sticky "En bref" card (sticks at `--header-height + 1.5rem`, PORT-035), tech-logo pills in the article header (PORT-033), numbered article sections (from `content/projects/`), a `DemoSection` for projects that have one, gallery, prev/next nav (`UNROUTED_HREFS` guard) | Five tickets touch this file (028, 031, 033, 035, 036) — see the procedure's conflict table if editing it again |
 | `src/components/journeySection.tsx` | Parcours: two side-by-side tracks (Expérience / Formation), each newest-first | Reads `period`/`location` off `projects.ts` and the new `education.ts` |
 | `src/components/federer.jsx` | The "À propos" tennisman SVG; arm+racket redrawn as an isolated group (`#federer-arm`) so a state machine (`idle/flying/hit`) animates a swing when the ball arrives (PORT-043) | Ball aim corrected at click-time from measured refs (`ball_aim` over `ball_path`); realistic skin/hair-tone hex colors in this file are the documented "likeness" exception, not a token violation |
@@ -122,16 +121,9 @@ derived live via `IntersectionObserver` (`SiteHeader.tsx`), not by measuring
   body-text style class, skipping `h2`. Untouched by M6 — needs its own pass.
 - **No CV PDF exists** — the mockup's "Télécharger le CV" CTA stays absent
   from the hero and the footer. Untouched by M6.
-- `src/components/SafranAccent.tsx` is dead code (superseded by
-  `SafranEarthDemo.tsx`, no longer imported anywhere) but could not be
-  deleted: `git rm` was refused twice by the local auto-mode permission
-  classifier ("Irreversible Local Destruction") during PORT-045. Needs a
-  manual `git rm src/components/SafranAccent.tsx`, by Corentin or a future
-  session/ticket with that permission.
-- A couple of code comments still name the old hero components by their
-  retired names (`HeroMesh`/`HeroCanvas`) as historical context, not as live
-  imports: in `src/components/SafranAccent.tsx` (itself dead) and
-  `src/components/useDesktopMotionGate.ts` (crediting the hook's origin).
+- A code comment in `src/components/useDesktopMotionGate.ts` still names the
+  old hero components by their retired names (`HeroMesh`/`HeroCanvas`) as
+  historical context (crediting the hook's origin), not a live import.
   Harmless; worth a documentation-only cleanup pass if it becomes confusing.
 - `src/app/app.css` still has a `#profile { ... }` rule (grouped with
   `#portfolio, #about`) targeting an id that no longer exists in the DOM
