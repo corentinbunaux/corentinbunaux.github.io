@@ -125,36 +125,118 @@ export function ProjectPage({ project: rawProject, article }: ProjectPageProps) 
       </nav>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_20rem]">
-        <div className="min-w-0">
-          <header className="mb-8">
-            <h1 className="mb-2 text-3xl font-bold text-main-text sm:text-4xl">
-              {project.title}
-            </h1>
-            <p className="mb-4 text-lg text-second-text">
-              {project.description}
-            </p>
+        <header className="min-w-0 lg:col-start-1 lg:row-start-1">
+          <h1 className="mb-2 text-3xl font-bold text-main-text sm:text-4xl">
+            {project.title}
+          </h1>
+          <p className="mb-4 text-lg text-second-text">
+            {project.description}
+          </p>
 
-            {project.img && (
-              <div className="mb-6 overflow-hidden rounded-2xl border border-second bg-surface">
+          {project.img && (
+            <div className="mb-6 overflow-hidden rounded-2xl border border-second bg-surface">
+              <OptimizedImage
+                src={project.img}
+                alt={`${t.projectPage.visualAltPrefix}${project.title}`}
+                priority
+                sizes="(min-width: 1024px) 60vw, 100vw"
+                style={{ width: "100%", height: "auto", display: "block" }}
+              />
+            </div>
+          )}
+
+          {project.techLogos.length > 0 && (
+            <ul className="flex flex-wrap gap-2">
+              {project.techLogos.map((id) => (
+                <TechBadge key={id} id={id} label={TECH_LABELS[id]} />
+              ))}
+            </ul>
+          )}
+        </header>
+
+        {/* Placed here in the DOM (not after the content column) so that
+            below 1024px — where the grid collapses to one column — "En bref"
+            appears right after the article header, before the sections, per
+            PORT-035. On lg+ it is pulled into the right column and made to
+            span both rows via explicit grid placement, so the visual order
+            (header, then two columns) stays distinct from an `order-*` trick
+            that would desync visual order from DOM/tab order. Trade-off:
+            keyboard tab order visits "En bref" (its repo link) right after
+            the header, before the article sections — acceptable since it
+            mirrors the mobile reading order. */}
+        <aside
+          aria-labelledby="en-bref-heading"
+          className="lg:sticky lg:top-[calc(var(--header-height)+1.5rem)] lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:self-start"
+        >
+          <div className="rounded-2xl border border-second bg-surface-raised p-6">
+            <h2
+              id="en-bref-heading"
+              className="mb-4 text-lg font-semibold text-main-text"
+            >
+              {t.projectPage.enBref}
+            </h2>
+            <dl className="space-y-4 text-sm">
+              {project.role && (
+                <div>
+                  <dt className="text-second-text">{t.projectPage.role}</dt>
+                  <dd className="text-main-text">{project.role}</dd>
+                </div>
+              )}
+              {duration && (
+                <div>
+                  <dt className="text-second-text">{t.projectPage.duration}</dt>
+                  <dd className="text-main-text">{duration}</dd>
+                </div>
+              )}
+              {project.team && (
+                <div>
+                  <dt className="text-second-text">{t.projectPage.team}</dt>
+                  <dd className="text-main-text">{project.team}</dd>
+                </div>
+              )}
+              {stack.length > 0 && (
+                <div>
+                  <dt className="text-second-text">{t.projectPage.stack}</dt>
+                  <dd className="text-main-text">{stack.join(", ")}</dd>
+                </div>
+              )}
+              {project.result && (
+                <div>
+                  <dt className="text-second-text">{t.projectPage.result}</dt>
+                  <dd className="text-main-text">{project.result}</dd>
+                </div>
+              )}
+            </dl>
+
+            {project.entityLogo && (
+              <div className="mt-6 flex items-center justify-center rounded-lg bg-white p-3">
                 <OptimizedImage
-                  src={project.img}
-                  alt={`${t.projectPage.visualAltPrefix}${project.title}`}
-                  priority
-                  sizes="(min-width: 1024px) 60vw, 100vw"
-                  style={{ width: "100%", height: "auto", display: "block" }}
+                  src={project.entityLogo}
+                  alt={`${t.projectPage.logoLabel} ${project.title}`}
+                  sizes="8rem"
+                  style={{
+                    width: "100%",
+                    height: "auto",
+                    maxWidth: "8rem",
+                  }}
                 />
               </div>
             )}
 
-            {project.techLogos.length > 0 && (
-              <ul className="flex flex-wrap gap-2">
-                {project.techLogos.map((id) => (
-                  <TechBadge key={id} id={id} label={TECH_LABELS[id]} />
-                ))}
-              </ul>
+            {project.githubRepo && (
+              <a
+                href={project.githubRepo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 block text-center text-sm font-medium text-my-green hover:underline"
+              >
+                {t.projectPage.viewRepo}
+              </a>
             )}
-          </header>
+          </div>
+        </aside>
 
+        <div className="min-w-0 lg:col-start-1 lg:row-start-2">
           <div className="space-y-10">
             {sections.map((section, idx) => {
               const headingId = `section-${idx}-heading`;
@@ -249,78 +331,6 @@ export function ProjectPage({ project: rawProject, article }: ProjectPageProps) 
             )}
           </nav>
         </div>
-
-        <aside
-          aria-labelledby="en-bref-heading"
-          className="lg:sticky lg:top-8 lg:self-start"
-        >
-          <div className="rounded-2xl border border-second bg-surface-raised p-6">
-            <h2
-              id="en-bref-heading"
-              className="mb-4 text-lg font-semibold text-main-text"
-            >
-              {t.projectPage.enBref}
-            </h2>
-            <dl className="space-y-4 text-sm">
-              {project.role && (
-                <div>
-                  <dt className="text-second-text">{t.projectPage.role}</dt>
-                  <dd className="text-main-text">{project.role}</dd>
-                </div>
-              )}
-              {duration && (
-                <div>
-                  <dt className="text-second-text">{t.projectPage.duration}</dt>
-                  <dd className="text-main-text">{duration}</dd>
-                </div>
-              )}
-              {project.team && (
-                <div>
-                  <dt className="text-second-text">{t.projectPage.team}</dt>
-                  <dd className="text-main-text">{project.team}</dd>
-                </div>
-              )}
-              {stack.length > 0 && (
-                <div>
-                  <dt className="text-second-text">{t.projectPage.stack}</dt>
-                  <dd className="text-main-text">{stack.join(", ")}</dd>
-                </div>
-              )}
-              {project.result && (
-                <div>
-                  <dt className="text-second-text">{t.projectPage.result}</dt>
-                  <dd className="text-main-text">{project.result}</dd>
-                </div>
-              )}
-            </dl>
-
-            {project.entityLogo && (
-              <div className="mt-6 flex items-center justify-center rounded-lg bg-white p-3">
-                <OptimizedImage
-                  src={project.entityLogo}
-                  alt={`${t.projectPage.logoLabel} ${project.title}`}
-                  sizes="8rem"
-                  style={{
-                    width: "100%",
-                    height: "auto",
-                    maxWidth: "8rem",
-                  }}
-                />
-              </div>
-            )}
-
-            {project.githubRepo && (
-              <a
-                href={project.githubRepo}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 block text-center text-sm font-medium text-my-green hover:underline"
-              >
-                {t.projectPage.viewRepo}
-              </a>
-            )}
-          </div>
-        </aside>
       </div>
       </main>
     </>
