@@ -4,7 +4,7 @@ title: "Cartes projet — afficher le début de l'article au lieu du vide (carte
 group: corentin
 machine: asus_corentin
 milestone: M7 — Recette utilisateur, 2e passe
-status: ready
+status: review
 resumeAt: null
 priority: P1
 estimate: 1
@@ -230,17 +230,72 @@ Commit : `feat(projects): show an article excerpt on project cards instead of em
 
 ## Critères d'acceptation
 
-- [ ] Plus d'espace vide visible sous le texte d'une carte étirée par la
+- [x] Plus d'espace vide visible sous le texte d'une carte étirée par la
       grille (Safran en particulier).
-- [ ] L'extrait vient du vrai contenu de l'article (`content/projects/`),
+- [x] L'extrait vient du vrai contenu de l'article (`content/projects/`),
       pas d'un texte inventé.
-- [ ] `npm run build` passe (donc chaque article a bien un premier
+- [x] `npm run build` passe (donc chaque article a bien un premier
       paragraphe de contexte dans les deux langues).
-- [ ] lint / tsc / build passent.
+- [x] lint / tsc / build passent.
 
 ## Journal d'exécution
 
-_(à remplir)_
+- Worktree `../wt-PORT-057` créée depuis `refonte-2026` (`13c7a8e`), branche
+  `feat/PORT-057-card-excerpt`. `npm ci` OK (437 paquets).
+- Implémentation conforme aux étapes 1 à 3 du ticket, reprises telles
+  quelles : `src/app/page.tsx` redevient un composant serveur qui appelle
+  `loadArticle()` pour les 12 projets et construit `excerpts` ;
+  `src/components/HomeShell.tsx` créé (reprend tel quel le JSX client de
+  l'ancien `page.tsx`) ; `src/components/projectsSection.jsx` :
+  `ProjectsSection` reçoit `excerpts`, `ProjectCard` reçoit `excerpt` et
+  l'affiche sous la description (`line-clamp-5 flex-1`), `truncate` retiré de
+  la description, `flex-1` ajouté au conteneur de texte, `mt-auto` sur le
+  bloc de pastilles technos.
+- `npm run lint` :
+  ```
+  ✖ 4 problems (0 errors, 4 warnings)
+  ```
+  Les 4 warnings (`react-hooks/set-state-in-effect`) sont préexistants dans
+  `src/theme/ThemeContext.tsx` et `src/theme/useThemeColors.ts`, fichiers non
+  touchés par ce ticket.
+- `npx tsc --noEmit` : aucune sortie, aucune erreur.
+- `npm run build` :
+  ```
+  ✓ Compiled successfully in 28.4s
+  Running TypeScript ...
+  Finished TypeScript in 9.9s ...
+  ✓ Generating static pages using 7 workers (15/15) in 2.4s
+  Finalizing page optimization ...
+  Route (app): / , /_not-found, /cpge_tipe, /emse/android, /emse/embedded,
+  /emse/minesweeper, /emse/programming, /internships/kusmitea,
+  /internships/quimesis, /internships/safran, /personnal/cctv,
+  /personnal/web, /research/sncf, /work/gcii — toutes ○ Static.
+  ```
+  Les 12 articles ont bien chargé via `loadArticle()` lors de la génération
+  de `/`.
+- Vérification visuelle faite via `npm run dev` (port 3002, le 3000 étant
+  déjà pris par un autre agent) et un onglet Chrome dédié à moi (jamais
+  touché l'onglet d'un autre agent) :
+  - 1280 px, thème sombre et clair : la carte Safran (voisine de la carte
+    vedette GCII, ligne étirée) affiche l'extrait de son "Contexte" sur
+    plusieurs lignes, plus de vide sous le texte ; les pastilles technos sont
+    bien poussées en bas (`mt-auto`).
+  - Bascule FR → EN : l'extrait change de langue (vérifié sur Safran et
+    GCII, ex. « During my final year at Mines de Saint-Étienne… »).
+  - 360 px : **non vérifié en direct**. L'outil `resize_window` du
+    navigateur partagé n'a pas modifié la fenêtre réelle (`window.innerWidth`
+    toujours à 2048 après l'appel) — cette fenêtre est partagée avec l'onglet
+    d'un autre agent (`localhost:3000/emse/minesweeper`), donc pas
+    d'insistance pour ne pas perturber son travail. Vérifié uniquement par
+    lecture du code : la grille repasse en `grid-cols-1` sous `sm:` (640 px),
+    donc à 360 px chaque carte est seule sur sa ligne (pas d'étirement de
+    hauteur inter-cartes) et aucune classe ajoutée n'introduit de largeur
+    fixe — mais pas de capture d'écran réelle à 360 px.
+  - Confirmé aussi sur le HTML statique généré (`out/index.html` après
+    `npm run build`) : les 12 cartes contiennent bien `line-clamp-5
+    flex-1 text-sm text-second-text/90` suivi du premier paragraphe réel de
+    chaque article (FR).
+- Écart par rapport au ticket : aucun.
 
 ## Notes pour la consolidation
 
