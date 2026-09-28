@@ -5,7 +5,7 @@ import { useTranslation } from "../../i18n/dictionary";
 import { useTheme } from "../../theme/ThemeContext";
 import { DEMOS, type DemoEntry } from "./registry";
 
-function DemoStage({ demo }: { demo: DemoEntry }) {
+function DemoStage({ demo, className }: { demo: DemoEntry; className?: string }) {
   const gate = useDesktopMotionGate();
   const { theme } = useTheme();
   const t = useTranslation();
@@ -21,7 +21,7 @@ function DemoStage({ demo }: { demo: DemoEntry }) {
 
   return (
     // Fixed 16:9 box in every gate state: no layout shift when the scene mounts.
-    <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-second bg-surface">
+    <div className={className ?? "relative aspect-video w-full overflow-hidden rounded-2xl border border-second bg-surface"}>
       {gate === "render" && (
         // key={theme}: remount so the scene re-reads the design tokens.
         <Component key={theme} />
@@ -43,7 +43,7 @@ export type DemoSectionProps = {
 
 export function DemoSection({ href, number }: DemoSectionProps) {
   const t = useTranslation();
-  const demos = (DEMOS[href] ?? []).filter((demo) => demo.ready);
+  const demos = (DEMOS[href] ?? []).filter((demo) => demo.ready && demo.placement === "demo");
   if (demos.length === 0) return null;
 
   return (
@@ -66,5 +66,39 @@ export function DemoSection({ href, number }: DemoSectionProps) {
         ))}
       </div>
     </section>
+  );
+}
+
+export type InlineVisualProps = { href: string };
+
+/** The small, unlabelled visual PORT-054/PORT-055 place near a project's
+ * Context section — no "Démo" heading, no numbering, no figcaption title
+ * (only the demo's own caption, smaller, for accessibility). Renders
+ * nothing if the project has no "inline"-placement demo, or none is ready. */
+export function InlineVisual({ href }: InlineVisualProps) {
+  const gate = useDesktopMotionGate();
+  const { theme } = useTheme();
+  const t = useTranslation();
+  const demo = (DEMOS[href] ?? []).find((d) => d.ready && d.placement === "inline");
+  if (!demo) return null;
+
+  if (demo.kind === "2d") {
+    return (
+      <div className="mt-6">
+        <demo.Component />
+        <p className="mt-2 text-xs text-second-text">{t.demos.items[demo.id].caption}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-6">
+      <div className={`relative overflow-hidden rounded-2xl border border-second bg-surface ${demo.inlineClassName ?? "mx-auto aspect-square w-full max-w-xs"}`}>
+        {gate === "render" && <demo.Component key={theme} />}
+      </div>
+      {gate === "render" && (
+        <p className="mt-2 text-xs text-second-text">{t.demos.items[demo.id].caption}</p>
+      )}
+    </div>
   );
 }

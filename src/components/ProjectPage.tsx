@@ -1,9 +1,10 @@
 "use client";
 
+import { Fragment } from "react";
 import Link from "next/link";
 import { TechBadge } from "./TechBadge";
 import { OptimizedImage } from "./optimizedImage";
-import { DemoSection } from "./demos/DemoSection";
+import { DemoSection, InlineVisual } from "./demos/DemoSection";
 import { SiteHeader } from "./SiteHeader";
 import {
   projects,
@@ -241,21 +242,24 @@ export function ProjectPage({ project: rawProject, article }: ProjectPageProps) 
             {sections.map((section, idx) => {
               const headingId = `section-${idx}-heading`;
               return (
-                <section key={headingId} aria-labelledby={headingId}>
-                  <p className="mb-1 text-sm font-semibold tracking-widest text-my-green">
-                    {String(idx + 1).padStart(2, "0")}
-                  </p>
-                  <h2 id={headingId} className="mb-2 text-xl font-semibold text-main-text">
-                    {section.title}
-                  </h2>
-                  <div className="space-y-4">
-                    {section.paragraphs.map((paragraph, pIdx) => (
-                      <p key={pIdx} className="text-main-text">
-                        {paragraph}
-                      </p>
-                    ))}
-                  </div>
-                </section>
+                <Fragment key={headingId}>
+                  <section aria-labelledby={headingId}>
+                    <p className="mb-1 text-sm font-semibold tracking-widest text-my-green">
+                      {String(idx + 1).padStart(2, "0")}
+                    </p>
+                    <h2 id={headingId} className="mb-2 text-xl font-semibold text-main-text">
+                      {section.title}
+                    </h2>
+                    <div className="space-y-4">
+                      {section.paragraphs.map((paragraph, pIdx) => (
+                        <p key={pIdx} className="text-main-text">
+                          {paragraph}
+                        </p>
+                      ))}
+                    </div>
+                  </section>
+                  {idx === 0 && <InlineVisual href={project.href} />}
+                </Fragment>
               );
             })}
 
