@@ -4,7 +4,7 @@ title: "SNCF — retirer le train 3D, ajouter un petit train 2D dans le contexte
 group: corentin
 machine: asus_corentin
 milestone: M7 — Recette utilisateur, 2e passe
-status: done
+status: blocked
 resumeAt: null
 priority: P1
 estimate: 0.5
@@ -201,6 +201,25 @@ Route (app) / /cpge_tipe /emse/android /emse/embedded /emse/minesweeper
 **Vérification visuelle :** NON FAITE, outil Chrome indisponible.
 
 **Écarts par rapport au ticket :** Aucun. Toutes les étapes ont été exécutées comme prévu.
+
+## Blocked by
+
+**Problème lors de la fusion dans le dépôt principal (étape 6c) :**
+
+Le dépôt principal a des modifications locales non commitées sur `src/app/app.css` (modification locale de Corentin qui tourne le serveur de dev). Le merge depuis la branche `feat/PORT-055-sncf-2d-train` échoue avec l'erreur :
+
+```
+error: Your local changes to the following files would be overwritten by merge:
+	src/app/app.css
+Please commit your changes or stash them before you merge.
+```
+
+Selon les instructions, je n'ai pas le droit de faire `git checkout`, `git stash` ou `git reset` sur le dépôt principal. Le merge ne peut pas procéder.
+
+**Worktree status :** 
+- Branche `feat/PORT-055-sncf-2d-train` est prête à être fusionnée (2 commits : implémentation + clôture du ticket)
+- Tous les tests (lint, tsc, build) passent après l'intégration de `refonte-2026`
+- Les modifications de Corentin dans le dépôt principal doivent être commitées ou stashées manuellement avant de pouvoir fusionner
 
 ## Notes pour la consolidation
 
