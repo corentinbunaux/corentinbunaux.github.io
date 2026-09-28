@@ -4,13 +4,10 @@ import * as THREE from "three";
 import { ThreeStage, type ThreeStageSetup } from "../demos/ThreeStage";
 import { HERO_ICONS } from "./heroIcons";
 
-/** Max tilt applied to the globe + rings group when following the pointer. */
+/** Max tilt applied to the rings group when following the pointer. */
 const MAX_TILT_RADIANS = 0.25;
 /** Smoothing rate for the pointer tilt: current += (target - current) * min(1, delta * SMOOTHING). */
 const TILT_SMOOTHING = 3;
-
-const GLOBE_RADIUS = 1.1;
-const GLOBE_SPIN_SPEED = 0.12;
 
 interface RingSpec {
   radius: number;
@@ -20,9 +17,14 @@ interface RingSpec {
 }
 
 const iconKeys = Object.keys(HERO_ICONS);
+// Radii nudged up from the old globe-orbit values (1.75 / 2.05) now that the
+// rings orbit the avatar circle instead: increasing them much further makes
+// icons swing outside the camera frustum at the sides (verified by
+// screenshot — the frame's visible half-width at this camera distance/fov
+// is ~1.9 world units), so the increase stays modest (PORT-052).
 const RINGS: readonly RingSpec[] = [
-  { radius: 1.75, inclinationDeg: 20, speed: 0.18, icons: iconKeys.slice(0, 8) },
-  { radius: 2.05, inclinationDeg: -35, speed: -0.12, icons: iconKeys.slice(8, 15) },
+  { radius: 1.9, inclinationDeg: 20, speed: 0.18, icons: iconKeys.slice(0, 8) },
+  { radius: 2.2, inclinationDeg: -35, speed: -0.12, icons: iconKeys.slice(8, 15) },
 ];
 
 interface OrbitIcon {
@@ -34,23 +36,13 @@ const setupGlobe: ThreeStageSetup = ({ scene, camera, colors }) => {
   camera.lookAt(0, 0, 0);
   camera.updateMatrixWorld(true);
 
-  // The globe center never moves (the tilt group only rotates around the
-  // origin), so its camera-space depth is constant: compute it once.
-  const globeCenterCamZ = new THREE.Vector3(0, 0, 0).applyMatrix4(camera.matrixWorldInverse).z;
+  // The orbit center never moves (the tilt group only rotates around the
+  // origin, which lines up with the avatar's center), so its camera-space
+  // depth is constant: compute it once.
+  const orbitCenterCamZ = new THREE.Vector3(0, 0, 0).applyMatrix4(camera.matrixWorldInverse).z;
 
   const tiltGroup = new THREE.Group();
   scene.add(tiltGroup);
-
-  const globeGeometry = new THREE.WireframeGeometry(
-    new THREE.SphereGeometry(GLOBE_RADIUS, 18, 12),
-  );
-  const globeMaterial = new THREE.LineBasicMaterial({
-    color: new THREE.Color(colors.blue),
-    transparent: true,
-    opacity: 0.55,
-  });
-  const globe = new THREE.LineSegments(globeGeometry, globeMaterial);
-  tiltGroup.add(globe);
 
   const loader = new THREE.TextureLoader();
   const orbitIcons: OrbitIcon[] = [];
@@ -70,7 +62,11 @@ const setupGlobe: ThreeStageSetup = ({ scene, camera, colors }) => {
       const dataUrl = HERO_ICONS[key as keyof typeof HERO_ICONS];
       const texture = loader.load(dataUrl);
       texture.colorSpace = THREE.SRGBColorSpace;
-      const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+      const material = new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true,
+        color: new THREE.Color(colors.mainText),
+      });
       const sprite = new THREE.Sprite(material);
       sprite.scale.setScalar(0.32);
 
@@ -94,8 +90,6 @@ const setupGlobe: ThreeStageSetup = ({ scene, camera, colors }) => {
 
   return {
     update(elapsed, delta) {
-      globe.rotation.y = elapsed * GLOBE_SPIN_SPEED;
-
       for (const { group, speed } of ringSpins) {
         group.rotation.y = elapsed * speed;
       }
@@ -109,7 +103,7 @@ const setupGlobe: ThreeStageSetup = ({ scene, camera, colors }) => {
       for (const { sprite } of orbitIcons) {
         sprite.getWorldPosition(worldPosition);
         const camZ = worldPosition.applyMatrix4(camera.matrixWorldInverse).z;
-        const depth = THREE.MathUtils.clamp((camZ - globeCenterCamZ) / RINGS[1].radius, -1, 1);
+        const depth = THREE.MathUtils.clamp((camZ - orbitCenterCamZ) / RINGS[1].radius, -1, 1);
         (sprite.material as THREE.SpriteMaterial).opacity = THREE.MathUtils.lerp(
           0.35,
           1,
