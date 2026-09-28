@@ -964,3 +964,19 @@ section[id] {
     scroll-behavior: auto;
   }
 }
+
+/* PORT-055: the SNCF mini-train strip loops left to right, off-screen to
+   off-screen, so it never appears to "teleport" mid-frame. */
+@keyframes sncf_mini_train {
+  from { left: -6rem; }
+  to { left: 100%; }
+}
+.sncf-mini-train {
+  animation: sncf_mini_train 14s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sncf-mini-train {
+    animation: none;
+    left: 40%;
+  }
+}

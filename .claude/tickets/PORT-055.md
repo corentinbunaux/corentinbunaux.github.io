@@ -4,7 +4,7 @@ title: "SNCF — retirer le train 3D, ajouter un petit train 2D dans le contexte
 group: corentin
 machine: asus_corentin
 milestone: M7 — Recette utilisateur, 2e passe
-status: ready
+status: in-progress
 resumeAt: null
 priority: P1
 estimate: 0.5
