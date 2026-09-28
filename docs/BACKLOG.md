@@ -13,11 +13,14 @@ qu'une session ne l'exécute avec `/work <ID>`.
 | **M3 — Contenu & structure** | Les 7 zones de la maquette "REFONTE" sont implémentées avec le contenu réel (dont GCII/Enedis), relu par Corentin | P1 |
 | **M4 — i18n FR/EN** | Le site est intégralement bilingue via un toggle, traductions relues | P2 |
 | **M5 — Accents 3D** | Hero + accents contextuels (Safran, Quimesis) en place, sans régression de performance | P3 |
+| **M6 — Recette utilisateur** | 16 retours de la recette du 2026-09-26 traités (`docs/PLAN-RECETTE.md`) : thème clair/sombre, en-tête commun, hero façon maquette, Parcours à deux pistes, articles Markdown, 10 démos 2D/3D, consolidation de la documentation | P1 |
 
 Ordre volontaire : M1 isole et retire le risque le plus élevé (CI cassée +
 upgrade + faisabilité three.js) avant tout le reste. M2/M3 portent la valeur
 principale (ce que Corentin a dit compter le plus). M4/M5 sont séquencés en
-dernier — priorité explicitement plus basse selon le cadrage.
+dernier — priorité explicitement plus basse selon le cadrage. M6 est un jalon
+ultérieur, ouvert par une recette utilisateur une fois M1-M5 livrés (source :
+`docs/PLAN-RECETTE.md`, pas `docs/CADRAGE.md`).
 
 ## Tickets
 
@@ -50,6 +53,61 @@ dernier — priorité explicitement plus basse selon le cadrage.
 (PORT-002, 009, 011, 012, 017, 018, 019, 020) — l'hypothèse est qu'aucun ne
 dérape gravement ; PORT-003 (recherche) sert justement à retirer la plus
 grosse incertitude tôt.
+
+## M6 — Recette utilisateur (PORT-024 à 051)
+
+Source : `docs/PLAN-RECETTE.md` (16 retours de Corentin sur M1-M5 + réponses
+données en session). Procédure commune : `docs/PROCEDURE-TICKET.md` ; règles
+communes des scènes 3D : `docs/GUIDE-3D.md`. Toutes les branches fusionnent
+dans `refonte-2026`. Statuts ci-dessous relevés directement dans
+`.claude/tickets/` (frontmatter `status`) à la clôture de PORT-051 ;
+`review` signifie fusionné et vérifié par l'agent, mais avec un
+`human_checkpoint` encore ouvert pour Corentin (liste complète dans
+`PASSATION.md`).
+
+| ID | Titre | Statut |
+| --- | --- | --- |
+| PORT-024 | i18n — dictionnaire découpé par namespace | done |
+| PORT-025 | CSS — `overflow-x: clip`, scroll fluide natif, hauteur d'en-tête en token | done |
+| PORT-026 | Thème clair/sombre + `lucide-react` | review |
+| PORT-027 | Footer — retirer la phrase de disponibilité | done |
+| PORT-028 | En-tête commun `SiteHeader` (nav, langue, thème) | review |
+| PORT-029 | À propos — intérêts actifs/archivés, icônes, bouton PUSH | review |
+| PORT-030 | Parcours — deux pistes Expérience / Formation, ordre décroissant | review |
+| PORT-031 | Section « Démo », registre, socle three.js (`ThreeStage`) | done |
+| PORT-032 | Illustration GCII/Enedis (SVG généré) | review |
+| PORT-033 | Logos des technos dans l'en-tête d'article | done |
+| PORT-034 | Soulignement de la section courante (nav) | done |
+| PORT-035 | « En bref » : alignement + sticky sous l'en-tête | review |
+| PORT-036 | Articles en Markdown (FR/EN), lus au build | review |
+| PORT-037 | Hero façon maquette + fusion du Profil | review |
+| PORT-038 | Démo : démineur 9×9 | review |
+| PORT-039 | Démo : surveillants 10×10 | review |
+| PORT-040 | Démo : Dactylo Race solo | review |
+| PORT-041 | Démo : dictionnaire de prédiction | done |
+| PORT-042 | Démo : graphique espace-temps SNCF (2D) | review |
+| PORT-043 | Tennisman : bras redessiné + frappe animée | review |
+| PORT-044 | Hero : globe filaire + icônes en orbite (3D) | review |
+| PORT-045 | Démo 3D Safran : Terre, satellites, chasseur stylisé | review |
+| PORT-046 | Démo 3D SNCF : train sur voie | done |
+| PORT-047 | Démo 3D Systèmes embarqués : voiture qui se gare | done |
+| PORT-048 | Démo 3D Robotique : bras d'exosquelette | review |
+| PORT-049 | Démo 3D Quimesis : mâchoire interactive | review |
+| PORT-050 | Parcours : icônes 3D diplôme / mallette | done |
+| PORT-051 | Consolidation : docs + recette clair/mobile | review (ce ticket — `human_checkpoint` : nouvelle recette complète par Corentin) |
+
+**PORT-022** (`Bug — le scroll JS behavior:'smooth' ne scrolle jamais`,
+jalon M2) est **clos comme faux positif** : l'onglet de test automatisé était
+en arrière-plan (`document.visibilityState === "hidden"`), ce que Chrome ne
+scrolle jamais en fluide ; le site n'avait pas de bug. Sa conséquence
+positive (nav en ancres natives + `scroll-behavior: smooth`) est livrée par
+PORT-025/028.
+
+Tous les tickets PORT-024 à PORT-050 sont fusionnés dans `refonte-2026`
+(vérifié via `git log --oneline refonte-2026`, un commit `Merge PORT-0XX: ...`
+par ticket). Aucun n'est `blocked` à l'ouverture de PORT-051. Un `status:
+review` bloque uniquement la clôture définitive du ticket, pas la suite du
+travail (voir `docs/PROCEDURE-TICKET.md` §1).
 
 ## Chemin critique
 
