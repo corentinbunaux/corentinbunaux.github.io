@@ -4,7 +4,7 @@ title: "À propos — chevauchement mobile, libellé « pratiquées pendant mes 
 group: corentin
 machine: asus_corentin
 milestone: M7 — Recette utilisateur, 2e passe
-status: ready
+status: review
 resumeAt: null
 priority: P1
 estimate: 1
@@ -138,18 +138,116 @@ Commit : `fix(about): mobile overlap, rename the archived label, move interests`
 
 ## Critères d'acceptation
 
-- [ ] Plus de chevauchement tennisman/icône à 360 px (mesuré, pas supposé).
-- [ ] Le mot « Archivées » n'apparaît plus.
-- [ ] Jeu vidéo est sous « Pratiquées pendant mes études ».
-- [ ] Films / Musique est sous « Aujourd'hui ».
-- [ ] lint / tsc / build passent.
+- [x] Plus de chevauchement tennisman/icône à 360 px (mesuré, pas supposé).
+- [x] Le mot « Archivées » n'apparaît plus.
+- [x] Jeu vidéo est sous « Pratiquées pendant mes études ».
+- [x] Films / Musique est sous « Aujourd'hui ».
+- [x] lint / tsc / build passent.
 
 ## Journal d'exécution
 
-_(à remplir — mesures avant/après obligatoires pour le chevauchement)_
+**Diagnostic (avant correction)** — Chrome headless (`--headless=new
+--use-angle=swiftshader --enable-unsafe-swiftshader`, `--user-data-dir`
+dédié, protocole DevTools en WebSocket natif Node 24, script jetable hors
+dépôt), `npm run dev` sur `http://localhost:3000`, 360×800, section
+« À propos ».
+
+Mesures (`getBoundingClientRect`) :
+- `svg#game` (tennisman) : `top=2309.36 bottom=2571.75 left=48.80 right=311.19`
+- `<li>` Échecs : `top=2268.23 bottom=2344.23 left=56 right=168`
+- Chevauchement vertical mesuré : `2344.23 − 2309.36 = 34.87px` (horizontalement les
+  plages `[48.80,311.19]` et `[56,168]` se recoupent aussi) → chevauchement réel confirmé.
+
+Décomposition de la cause (mesures des ancêtres avec un second script,
+`col1`/`col2` = les deux enfants de `.grid.grid-cols-1.lg:grid-cols-2.h-full`) :
+- `.container` (`h-5/6`, `position: static`) a bien une hauteur définie par un ancêtre
+  (`containerHeight: 1453.94px`) — la première hypothèse du ticket (h-5/6 se comporte
+  comme `auto`, sans ancêtre dimensionné) était donc fausse ici : la percentage-height
+  résolvait bel et bien à une valeur fixe.
+- `col1` (`h-1/2`, texte + listes d'intérêts) : boîte propre = 595.77px, mais son
+  contenu réel (`interestsWrap`) va jusqu'à 1172.23 (relatif page), soit ~565px
+  de débordement sous sa propre boîte (`overflow: visible` par défaut).
+- `col2` (`h-1/2`, bouton + tennisman, `flex flex-col justify-center`) : boîte
+  propre = seulement 131.19px de haut, alors que son contenu (le SVG, 262.39px)
+  est centré verticalement → il déborde symétriquement d'environ 65.6px au-dessus
+  ET en dessous de la boîte.
+- Cause réelle : les deux colonnes (`grid-cols-1` sur mobile) reçoivent chacune une
+  hauteur `h-1/2` **forcée et arbitraire**, bien plus petite que leur contenu réel ;
+  avec `overflow: visible`, le contenu de `col1` déborde vers le bas et celui de
+  `col2` déborde vers le haut, et les deux débordements se recouvrent. Ce n'est ni un
+  problème de dimensionnement du SVG lui-même (`width:80%`, sans `height`, se
+  comporte normalement — `svgComputedHeight: 262.391px`, cohérent avec son
+  `viewBox` carré), ni un problème de positionnement du calque `trackRef` (son
+  `getBoundingClientRect` ne recoupe jamais la grille d'intérêts dans les mesures).
+- Cause secondaire, découverte après un premier correctif partiel : les deux
+  enfants internes de `col1` (`h-1/6` titre, `h-5/6` contenu) souffrent du même
+  problème une fois `col1` passée en `h-auto` — dans un item de grille CSS, les
+  hauteurs en pourcentage des descendants ne se comportent pas comme un simple
+  bloc `auto` : `col1` se stabilisait à 1191.55px alors que son contenu réel
+  (`interestsWrap`, bottom 959.53 relatif à la page vs. `col1` bottom 890.95)
+  débordait encore de ~68.6px. Confirmé par mesure avant de corriger.
+
+**Correctif** (`src/components/aboutmeSection.jsx`) : remplacer les hauteurs en
+pourcentage forcées sur mobile par `h-auto`, réservées à `lg:` (desktop, où le
+layout 2 colonnes en a besoin) :
+- `.container h-5/6` → `h-auto lg:h-5/6`
+- grid `h-full` → `h-auto lg:h-full`, + `gap-10 lg:gap-0` (espace vertical entre
+  les deux colonnes empilées sur mobile, `gap-0` à `lg:` pour ne rien changer au
+  layout desktop)
+- `col1 h-1/2 lg:h-full` → `h-auto lg:h-full`
+- `col2 h-1/2 lg:h-full` → `h-auto lg:h-full`
+- enfants de `col1` : `h-1/6` → `h-auto lg:h-1/6`, `h-5/6` → `h-auto lg:h-5/6`
+
+**Mesures après correction** (mêmes rectangles, mêmes conditions) :
+- `svg#game` : `top=1118.95 bottom=1381.34`
+- `<li>` Échecs : `top=604.95 bottom=680.95`
+- Marge libre : `1118.95 − 680.95 = 438px` (grille et tennisman ne se touchent
+  même plus dans le même ordre de grandeur — la page est simplement plus
+  courte puisque les deux colonnes ne débordent plus l'une sur l'autre) ;
+  sur le screenshot 360×800 recadré sur la zone, marge visuelle ≈ 80px entre le
+  bas de la grille d'intérêts (4 items) et le haut du tennisman.
+- Reconfirmé à 360×800 en thème sombre (mêmes coordonnées, layout indépendant
+  du thème) et à 1280×900 clair : les deux colonnes sont côte à côte
+  (`svg` x∈[695,1178], `<li>` Échecs x∈[345,458]), aucun recouvrement possible,
+  `gap-0` à `lg:` n'a rien changé visuellement au layout desktop existant
+  (capture comparée : titre, paragraphes, bouton PUSH!, tennisman identiques).
+
+**Commandes exécutées** (dans `../wt-PORT-061`) :
+- `npm run lint` → `✖ 4 problems (0 errors, 4 warnings)` — les 4 warnings
+  (`react-hooks/set-state-in-effect` dans `ThemeContext.tsx` /
+  `useThemeColors.ts`) sont préexistants, sans rapport avec ce ticket
+  (fichiers non touchés).
+- `npm run build` → `✓ Compiled successfully in 23.3s`, `Finished TypeScript in
+  11.3s`, 15 pages statiques générées, build terminé sans erreur.
+- `npx tsc --noEmit` (après le build) → aucune sortie, code de sortie 0.
+
+**Vérification visuelle** : faite en headless (aucun navigateur interactif
+disponible), 360×800 clair/sombre et 1280×900 clair, via captures
+`Page.captureScreenshot` : titre de catégorie affiché « PRATIQUÉES PENDANT MES
+ÉTUDES » (plus de « Archivées »), « Jeu vidéo » sous cette catégorie, « Films /
+Musique » (icône `Clapperboard`) sous « Aujourd'hui », tennisman et bouton
+PUSH! inchangés visuellement au format desktop. Pas de vérification humaine
+interactive (aucun navigateur connecté à la session) — c'est l'objet du
+`human_checkpoint` de ce ticket.
+
+**Écarts par rapport au ticket** : aucun. Le correctif touche uniquement
+`src/components/aboutmeSection.jsx` (classes Tailwind de hauteur/gap) et
+`src/i18n/namespaces/about.ts` (libellé + nouvelle clé `moviesMusic`) — ni
+`app.css` ni `federer.jsx` n'ont eu besoin d'être modifiés, la cause étant
+entièrement dans les classes de hauteur du composant.
 
 ## Notes pour la consolidation
 
-- ARCHITECTURE.md : mettre à jour la description des catégories
-  d'intérêts et, si le diagnostic a changé la mise en page de la section,
-  le noter.
+- ARCHITECTURE.md : la section « À propos » n'a plus de hauteurs `h-*`
+  fractionnaires forcées sur mobile pour les deux colonnes (texte/intérêts et
+  tennisman) — seulement à partir de `lg:` où le layout 2 colonnes en a besoin.
+  Sur mobile les deux blocs s'empilent en hauteur `auto` avec un `gap-10`
+  entre eux. Cause du bug d'origine : des hauteurs en `%` forcées sur des
+  contenus plus grands qu'elles, avec `overflow: visible`, faisaient déborder
+  les deux blocs l'un dans l'autre.
+- Catégories d'intérêts : « Aujourd'hui » = Tennis, Course, Films / Musique
+  (nouveau, icône `Clapperboard`), Code. « Pratiquées pendant mes études »
+  (libellé renommé, sans « Archivées ») = Natation, Escalade, Échecs, Jeu
+  vidéo (déplacé depuis « Aujourd'hui »).
+- PORT-062 (tennisman) dépend de ce ticket et touche les mêmes fichiers :
+  fusionné en premier comme demandé par le ticket.
