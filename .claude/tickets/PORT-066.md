@@ -4,7 +4,7 @@ title: "Safran — vaisseau plus reconnaissable (agrandir/détailler l'X-wing st
 group: corentin
 machine: asus_corentin
 milestone: M8 — Recette utilisateur, 3e passe
-status: ready
+status: review
 resumeAt: null
 priority: P2
 estimate: 1.5
@@ -146,17 +146,83 @@ Commit (temps 2, si utilisé) : `fix(safran): replace the X-wing silhouette with
 
 ## Critères d'acceptation
 
-- [ ] Le vaisseau est clairement visible et lisible comme un vaisseau sur une
+- [x] Le vaisseau est clairement visible et lisible comme un vaisseau sur une
       capture plein cadre, pas seulement en gros plan.
-- [ ] Toujours sans nom, logo ni couleurs de franchise précise.
-- [ ] Guide 3D §4, lint / tsc / build.
+- [x] Toujours sans nom, logo ni couleurs de franchise précise.
+- [x] Guide 3D §4, lint / tsc / build.
 
 ## Journal d'exécution
 
-_(à remplir — joindre au moins une capture plein cadre avant/après)_
+**Décision : temps 2 (aile delta).** Le temps 1 a été fait, committé
+(4cc179f) et jugé sur captures plein cadre avant de passer au temps 2.
+
+Constat de départ : le cadre de la démo est `max-w-md` → **446 × 250 px**
+à 1280 × 800. C'est à cette taille que tout a été jugé.
+
+- **Avant** (refonte-2026, 334cc7b) : chasseur ~40 px, croix grise fine,
+  difficile à distinguer des satellites (même gris, même forme « corps +
+  panneaux »). Bug supplémentaire trouvé : le modèle volait **à reculons**
+  depuis PORT-054 (`Object3D.lookAt` oriente le +Z d'un mesh vers la cible,
+  vérifié dans `node_modules/three/src/core/Object3D.js` l. 713-721 ; le code
+  envoyait l'avant sur -Z).
+- **Temps 1** (4cc179f) : échelle ×2 (`FIGHTER_SCALE`), `FIGHTER_RADIUS`
+  3.2 → 2.4, `FIGHTER_PASS_DURATION` 7 → 11 s, bulle de cockpit
+  `colors.blue` + petit cylindre `colors.mainText`, orientation corrigée.
+  Résultat plein cadre : vaisseau bien visible (~70-90 px) mais il se lit
+  comme une **croix / un moulin** vu de face ou de dessus, le cockpit est
+  illisible à cette taille. Pas convaincant → temps 2.
+- **Temps 2** (48ca508) : fuselage effilé + nez conique, une paire d'ailes
+  delta (`ExtrudeGeometry`, anédrale 10°), bulle de cockpit `colors.blue`
+  transparente, deux réacteurs `colors.green` (`MeshBasicMaterial`), gris
+  neutre `0x9a9a9a`. Mêmes réglages taille/rayon/durée que le temps 1.
+  Écart au ticket (ajout) : le vecteur `up` du chasseur est penché vers la
+  caméra (`FIGHTER_BANK = 1.2`) pour qu'il soit vu en plan (de dessus) et pas
+  par la tranche — l'arc est presque à hauteur d'œil, une aile delta à plat
+  y serait une simple ligne. Résultat plein cadre : silhouette de chasseur à
+  aile delta nettement lisible, nez/cockpit/réacteurs identifiables, en
+  sombre et en clair. Passe devant la Terre (au-dessus du limbe), jamais au
+  travers ; croise les orbites des satellites dans d'autres plans, sans
+  incohérence visible.
+- Légendes `demos.ts` **non modifiées** : elles ne parlent que d'« un
+  visiteur inattendu » / « an unexpected visitor », aucune ressemblance avec
+  un vaisseau précis n'y est suggérée.
+
+Captures prises pendant l'exécution (dossier scratchpad de session, non
+versionnées) : avant/temps 1/temps 2 en thème sombre et temps 2 en thème
+clair, chacune en plein cadre 1280×800 et en planche à taille native
+446×250.
+
+Vérifications (Chrome headless `--use-angle=swiftshader`, CDP, 1280×800) :
+- console : aucune erreur/avertissement après modification (avant : un 404
+  de ressource, non lié, non reproduit ensuite).
+- triangles max/frame (compteur sur `drawElements`/`drawArrays`) : avant
+  8 056, temps 1 8 392, temps 2 8 184. Budget < 60 000 respecté.
+- fps : 37 sur 5 s — rendu **logiciel** SwiftShader en headless, non
+  représentatif ; cible ≥ 50 fps NON vérifiée sur GPU.
+- 3 allers-retours Kusmitea ↔ Safran : 1 canvas, aucune erreur WebGL.
+- 360 px : 0 canvas, 0 requête contenant « three » sur 20 requêtes.
+- Pause hors écran : NON revérifiée (comportement de `ThreeStage`, inchangé).
+
+Commandes (dans la worktree, avant intégration de `refonte-2026`) :
+```
+$ npm run lint
+✖ 4 problems (0 errors, 4 warnings)   (préexistants, autres fichiers)
+$ npx eslint src/components/demos/SafranEarthDemo.tsx   -> aucune sortie
+$ npm run build   -> succès, "○ (Static) prerendered as static content"
+$ npx tsc --noEmit   -> aucune sortie, exit 0
+```
+
+Ces vérifications ont été relancées par l'orchestrateur après fusion de
+`refonte-2026` dans la branche, avant la fusion finale (voir plus bas).
 
 ## Notes pour la consolidation
 
-- ARCHITECTURE.md : si le temps 2 est utilisé, noter que la silhouette du
-  chasseur Safran est passée de "4 ailes en X" à "aile delta", et pourquoi
-  (lisibilité à petite échelle).
+- **Temps 2 utilisé** : la silhouette du chasseur Safran passe de « 4 ailes
+  en X » à « aile delta » (lisibilité dans un cadre de 446 × 250 px : les 4
+  ailes fines se lisaient comme une croix / un satellite de plus). Le
+  chasseur est incliné vers la caméra (`FIGHTER_BANK`) pour être vu en plan.
+- Bug corrigé au passage : le chasseur volait à reculons depuis PORT-054
+  (`Object3D.lookAt` vise avec +Z pour un mesh, pas -Z).
+- Point à surveiller (hors ticket) : en headless SwiftShader la Terre paraît
+  très sombre (seul un croissant en haut est éclairé). À vérifier sur un vrai
+  GPU ; si c'est pareil, ouvrir un ticket d'éclairage de la scène Safran.

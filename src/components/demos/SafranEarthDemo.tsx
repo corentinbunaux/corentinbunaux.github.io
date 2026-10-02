@@ -6,7 +6,7 @@ import { ThreeStage, type ThreeStageSetup } from "./ThreeStage";
 /**
  * Safran demo (PORT-045, feedback #9): a textured Earth (NASA Blue Marble),
  * a small constellation of visible satellites on inclined orbits, and a
- * late, unbranded four-winged starfighter that passes by every so often.
+ * late, unbranded delta-wing fighter that passes by every so often.
  */
 
 const EARTH_RADIUS = 1.4;
@@ -33,8 +33,11 @@ const ORBITS: readonly OrbitDef[] = [
 
 const FIGHTER_FIRST_AT = 20; // s
 const FIGHTER_INTERVAL = 45; // s
-const FIGHTER_PASS_DURATION = 7; // s
-const FIGHTER_RADIUS = 3.2;
+const FIGHTER_PASS_DURATION = 11; // s - slow enough to be read (PORT-066)
+const FIGHTER_RADIUS = 2.4; // closer to the camera than the 3.2 of PORT-054
+const FIGHTER_SCALE = 2; // the ~0.5-unit model read as a dot at display size
+const FIGHTER_BANK = 1.2; // weight of "towards the camera" in the fighter's up vector
+const WORLD_UP = new THREE.Vector3(0, 1, 0);
 const FIGHTER_START_ANGLE = THREE.MathUtils.degToRad(-20);
 
 /** Point on a circular orbit of `radius`, tilted by `inclination` around the X axis. */
@@ -99,75 +102,74 @@ function buildSatellite(bodyColor: THREE.ColorRepresentation, panelColor: THREE.
   return group;
 }
 
-const WING_ANGLES_DEG = [45, 135, 225, 315] as const;
+const WING_ANHEDRAL = THREE.MathUtils.degToRad(10);
 
-/** A generic four-winged starfighter, ~0.5 units long, built from primitives
- * only (no franchise names, logos or colours - a stylised nod, not a copy). */
-function buildFighter(hullColor: THREE.ColorRepresentation, glowColor: THREE.ColorRepresentation) {
+/** Flat triangular wing (planform in the model's X/Y plane, thin along Z),
+ * root against the fuselage, tip swept back. `side` = 1 right, -1 left. */
+function buildDeltaWing(side: 1 | -1, material: THREE.Material) {
+  const shape = new THREE.Shape();
+  shape.moveTo(side * 0.02, 0.12); // root, leading edge
+  shape.lineTo(side * 0.32, -0.16); // tip
+  shape.lineTo(side * 0.3, -0.2);
+  shape.lineTo(side * 0.02, -0.2); // root, trailing edge
+  shape.closePath();
+  const geometry = new THREE.ExtrudeGeometry(shape, { depth: 0.016, bevelEnabled: false });
+  geometry.translate(0, 0, -0.008); // centre the thickness on the wing plane
+  const wing = new THREE.Mesh(geometry, material);
+  wing.position.z = -0.012; // slightly under the fuselage axis
+  wing.rotation.y = side * WING_ANHEDRAL; // tip tilted down (anhedral)
+  return wing;
+}
+
+/** A generic delta-wing interceptor, ~0.55 units long before `FIGHTER_SCALE`,
+ * built from primitives only (no franchise names, logos or colours). PORT-066:
+ * replaces the four thin X wings of PORT-045/054, which read as a cross (or as
+ * one more satellite) at display size; one pair of wide flat wings, a tinted
+ * cockpit bubble and two glowing engines read as "a ship" much more easily. */
+function buildFighter(
+  hullColor: THREE.ColorRepresentation,
+  glowColor: THREE.ColorRepresentation,
+  canopyColor: THREE.ColorRepresentation,
+) {
   const group = new THREE.Group();
-  // Every part below is built with "forward" along +Y, then remapped to -Z
-  // once (Object3D.lookAt points -Z at its target) via `model.rotation.x`.
+  // Every part below is built with "forward" along +Y and "top" along +Z,
+  // then remapped once so forward is +Z (Object3D.lookAt points a mesh's +Z
+  // at its target) and top stays world-up - see the end of this function.
   const model = new THREE.Group();
   const hullMaterial = new THREE.MeshStandardMaterial({ color: hullColor });
   const glowMaterial = new THREE.MeshBasicMaterial({ color: glowColor });
 
-  const fuselage = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.05, 0.32, 8), hullMaterial);
+  const fuselage = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.05, 0.38, 12), hullMaterial);
+  fuselage.position.y = -0.01;
   model.add(fuselage);
 
-  const nose = new THREE.Mesh(new THREE.ConeGeometry(0.025, 0.14, 8), hullMaterial);
-  nose.position.y = 0.23;
+  const nose = new THREE.Mesh(new THREE.ConeGeometry(0.032, 0.16, 12), hullMaterial);
+  nose.position.y = 0.26;
   model.add(nose);
 
-  const WING_ROOT = 0.05; // distance fuselage -> racine de l'aile
-  const WING_LENGTH = 0.3; // longueur de l'aile, vers l'exterieur
-  const WING_THICKNESS = 0.02;
-  const WING_CHORD = 0.09; // largeur (corde) de l'aile
+  model.add(buildDeltaWing(1, hullMaterial), buildDeltaWing(-1, hullMaterial));
 
-  for (const deg of WING_ANGLES_DEG) {
-    const rad = THREE.MathUtils.degToRad(deg);
-    // Upper pair (45/315) fans up, lower pair (135/225) fans down: an X-wing silhouette.
-    const tilt = (deg === 45 || deg === 315 ? 1 : -1) * THREE.MathUtils.degToRad(20);
-    const centerDist = WING_ROOT + WING_LENGTH / 2;
+  // Cockpit bubble: a stretched, flattened sphere on top of the front fuselage.
+  const canopy = new THREE.Mesh(
+    new THREE.SphereGeometry(0.034, 16, 10),
+    new THREE.MeshStandardMaterial({ color: canopyColor, transparent: true, opacity: 0.85 }),
+  );
+  canopy.scale.set(1, 2.2, 0.9);
+  canopy.position.set(0, 0.09, 0.03);
+  model.add(canopy);
 
-    // Local box: long axis on X (radial), thin on Y, chord on Z - built flat,
-    // then rotated so its own X axis points outward at angle `rad` in the XZ
-    // plane, then fanned up/down by `tilt` around that same outward axis.
-    const wing = new THREE.Mesh(
-      new THREE.BoxGeometry(WING_LENGTH, WING_THICKNESS, WING_CHORD),
-      hullMaterial,
-    );
-    const outward = new THREE.Vector3(Math.cos(rad), 0, Math.sin(rad));
-    wing.position.copy(outward).multiplyScalar(centerDist);
-    wing.position.y -= 0.02;
-    // Point local +X along `outward`, keeping local Y roughly vertical, then
-    // fan the wing up/down around that same outward axis.
-    const wingUp = new THREE.Vector3(0, 1, 0);
-    const m = new THREE.Matrix4().makeBasis(
-      outward,
-      wingUp.clone().sub(outward.clone().multiplyScalar(wingUp.dot(outward))).normalize(),
-      new THREE.Vector3().crossVectors(outward, wingUp).normalize(),
-    );
-    wing.quaternion.setFromRotationMatrix(m);
-    wing.rotateX(tilt); // fan around the wing's own (now radial) local X axis
-    model.add(wing);
-
-    const cannon = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.008, 0.008, 0.1, 8),
-      hullMaterial,
-    );
-    cannon.position.copy(outward).multiplyScalar(WING_ROOT + WING_LENGTH + 0.05);
-    cannon.position.y -= 0.02;
-    cannon.quaternion.copy(wing.quaternion);
-    cannon.rotateZ(Math.PI / 2); // cylinder's own axis (Y) -> along the wing's radial X
-    model.add(cannon);
-
-    const reactor = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.05, 8), glowMaterial);
-    reactor.position.copy(outward).multiplyScalar(WING_ROOT + WING_LENGTH * 0.35);
-    reactor.position.y -= 0.02 + 0.03 * Math.sign(tilt);
-    model.add(reactor);
+  // Two glowing engines at the back, at the root of each wing.
+  for (const side of [1, -1] as const) {
+    const engine = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.06, 12), glowMaterial);
+    engine.position.set(side * 0.06, -0.19, -0.01);
+    model.add(engine);
   }
 
-  model.rotation.x = -Math.PI / 2;
+  // +Y (forward) -> +Z, then half-turn around forward so +Z (top) -> world +Y.
+  // PORT-054 used rotation.x = -PI/2, which flew the fighter tail first.
+  model.rotation.x = Math.PI / 2;
+  model.rotateY(Math.PI);
+  model.scale.setScalar(FIGHTER_SCALE);
   group.add(model);
   group.visible = false;
   return group;
@@ -238,7 +240,7 @@ const setupScene: ThreeStageSetup = ({ scene, camera, colors }) => {
   );
 
   // Late, occasional starfighter pass (feedback #9's "last resort").
-  const fighter = buildFighter(0x9a9a9a, colors.green);
+  const fighter = buildFighter(0x9a9a9a, colors.green, colors.blue);
   scene.add(fighter);
   let fighterActive = false;
   let nextFighterStart = FIGHTER_FIRST_AT;
@@ -246,6 +248,7 @@ const setupScene: ThreeStageSetup = ({ scene, camera, colors }) => {
   const position = new THREE.Vector3();
   const tangent = new THREE.Vector3();
   const lookTarget = new THREE.Vector3();
+  const toCamera = new THREE.Vector3();
 
   return {
     update(elapsed) {
@@ -274,6 +277,10 @@ const setupScene: ThreeStageSetup = ({ scene, camera, colors }) => {
           fighterPosition(angle, position);
           fighter.position.copy(position);
           fighterTangent(angle, tangent);
+          // Bank towards the camera so the flat delta planform is seen from
+          // above instead of edge-on (the arc is almost at eye level).
+          toCamera.copy(camera.position).sub(position).normalize();
+          fighter.up.copy(WORLD_UP).addScaledVector(toCamera, FIGHTER_BANK).normalize();
           fighter.lookAt(lookTarget.copy(position).add(tangent));
         }
       }
