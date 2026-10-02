@@ -2,7 +2,7 @@
 
 import * as THREE from "three";
 import { ThreeStage, type ThreeStageSetup } from "../demos/ThreeStage";
-import { HERO_ICONS, HERO_ICONS_INVERTED } from "./heroIcons";
+import { HERO_ICONS, HERO_ICONS_LIGHT_THEME } from "./heroIcons";
 
 /** Max tilt applied to the rings group when following the pointer. */
 const MAX_TILT_RADIANS = 0.25;
@@ -64,7 +64,7 @@ const setupGlobe: ThreeStageSetup = ({ scene, camera, colors }) => {
     ring.icons.forEach((key, index) => {
       const isTwoTone = TWO_TONE_ICONS.has(key);
       const dataUrl = isTwoTone && isLightTheme
-        ? HERO_ICONS_INVERTED[key as keyof typeof HERO_ICONS_INVERTED]
+        ? HERO_ICONS_LIGHT_THEME[key as keyof typeof HERO_ICONS_LIGHT_THEME]
         : HERO_ICONS[key as keyof typeof HERO_ICONS];
       const texture = loader.load(dataUrl);
       texture.colorSpace = THREE.SRGBColorSpace;
@@ -73,8 +73,10 @@ const setupGlobe: ThreeStageSetup = ({ scene, camera, colors }) => {
         transparent: true,
         // Groot/B-Rabbit (PORT-063) are two-tone drawings, not plain silhouettes:
         // tinting them would crush their internal contrast, so they keep their
-        // own colours (or the pre-inverted swap above) instead of the theme tint
-        // every other icon gets.
+        // own colours instead of the theme tint every other icon gets. Their
+        // light-theme variant (PORT-068) is not a colour inversion — it's the
+        // same white-fill artwork as dark theme, with a black outline ring
+        // added around the silhouette so it still reads against a white page.
         color: isTwoTone ? 0xffffff : new THREE.Color(colors.mainText),
       });
       const sprite = new THREE.Sprite(material);
