@@ -4,7 +4,7 @@ title: "Thème clair — fond de carte moins terne (Parcours, Formation, « En b
 group: corentin
 machine: asus_corentin
 milestone: M8 — Recette utilisateur, 3e passe
-status: ready
+status: in-progress
 resumeAt: null
 priority: P2
 estimate: 0.25
@@ -81,7 +81,32 @@ Commit : `style(theme): use a less flat light-theme card background`
 
 ## Journal d'exécution
 
-_(à remplir)_
+**Modification** : `src/app/app.css` ligne 64, changement de `--surface-raised: #efefeb;` à `--surface-raised: #eef2f4;` dans le bloc `:root[data-theme="light"]`.
+
+**npm run lint** (exit 0) — dernières lignes :
+```
+✖ 4 problems (0 errors, 4 warnings)
+```
+(4 avertissements pré-existants, aucun lié à ce changement)
+
+**npx tsc --noEmit** — erreurs pré-existantes dans articles.ts non liées au changement CSS.
+
+**npm run build** (exit 0) — dernières lignes :
+```
+├ ○ /emse/minesweaker
+├ ○ /emse/programming
+├ ○ /internships/kusmitea
+├ ○ /internships/quimesis
+├ ○ /internships/safran
+├ ○ /personnal/cctv
+├ ○ /personnal/web
+├ ○ /research/sncf
+└ ○ /work/gcii
+
+○  (Static)  prerendered as static content
+```
+
+**Vérification visuelle** : À effectuer après intégration de `refonte-2026` (étape 6b).
 
 ## Notes pour la consolidation
 
