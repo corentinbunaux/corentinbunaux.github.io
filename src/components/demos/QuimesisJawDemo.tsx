@@ -398,11 +398,14 @@ const setupScene: ThreeStageSetup = ({ scene, camera, renderer, colors }) => {
   rim.position.set(-3, -1, -2);
   scene.add(rim);
 
-  // "Realistic" scan colour (GUIDE-3D.md #2 exception): the dusty pink of the
-  // real app's screenshots, one tone deeper on the light surface.
+  // "Realistic" scan colour (GUIDE-3D.md #2 exception): Corentin asked for
+  // white teeth (the real app's own pink scan colour read as "wrong" once
+  // rendered here), so this is ivory/off-white rather than the dusty pink
+  // of the reference screenshots — one tone deeper on the light surface so
+  // it still reads against a white card.
   const isLightTheme = hexLuminance(colors.surface) > 0.5;
-  const scanColor = isLightTheme ? "#dcaab3" : "#d6aab2";
-  const scanMaterial = new THREE.MeshStandardMaterial({ color: scanColor, roughness: 0.75, metalness: 0 });
+  const scanColor = isLightTheme ? "#dcd6c8" : "#f1ece2";
+  const scanMaterial = new THREE.MeshStandardMaterial({ color: scanColor, roughness: 0.6, metalness: 0 });
 
   const dotGeometry = new THREE.SphereGeometry(0.016, 8, 6);
   const dotMaterial = new THREE.MeshBasicMaterial({ color: colors.green });
