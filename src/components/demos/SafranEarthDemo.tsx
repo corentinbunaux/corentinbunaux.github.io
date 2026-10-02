@@ -118,20 +118,52 @@ function buildFighter(hullColor: THREE.ColorRepresentation, glowColor: THREE.Col
   nose.position.y = 0.23;
   model.add(nose);
 
+  const WING_ROOT = 0.05; // distance fuselage -> racine de l'aile
+  const WING_LENGTH = 0.3; // longueur de l'aile, vers l'exterieur
+  const WING_THICKNESS = 0.02;
+  const WING_CHORD = 0.09; // largeur (corde) de l'aile
+
   for (const deg of WING_ANGLES_DEG) {
     const rad = THREE.MathUtils.degToRad(deg);
     // Upper pair (45/315) fans up, lower pair (135/225) fans down: an X-wing silhouette.
-    const tilt = (deg === 45 || deg === 315 ? 1 : -1) * THREE.MathUtils.degToRad(15);
+    const tilt = (deg === 45 || deg === 315 ? 1 : -1) * THREE.MathUtils.degToRad(20);
+    const centerDist = WING_ROOT + WING_LENGTH / 2;
 
-    const wing = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.34, 0.07), hullMaterial);
-    wing.position.set(Math.cos(rad) * 0.06, -0.02, Math.sin(rad) * 0.06);
-    wing.rotation.y = rad;
-    wing.rotation.x = tilt;
+    // Local box: long axis on X (radial), thin on Y, chord on Z - built flat,
+    // then rotated so its own X axis points outward at angle `rad` in the XZ
+    // plane, then fanned up/down by `tilt` around that same outward axis.
+    const wing = new THREE.Mesh(
+      new THREE.BoxGeometry(WING_LENGTH, WING_THICKNESS, WING_CHORD),
+      hullMaterial,
+    );
+    const outward = new THREE.Vector3(Math.cos(rad), 0, Math.sin(rad));
+    wing.position.copy(outward).multiplyScalar(centerDist);
+    wing.position.y -= 0.02;
+    // Point local +X along `outward`, keeping local Y roughly vertical, then
+    // fan the wing up/down around that same outward axis.
+    const wingUp = new THREE.Vector3(0, 1, 0);
+    const m = new THREE.Matrix4().makeBasis(
+      outward,
+      wingUp.clone().sub(outward.clone().multiplyScalar(wingUp.dot(outward))).normalize(),
+      new THREE.Vector3().crossVectors(outward, wingUp).normalize(),
+    );
+    wing.quaternion.setFromRotationMatrix(m);
+    wing.rotateX(tilt); // fan around the wing's own (now radial) local X axis
     model.add(wing);
 
-    const reactor = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.06, 8), glowMaterial);
-    reactor.position.set(Math.cos(rad) * 0.06, -0.2, Math.sin(rad) * 0.06);
-    reactor.rotation.x = tilt;
+    const cannon = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.008, 0.008, 0.1, 8),
+      hullMaterial,
+    );
+    cannon.position.copy(outward).multiplyScalar(WING_ROOT + WING_LENGTH + 0.05);
+    cannon.position.y -= 0.02;
+    cannon.quaternion.copy(wing.quaternion);
+    cannon.rotateZ(Math.PI / 2); // cylinder's own axis (Y) -> along the wing's radial X
+    model.add(cannon);
+
+    const reactor = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.05, 8), glowMaterial);
+    reactor.position.copy(outward).multiplyScalar(WING_ROOT + WING_LENGTH * 0.35);
+    reactor.position.y -= 0.02 + 0.03 * Math.sign(tilt);
     model.add(reactor);
   }
 

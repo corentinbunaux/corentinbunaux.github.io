@@ -23,9 +23,9 @@ export const demosFr: DemosDict = {
     "Cette animation 3D s'affiche sur un écran large (1024 px et plus), si votre système ne demande pas de réduire les animations.",
   items: {
     "safran-earth": {
-      title: "La Terre et sa constellation",
+      title: "Un clin d'œil à l'aérospatial",
       caption:
-        "Des satellites en orbite autour de la Terre, clin d'œil au secteur aérospatial de Safran. Texture : NASA Blue Marble. Restez un peu : un visiteur inattendu finit par passer.",
+        "Des satellites en orbite autour de la Terre, clin d'œil au secteur aérospatial de Safran — pas une reproduction de mon travail. Texture : NASA Blue Marble. Restez un peu : un visiteur inattendu finit par passer.",
     },
     "quimesis-fragments": {
       title: "Mes débuts en 3D",
@@ -94,9 +94,9 @@ export const demosEn: DemosDict = {
     "This 3D animation is shown on wide screens (1024 px and up), unless your system asks to reduce motion.",
   items: {
     "safran-earth": {
-      title: "Earth and its constellation",
+      title: "A nod to aerospace",
       caption:
-        "Satellites orbiting Earth, a nod to Safran's aerospace sector. Texture: NASA Blue Marble. Stay a while: an unexpected visitor eventually flies by.",
+        "Satellites orbiting Earth, a nod to Safran's aerospace sector — not a recreation of my actual work there. Texture: NASA Blue Marble. Stay a while: an unexpected visitor eventually flies by.",
     },
     "quimesis-fragments": {
       title: "My first steps in 3D",
