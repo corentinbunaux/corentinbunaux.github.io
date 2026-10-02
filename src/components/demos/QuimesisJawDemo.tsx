@@ -7,11 +7,13 @@ import { ThreeStage, type ThreeStageSetup } from "./ThreeStage";
 /**
  * Quimesis demo (PORT-049, rebuilt in PORT-059): an interactive procedural
  * jaw next to `QuimesisFragmentsDemo`. No scan, no downloaded model. Each
- * arcade is ONE continuous parametric surface (gum and crowns fused, one
- * colour), modelled on the screenshots of the real app published in the
- * project gallery (`assets/images-src/img/Quimesis1-3.png`): a raw scan look,
- * teeth only readable through their crowns, cusps and the grooves between
- * them.
+ * arcade is ONE continuous parametric surface (gum and crowns fused, no
+ * seam), modelled on the screenshots of the real app published in the
+ * project gallery (`assets/images-src/img/Quimesis1-3.png`). Gum and enamel
+ * are painted two different colours per vertex (ivory teeth, pink gum) so
+ * they stay easy to tell apart at a glance, per Corentin's feedback — the
+ * surface itself stays one continuous mesh, only the colour changes at the
+ * gum line.
  *
  * The surface is a tube swept along the arch: at every arc-length sample `s`
  * a cross-section ring (gum base + crown, in the local (normal, up) plane) is
@@ -153,8 +155,22 @@ function cuspRelief(type: ToothType, t: number, q: number): number {
 const scanNoise = (a: number, b: number, c: number) =>
   Math.sin(a * 71 + b * 23) * Math.sin(b * 57 + c * 31) * Math.sin(c * 43 + a * 19);
 
+const smoothstep = (edge0: number, edge1: number, x: number) => {
+  const t = Math.min(Math.max((x - edge0) / (edge1 - edge0), 0), 1);
+  return t * t * (3 - 2 * t);
+};
+
+/** How much of a crown vertex's height is "tooth" rather than "gum", as a
+ * fraction of the crown's own rise above the gum line: 0 up to and including
+ * the gum line itself, ramping to 1 within a thin band just above it. This
+ * doubles as the correct answer in the V-groove between two teeth and behind
+ * the last molar, where `rise` is always 0: the whole ring reads as gum. */
+const GUM_CROWN_BAND = 0.01;
+const toothFactorFromRise = (rise: number) => smoothstep(0, GUM_CROWN_BAND, rise);
+
 /** One cross-section ring, counter-clockwise in the (n, y) plane (n points
- * out of the mouth, y towards the crowns). Returns interleaved n, y. */
+ * out of the mouth, y towards the crowns). Returns interleaved n, y, tooth
+ * (tooth = 0 for gum, 1 for enamel, used to paint vertex colours). */
 function buildRing(s: number): number[] {
   const absS = Math.abs(s);
   const tooth = locateTooth(absS);
@@ -192,7 +208,7 @@ function buildRing(s: number): number[] {
   const bottom = -GUM_DEPTH - 0.005 * (1 + Math.sin(s * 23) * Math.sin(s * 9.7 + 1));
 
   const ring: number[] = [];
-  const push = (n: number, y: number) => ring.push(n, y);
+  const push = (n: number, y: number, toothFactor = 0) => ring.push(n, y, toothFactor);
 
   // Bottom, lingual to buccal.
   push(-lingualBottom, bottom);
@@ -209,14 +225,15 @@ function buildRing(s: number): number[] {
   push(buccalTop, gumLine - 0.04);
   push(buccalTop - 0.012, gumLine - 0.012);
   push(crownHalfWidth + 0.008, gumLine);
-  // Crown, buccal to lingual.
+  // Crown, buccal to lingual. `rise` is 0 at both edges and in the V-groove
+  // between teeth (tooth === null): those vertices stay gum-coloured.
   for (let j = 0; j <= CROWN_SEGMENTS; j++) {
     const psi = Math.PI / 2 - (j / CROWN_SEGMENTS) * Math.PI;
     const q = Math.sin(psi);
     const dome = Math.pow(Math.max(1 - Math.pow(Math.abs(q), 3), 0), 1 / 3);
     const relief = tooth ? cuspRelief(type, t, q) * dome : 0;
-    const rise = crownRise * (crownHeight * dome + relief);
-    push(crownHalfWidth * q, gumLine + Math.max(rise, 0));
+    const rise = Math.max(crownRise * (crownHeight * dome + relief), 0);
+    push(crownHalfWidth * q, gumLine + rise, toothFactorFromRise(rise));
   }
   // Lingual gum shoulder and wall.
   push(-crownHalfWidth - 0.008, gumLine);
@@ -228,7 +245,7 @@ function buildRing(s: number): number[] {
   return ring;
 }
 
-const RING_SIZE = buildRing(0).length / 2;
+const RING_SIZE = buildRing(0).length / 3;
 
 interface Arcade {
   readonly geometry: THREE.BufferGeometry;
@@ -271,23 +288,46 @@ function archFrame(s: number) {
   return { point, normal };
 }
 
+/** "#rrggbb" -> [r, g, b] in 0..1, for vertex-colour attributes. */
+function hexToRgb01(hex: string): readonly [number, number, number] {
+  const value = hex.replace("#", "");
+  return [
+    parseInt(value.slice(0, 2), 16) / 255,
+    parseInt(value.slice(2, 4), 16) / 255,
+    parseInt(value.slice(4, 6), 16) / 255,
+  ];
+}
+
 /** Builds one arcade in its local frame, gum line at y = 0. `sign` = +1
- * points the crowns up (lower arcade), -1 down (upper arcade). */
-function buildArcade(sign: 1 | -1): Arcade {
+ * points the crowns up (lower arcade), -1 down (upper arcade). Gum and
+ * enamel are the same continuous surface (PORT-059) but painted two colours
+ * per vertex, so the two tissues stay easy to tell apart (Corentin's
+ * feedback) without reintroducing a seam between separate meshes. */
+function buildArcade(sign: 1 | -1, toothHex: string, gumHex: string): Arcade {
   const samples = arcSamples();
   const positions: number[] = [];
+  const colors: number[] = [];
   const stripTooth: number[] = [];
+  const toothRgb = hexToRgb01(toothHex);
+  const gumRgb = hexToRgb01(gumHex);
+  const mixChannel = (a: number, b: number, t: number) => a + (b - a) * t;
 
   samples.forEach((s, ringIndex) => {
     const { point, normal } = archFrame(s);
     const ring = buildRing(s);
     for (let j = 0; j < RING_SIZE; j++) {
-      const n = ring[j * 2];
-      const y = ring[j * 2 + 1];
+      const n = ring[j * 3];
+      const y = ring[j * 3 + 1];
+      const toothFactor = ring[j * 3 + 2];
       const px = point.x + normal.x * n;
       const pz = point.z + normal.z * n;
       const jitter = 0.002 * scanNoise(px * 1.3, y * 1.3, pz * 1.3);
       positions.push(px + normal.x * jitter, sign * (y + jitter), pz + normal.z * jitter);
+      colors.push(
+        mixChannel(gumRgb[0], toothRgb[0], toothFactor),
+        mixChannel(gumRgb[1], toothRgb[1], toothFactor),
+        mixChannel(gumRgb[2], toothRgb[2], toothFactor),
+      );
     }
     if (ringIndex < samples.length - 1) {
       const middle = (s + samples[ringIndex + 1]) / 2;
@@ -324,6 +364,7 @@ function buildArcade(sign: 1 | -1): Arcade {
     }
     const centre = positions.length / 3;
     positions.push(cx / RING_SIZE, cy / RING_SIZE, cz / RING_SIZE);
+    colors.push(gumRgb[0], gumRgb[1], gumRgb[2]); // the arch's cut ends are always gum
     for (let j = 0; j < RING_SIZE; j++) {
       const a = ringIndex * RING_SIZE + j;
       const b = ringIndex * RING_SIZE + ((j + 1) % RING_SIZE);
@@ -336,6 +377,7 @@ function buildArcade(sign: 1 | -1): Arcade {
 
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
   geometry.setIndex(indices);
   geometry.computeVertexNormals();
 
@@ -398,20 +440,25 @@ const setupScene: ThreeStageSetup = ({ scene, camera, renderer, colors }) => {
   rim.position.set(-3, -1, -2);
   scene.add(rim);
 
-  // "Realistic" scan colour (GUIDE-3D.md #2 exception): Corentin asked for
-  // white teeth (the real app's own pink scan colour read as "wrong" once
-  // rendered here), so this is ivory/off-white rather than the dusty pink
-  // of the reference screenshots — one tone deeper on the light surface so
-  // it still reads against a white card.
+  // "Realistic" scan colours (GUIDE-3D.md #2 exception): Corentin asked for
+  // a clear visual distinction between gum and teeth, so the single scan
+  // colour from PORT-059 is now two colours, painted per vertex (one
+  // continuous surface, no seam) — ivory enamel, dusty pink gum (the same
+  // pink considered for the discrete-teeth version back in PORT-049). The
+  // enamel tone is one notch deeper on the light surface so the mesh's
+  // silhouette still reads against a white card; the gum pink needs no such
+  // adjustment since what matters is its contrast against the enamel next
+  // to it, not against the page background.
   const isLightTheme = hexLuminance(colors.surface) > 0.5;
-  const scanColor = isLightTheme ? "#dcd6c8" : "#f1ece2";
-  const scanMaterial = new THREE.MeshStandardMaterial({ color: scanColor, roughness: 0.6, metalness: 0 });
+  const toothColor = isLightTheme ? "#dcd6c8" : "#f1ece2";
+  const gumColor = "#c98a8f";
+  const scanMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: 0.6, metalness: 0 });
 
   const dotGeometry = new THREE.SphereGeometry(0.016, 8, 6);
   const dotMaterial = new THREE.MeshBasicMaterial({ color: colors.green });
 
   const makeArcadeMesh = (sign: 1 | -1) => {
-    const arcade = buildArcade(sign);
+    const arcade = buildArcade(sign, toothColor, gumColor);
     const mesh = new THREE.Mesh(arcade.geometry, scanMaterial);
     const dots = new THREE.InstancedMesh(dotGeometry, dotMaterial, DOTS_PER_TOOTH);
     dots.visible = false;
