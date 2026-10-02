@@ -88,15 +88,6 @@
 
 /*md*/
 @media (min-width: 768px) {
-  h1,
-  h2,
-  h3,
-  p,
-  button {
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-  }
-
   h3 {
     font-size: 1.25rem;
   }
@@ -887,32 +878,6 @@ p {
   }
 }
 
-/* Tennis player swing (PORT-043). #federer-arm holds both arms and the
-   racket; its transform-origin (the shoulder) is set inline in federer.jsx.
-   Angles are softer than the ticket's -35/+50: beyond them the racket
-   crosses the face and the arm detaches from the sleeve. */
-@keyframes federer_swing {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  40% {
-    transform: rotate(-20deg);
-  }
-
-  70% {
-    transform: rotate(35deg);
-  }
-
-  100% {
-    transform: rotate(0deg);
-  }
-}
-
-.federer-swing #federer-arm {
-  animation: federer_swing 0.6s ease-out both;
-}
-
 /* Linear correction added on top of ball_path (same duration and easing)
    so the ball ends on the racket. --ball-aim-x/y are measured in
    aboutmeSection.jsx when PUSH is clicked. */
@@ -930,7 +895,8 @@ p {
   animation: ball_aim 1s ease-out both;
 }
 
-/* Struck ball: fades out around the forward swing (70% of 0.6s). */
+/* Struck ball: rests on the racket briefly, then fades out. The player
+   stays still (PORT-062 removed the arm swing). */
 .ball.ball-struck {
   opacity: 0;
   transition: opacity 0.2s ease-out 0.35s;
@@ -941,7 +907,6 @@ p {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .federer-swing #federer-arm,
   .ball,
   .ball-aim,
   .btn_federer-done {
@@ -962,5 +927,21 @@ section[id] {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+}
+
+/* PORT-055: the SNCF mini-train strip loops left to right, off-screen to
+   off-screen, so it never appears to "teleport" mid-frame. */
+@keyframes sncf_mini_train {
+  from { left: -6rem; }
+  to { left: 100%; }
+}
+.sncf-mini-train {
+  animation: sncf_mini_train 14s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sncf-mini-train {
+    animation: none;
+    left: 40%;
   }
 }

@@ -23,9 +23,9 @@ export const demosFr: DemosDict = {
     "Cette animation 3D s'affiche sur un écran large (1024 px et plus), si votre système ne demande pas de réduire les animations.",
   items: {
     "safran-earth": {
-      title: "La Terre et sa constellation",
+      title: "Un clin d'œil à l'aérospatial",
       caption:
-        "Des satellites en orbite autour de la Terre, clin d'œil au secteur aérospatial de Safran. Texture : NASA Blue Marble. Restez un peu : un visiteur inattendu finit par passer.",
+        "Des satellites en orbite autour de la Terre, clin d'œil au secteur aérospatial de Safran — pas une reproduction de mon travail. Texture : NASA Blue Marble. Restez un peu : un visiteur inattendu finit par passer.",
     },
     "quimesis-fragments": {
       title: "Mes débuts en 3D",
@@ -37,10 +37,10 @@ export const demosFr: DemosDict = {
       caption:
         "Faites-la tourner en la faisant glisser, cliquez pour ouvrir ou fermer la mâchoire, survolez une dent pour la mettre en évidence. Modèle simplifié, généré par le code.",
     },
-    "sncf-train": {
-      title: "Un train sur la ligne",
+    "sncf-mini-train": {
+      title: "Sur les rails",
       caption:
-        "Un train parcourt une ligne en boucle : ce sont ces circulations que les graphiques espace-temps représentent.",
+        "Un petit clin d'œil animé : c'est ce genre de circulation que les graphiques espace-temps ci-dessous représentent.",
     },
     "sncf-spacetime": {
       title: "Graphique espace-temps",
@@ -99,9 +99,9 @@ export const demosEn: DemosDict = {
     "This 3D animation is shown on wide screens (1024 px and up), unless your system asks to reduce motion.",
   items: {
     "safran-earth": {
-      title: "Earth and its constellation",
+      title: "A nod to aerospace",
       caption:
-        "Satellites orbiting Earth, a nod to Safran's aerospace sector. Texture: NASA Blue Marble. Stay a while: an unexpected visitor eventually flies by.",
+        "Satellites orbiting Earth, a nod to Safran's aerospace sector — not a recreation of my actual work there. Texture: NASA Blue Marble. Stay a while: an unexpected visitor eventually flies by.",
     },
     "quimesis-fragments": {
       title: "My first steps in 3D",
@@ -113,10 +113,10 @@ export const demosEn: DemosDict = {
       caption:
         "Drag to rotate, click to open or close the jaw, hover a tooth to highlight it. Simplified model, generated in code.",
     },
-    "sncf-train": {
-      title: "A train on the line",
+    "sncf-mini-train": {
+      title: "On the rails",
       caption:
-        "A train runs along a looping line: these are the movements that space-time diagrams depict.",
+        "A small animated wink: this is the kind of movement the space-time diagram below represents.",
     },
     "sncf-spacetime": {
       title: "Space-time diagram",

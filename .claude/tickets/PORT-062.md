@@ -4,7 +4,7 @@ title: "Tennisman — revers une main à la Federer, tout le corps, ou retirer l
 group: corentin
 machine: asus_corentin
 milestone: M7 — Recette utilisateur, 2e passe
-status: ready
+status: review
 resumeAt: null
 priority: P2
 estimate: 1.5
@@ -169,11 +169,96 @@ Commit : `feat(about): improve the tennis swing into a one-handed backhand pose`
 
 ## Journal d'exécution
 
-_(à remplir — captures de la pose finale, décision prise entre niveau 1,
-niveau 2 et repli, et pourquoi)_
+**Décision : repli (animation du tennisman désactivée).** Niveau 1 puis
+deux essais de niveau 2 tentés dans l'ordre, chacun capturé (Chrome headless
+via CDP, animations figées avec `Animation.pause()` + `currentTime` à
+0 / ~40 % / ~70 % / 100 %, 1280 et 1920 px, sombre et clair). Captures hors
+dépôt, dans le scratchpad de la session (`shots-l1/`, `shots-l2a/`,
+`shots-l2b/`, `shots-fb/`, `shots-rm/`).
+
+1. **Niveau 1** (conteneur `.federer-body` + `@keyframes federer_body_swing`
+   exactement comme le ticket, bras PORT-043 inchangé). Rejeté : la ligne de
+   sol fait partie du SVG, donc la rotation d'ensemble (-6° puis +3°)
+   **incline le sol** — on lit un « plan qui penche », pas un transfert de
+   poids. La pose finale est la pose de repos (le bras revient à 0°) inclinée
+   de 3° : rien d'un revers en préparation.
+2. **Niveau 2, essai 1.** Frontière nette trouvée (inventaire des 43 chemins
+   par `getBBox()`) : tête, chemise et son contour (chemins n° 1, 6, 12, 13,
+   17, 18, 23, 24, 25) s'arrêtent à la ceinture (y ≈ 33), recouverte par le
+   short. Isolés dans `<g id="federer-torso">` (pivot 30,33) avec
+   `#federer-arm` imbriqué ; aucun raccord visible à la ceinture. Bras
+   -30° + buste -5° en fin de mouvement : le **tamis passe sur la tête**
+   et on lit un smash, pas un revers ; le sol penche toujours (niveau 1).
+3. **Niveau 2, essai 2.** Rotation d'ensemble retirée (translateX seul),
+   bras -12° + translate(1px,-2px), buste -6°. Fin de pose : raquette haute
+   au-dessus de l'épaule droite, mais **le bras se détache de la manche**
+   (contour de l'épaule cassé), le tamis est **coupé par le bord haut du
+   viewBox**, et la silhouette reste celle d'une **prise à deux mains**
+   (les deux mains sur le manche, dessin d'origine) : ça lit comme une fin
+   de coup droit / smash à deux mains, pas un revers à une main.
+
+Conclusion : un revers **à une main** demanderait de redessiner le bras
+gauche (lâcher le manche) et l'orientation des épaules — hors de portée sans
+redécouper l'illustration. Repli appliqué comme autorisé par Corentin : la
+balle vole, se pose sur la raquette puis disparaît ; le tennisman reste
+immobile. `federer.jsx` n'est **pas** modifié (l'essai de groupe torse a été
+abandonné, pas commité). CSS `federer_swing` / `.federer-swing #federer-arm`
+supprimé (mort), retiré aussi de la liste `prefers-reduced-motion`.
+
+Vérifications visuelles (Chrome headless, serveur `next dev -p 3062` de la
+worktree, arrêtés par PID exact) :
+- Balle sur la raquette : centre de la balle à 4 px (1280) / 5 px (1920)
+  du centre du cordage au passage en `hit`, et le joueur ne bouge plus
+  ensuite (`getAnimations()` ne contient plus d'animation sur le SVG ;
+  0 `<g>` transformé). Vérifié en sombre et clair à 1280, sombre à 1920 ;
+  la passe 1920 clair du script final a raté le clic (instabilité du script),
+  mais le contrôle `prefers-reduced-motion` ci-dessous a tourné à 1920 clair.
+- `prefers-reduced-motion: reduce` (1920 clair) : après clic, aucune balle,
+  aucune animation (`document.getAnimations()` vide), bouton
+  `visibility: hidden`, aucun groupe du SVG transformé.
+- 360 px sombre/clair : le tennisman s'affiche, pas de défilement horizontal
+  (`scrollWidth` = 360) ; le bouton PUSH est masqué sous `xl` (inchangé).
+
+Commandes (dans la worktree) :
+
+```
+$ npm run lint      (5 dernières lignes)
+  48 |   return colors;
+  49 | }  react-hooks/set-state-in-effect
+
+✖ 4 problems (0 errors, 4 warnings)
+   (4 avertissements préexistants, aucun dans aboutmeSection.jsx :
+    `npx eslint src/components/aboutmeSection.jsx` → exit 0)
+
+$ npm run build     (5 dernières lignes)
+└ ○ /work/gcii
+
+
+○  (Static)  prerendered as static content
+
+$ npx tsc --noEmit  (lancé après le build)
+npm notice run tsc --noEmit
+exit 0
+```
+
+Critères d'acceptation :
+- Pose finale de revers une main : **non atteinte → repli appliqué**
+  (issue explicitement autorisée), captures des 3 tentatives ci-dessus.
+- Mouvement « plus que le bras » : sans objet, repli appliqué.
+- `prefers-reduced-motion` : rien ne bouge (vérifié, voir ci-dessus).
+- La balle atteint la raquette : oui (4–5 px d'écart au centre du cordage).
+- lint / tsc / build : passent.
 
 ## Notes pour la consolidation
 
-- ARCHITECTURE.md : si le niveau 1 (mouvement d'ensemble) est retenu,
-  documenter `.federer-body-swing` comme le mécanisme qui simule un
-  mouvement de tout le corps sans rig complet.
+- ARCHITECTURE.md : le tennisman de « À propos » est désormais **statique** ;
+  seule la balle est animée (`ball_path` + `ball_aim`, puis fondu
+  `.ball-struck`). `@keyframes federer_swing` et `.federer-swing` n'existent
+  plus. Le `<g id="federer-arm">` de `federer.jsx` (PORT-043) reste en place
+  mais n'est plus ciblé par aucun style : à supprimer dans un ticket de
+  nettoyage si on n'y revient pas.
+- Si on veut un jour un vrai revers à une main : il faut une nouvelle
+  illustration (ou un rig dessiné exprès), pas une rotation des chemins
+  actuels. Piste repérée : tête + chemise sont séparables proprement
+  (frontière à la ceinture, y ≈ 33 dans le viewBox), mais les deux mains
+  sur le manche et le tamis qui sort du viewBox au-dessus de y = 0 bloquent.

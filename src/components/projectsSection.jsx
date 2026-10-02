@@ -43,7 +43,7 @@ const TechPill = ({ id }) => {
   );
 };
 
-const ProjectCard = ({ project, t }) => (
+const ProjectCard = ({ project, t, excerpt }) => (
   <Link
     href={`/${project.href}`}
     className={`group flex flex-col overflow-hidden rounded-lg border border-second bg-surface transition-colors hover:border-secondary ${
@@ -64,11 +64,14 @@ const ProjectCard = ({ project, t }) => (
         </span>
       )}
     </div>
-    <div className="flex flex-col gap-2 p-4">
+    <div className="flex flex-1 flex-col gap-2 p-4">
       <h3 className="text-lg font-semibold text-main-text">{project.title}</h3>
-      <p className="truncate text-sm text-second-text">{project.description}</p>
+      <p className="text-sm text-second-text">{project.description}</p>
+      {excerpt && (
+        <p className="line-clamp-5 flex-1 text-sm text-second-text/90">{excerpt}</p>
+      )}
       {project.techLogos.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 pt-1">
+        <div className="mt-auto flex flex-wrap gap-1.5 pt-1">
           {project.techLogos.map((id) => (
             <TechPill key={id} id={id} />
           ))}
@@ -78,7 +81,7 @@ const ProjectCard = ({ project, t }) => (
   </Link>
 );
 
-function ProjectsSection() {
+function ProjectsSection({ excerpts }) {
   const [activeFilter, setActiveFilter] = useState("all");
   const t = useTranslation();
   const { language } = useLanguage();
@@ -130,7 +133,12 @@ function ProjectsSection() {
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredProjects.map((project) => (
-            <ProjectCard key={project.href} project={project} t={t} />
+            <ProjectCard
+              key={project.href}
+              project={project}
+              t={t}
+              excerpt={excerpts[project.href]?.[language]}
+            />
           ))}
         </div>
       </div>
