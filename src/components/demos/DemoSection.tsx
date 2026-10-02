@@ -55,13 +55,13 @@ export function DemoSection({ href, number }: DemoSectionProps) {
         {t.demos.sectionTitle}
       </h2>
       <div className="space-y-10">
-        {demos.map((demo) => (
-          <figure key={demo.id}>
-            <DemoStage demo={demo} />
-            <figcaption className="mt-3">
+        {demos.map((demo, index) => (
+          <figure key={demo.id} className={index > 0 ? "border-t border-second pt-10" : undefined}>
+            <figcaption className="mb-3">
               <h3 className="font-semibold text-main-text">{t.demos.items[demo.id].title}</h3>
               <p className="text-sm text-second-text">{t.demos.items[demo.id].caption}</p>
             </figcaption>
+            <DemoStage demo={demo} />
           </figure>
         ))}
       </div>

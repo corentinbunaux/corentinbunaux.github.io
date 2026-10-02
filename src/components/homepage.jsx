@@ -15,11 +15,9 @@ const HERO_STACK = [
   { id: "typescript", label: "TypeScript" },
   { id: "react", label: "React" },
   { id: "python", label: "Python" },
-  { id: "java", label: "Java" },
-  { id: "cpp", label: "C++" },
-  { id: "sql", label: "SQL" },
   { id: "git", label: "Git" },
   { id: "linux", label: "Linux" },
+  { id: "copilot", label: "Copilot CLI" },
 ];
 
 export function GithubLogo(props) {
