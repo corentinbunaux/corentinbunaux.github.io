@@ -33,6 +33,7 @@ const TECH_LABELS: Record<TechLogoId, string> = {
   linux: "Linux",
   office: "Office",
   git: "Git",
+  copilot: "Copilot CLI",
 };
 
 /**
