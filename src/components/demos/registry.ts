@@ -29,7 +29,8 @@ const MinesweeperDemo = dynamic(() => import("./MinesweeperDemo").then((m) => m.
 const GuardsDemo = dynamic(() => import("./GuardsDemo").then((m) => m.GuardsDemo), { ssr: false });
 const TypingDemo = dynamic(() => import("./TypingDemo").then((m) => m.TypingDemo), { ssr: false });
 const PredictDemo = dynamic(() => import("./PredictDemo").then((m) => m.PredictDemo), { ssr: false });
-const ParkingCarDemo = dynamic(() => import("./ParkingCarDemo").then((m) => m.ParkingCarDemo), { ssr: false });
+const EmbeddedSweepDemo = dynamic(() => import("./EmbeddedSweepDemo").then((m) => m.EmbeddedSweepDemo), { ssr: false });
+const EmbeddedReturnDemo = dynamic(() => import("./EmbeddedReturnDemo").then((m) => m.EmbeddedReturnDemo), { ssr: false });
 const ExoArmDemo = dynamic(() => import("./ExoArmDemo").then((m) => m.ExoArmDemo), { ssr: false });
 
 /** Project `href` -> its demos, in display order. */
@@ -126,13 +127,21 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
   ],
 
   "emse/embedded": [
-    // PORT-047
+    // PORT-060
     {
-      id: "parking-car",
+      id: "embedded-sweep",
       kind: "3d",
       ready: true,
       placement: "demo",
-      Component: ParkingCarDemo,
+      Component: EmbeddedSweepDemo,
+    },
+
+    {
+      id: "embedded-return",
+      kind: "3d",
+      ready: true,
+      placement: "demo",
+      Component: EmbeddedReturnDemo,
     },
   ],
 

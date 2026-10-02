@@ -10,5 +10,6 @@ export type DemoId =
   | "guards"
   | "typing"
   | "predict"
-  | "parking-car"
+  | "embedded-sweep"
+  | "embedded-return"
   | "exo-arm";
