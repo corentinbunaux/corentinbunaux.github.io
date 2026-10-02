@@ -29,4 +29,14 @@ const config = {
   },
 };
 
-export default createJestConfig(config);
+// three ships as ESM only: since r17x `build/three.cjs` is a deprecated shim
+// that require()s `three.module.js`, and the examples (OrbitControls,
+// RoundedBoxGeometry) are ESM too. next/jest skips all of node_modules by
+// default, so three is let through the SWC transform (cached after the first run).
+export default async function jestConfig() {
+  const resolved = await createJestConfig(config)();
+  resolved.transformIgnorePatterns = resolved.transformIgnorePatterns.map((pattern) =>
+    pattern.replace("(?!(geist|", "(?!(three|geist|"),
+  );
+  return resolved;
+}
