@@ -4,7 +4,7 @@ title: "Systèmes embarqués — remplacer la fausse démo de créneau par les d
 group: corentin
 machine: asus_corentin
 milestone: M7 — Recette utilisateur, 2e passe
-status: ready
+status: review
 resumeAt: null
 priority: P1
 estimate: 1.5
@@ -204,19 +204,87 @@ Commit : `feat(embedded): replace the wrong parking demo with the two real ones`
 
 ## Critères d'acceptation
 
-- [ ] Démo A : balayage 180° en boucle, approche d'un obstacle détecté.
-- [ ] Démo B : glisser le robot puis retour exact en trajet en L (deux
+- [x] Démo A : balayage 180° en boucle, approche d'un obstacle détecté.
+- [x] Démo B : glisser le robot puis retour exact en trajet en L (deux
       segments perpendiculaires, pas une diagonale).
-- [ ] `ParkingCarDemo`/`parkingCarLogic` disparus ou `ready: false` si la
+- [x] `ParkingCarDemo`/`parkingCarLogic` disparus ou `ready: false` si la
       suppression a été refusée.
-- [ ] Guide 3D §4, lint / tsc / build.
+- [x] Guide 3D §4, lint / tsc / build.
 
 ## Journal d'exécution
 
-_(à remplir)_
+**Implémentation** : `git rm` a été accepté sans résistance pour
+`ParkingCarDemo.tsx`/`parkingCarLogic.ts`. Deux nouveaux fichiers créés :
+`EmbeddedSweepDemo.tsx` (balayage 180° + approche, machine à états
+sweep/approach/pause/retreat) et `EmbeddedReturnDemo.tsx` (scan + glisser-
+déposer + retour en L, machine à états scan/idle/dragging/paused/returning).
+`registry.ts`, `demoIds.ts`, `demos.ts` mis à jour comme décrit dans le
+ticket. Convention de cap commune aux deux démos : `rotation.y = h` fait
+face à la direction monde `(sin h, cos h)`, donc h=0 regarde +Z ; reprise
+documentée en commentaire dans chaque fichier.
+
+**Commandes lancées** (dans `../wt-PORT-060`) :
+- `npm run lint` → 0 erreur, 4 avertissements pré-existants
+  (`react-hooks/set-state-in-effect` dans `LanguageContext.tsx`,
+  `ThemeContext.tsx`, `useThemeColors.ts`), sans rapport avec ce ticket.
+- `npx tsc --noEmit` → aucune sortie, code de sortie 0.
+- `npm run build` → "Compiled successfully in 9.2s", "Finished TypeScript in
+  9.3s", 15 pages statiques générées dont `/emse/embedded`, code de sortie 0.
+  Relancées à l'identique après l'intégration de `refonte-2026` (étape 6b) :
+  mêmes résultats (0 erreur, 4 mêmes avertissements pré-existants).
+
+**Vérification visuelle** : faite via Chrome headless piloté par le
+protocole DevTools natif (script jetable hors dépôt, WebSocket Node 24,
+`--headless=new --use-angle=swiftshader --enable-unsafe-swiftshader`,
+`--user-data-dir` dédié), Chrome et le serveur de dev arrêtés par PID exact
+en fin de session.
+- `/emse/embedded`, 1280 px, thème sombre et clair : les deux démos
+  s'affichent dans le cadre 16:9, robot + capteur/cône lisibles sur les deux
+  fonds, aucune erreur/avertissement console.
+- Démo B, glisser-déposer simulé via `Input.dispatchMouseEvent`
+  (press/move/release, pointe en haut-à-gauche du robot) : le robot suit le
+  pointeur, puis au relâchement revient en deux segments perpendiculaires
+  (capture d'écran en rafale confirme un déplacement pur sur un axe puis
+  pur sur l'autre, jamais les deux à la fois) ; il se pose exactement sur
+  l'anneau de départ et son orientation finale correspond à l'orientation de
+  repos. Le cycle scan → idle → dragging → paused → returning → scan a été
+  confirmé par instrumentation temporaire (`console.log`, retirée avant le
+  commit final) : l'anneau de scan progresse bien en opacité/échelle de 0 à
+  1 sur ~1,5 s, au chargement et après chaque retour.
+- 360 px : message « écran large » affiché, 0 `<canvas>`, aucune requête
+  réseau liée aux démos/`three`.
+- Navigation `/emse/embedded` → `/` → `/emse/embedded` ×3 : aucune erreur
+  « Too many active WebGL contexts ».
+- FPS (`requestAnimationFrame` sur ~4 s, snippet du guide) : ~16 fps sur les
+  deux démos **mais mesuré sous SwiftShader (rendu logiciel, pas de GPU) en
+  headless** — non représentatif d'une machine de dev avec accélération
+  GPU. Les scènes sont très simples (quelques boîtes/cylindres/cônes par
+  robot, aucune ombre portée), donc largement sous le budget de 60 000
+  triangles ; la cible ≥ 50 fps n'a **pas** été vérifiée sur GPU réel, à
+  confirmer visuellement par Corentin (c'est aussi l'objet du
+  `human_checkpoint`).
+
+**Écarts par rapport au ticket** : aucun écart fonctionnel. Petite liberté
+de mise en scène : Démo B utilise une caméra plongeante légèrement inclinée
+(`position (0, 6.3, 3.2)`, `lookAt` origine) plutôt que strictement
+zénithale, comme suggéré en option par le ticket ("vue du dessus ou
+légèrement inclinée").
+
+**Intégration `refonte-2026` (étape 6b)** : `git merge refonte-2026` a
+intégré PORT-057, PORT-058, PORT-061 (et PORT-052 si non déjà présent) sans
+conflit sur les fichiers touchés par ce ticket. Re-vérifié lint/tsc/build
+après fusion (mêmes résultats que ci-dessus).
 
 ## Notes pour la consolidation
 
 - ARCHITECTURE.md : deux démos pour `emse/embedded` (balayage+approche,
   scan+retour en L avec glisser-déposer) remplacent l'ancienne "voiture qui
   se gare en créneau", qui ne correspondait pas au vrai projet.
+- Les deux nouvelles démos partagent une convention de cap non documentée
+  ailleurs : `rotation.y = h` fait face à la direction monde `(sin h, cos
+  h)` dans le plan XZ (h=0 → +Z). Si une prochaine démo robot/véhicule a
+  besoin d'une convention de cap, envisager de la documenter dans
+  `docs/GUIDE-3D.md` plutôt que de la relaisser dans chaque fichier.
+- FPS non vérifié sur GPU réel pour ces deux démos (seulement mesuré en
+  headless/SwiftShader, ~16 fps, non représentatif) : à confirmer par
+  Corentin au moment du `human_checkpoint`.

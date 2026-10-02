@@ -67,10 +67,15 @@ export const demosFr: DemosDict = {
       caption:
         "Commencez à taper un mot : les suggestions viennent d'un petit dictionnaire classé par fréquence. Tab ou clic pour compléter.",
     },
-    "parking-car": {
-      title: "Créneau autonome",
+    "embedded-sweep": {
+      title: "Balayage et approche",
       caption:
-        "Un robot voiture longe une rangée, détecte une place libre avec son capteur puis s'y gare seul.",
+        "Le robot balaie 180° devant lui ; s'il détecte un obstacle pendant le balayage, il s'arrête et avance droit vers lui.",
+    },
+    "embedded-return": {
+      title: "Retour précis au point de départ",
+      caption:
+        "Le robot scanne son environnement, mémorise sa position, puis — glissez-le ailleurs — y revient exactement en suivant un trajet en L.",
     },
     "exo-arm": {
       title: "Bras d'exosquelette",
@@ -138,10 +143,15 @@ export const demosEn: DemosDict = {
       caption:
         "Start typing a word: suggestions come from a small frequency-ranked dictionary. Tab or click to complete.",
     },
-    "parking-car": {
-      title: "Self-parking",
+    "embedded-sweep": {
+      title: "Sweep and approach",
       caption:
-        "A robot car drives along a row, detects a free spot with its sensor, then parks by itself.",
+        "The robot sweeps 180° in front of it; if it detects an obstacle during the sweep, it stops and drives straight toward it.",
+    },
+    "embedded-return": {
+      title: "Precise return to base",
+      caption:
+        "The robot scans its surroundings, remembers its position, then — drag it elsewhere — returns to it exactly along an L-shaped path.",
     },
     "exo-arm": {
       title: "Exoskeleton arm",
