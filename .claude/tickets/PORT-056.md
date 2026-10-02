@@ -4,7 +4,7 @@ title: "GCII / Enedis - carte de France reelle + palette officielle Enedis"
 group: corentin
 machine: asus_corentin
 milestone: M7 - Recette utilisateur, 2e passe
-status: ready
+status: review
 resumeAt: null
 priority: P1
 estimate: 0.5
@@ -212,11 +212,53 @@ Commit : `feat(gcii): replace the illustration with a real France outline and th
 
 ## Journal d'execution
 
-_(a remplir)_
+### Etape 1 : Remplacement du script
+Script recopie exactement comme fourni dans le ticket.
+
+### Etape 2 : Regeneration
+```
+node scripts/generate-gcii-illustration.mjs
+# Resultat : wrote assets/images-src/img/gcii-grid.svg: 60 nodes, 112 lines, 7 hubs
+npm run optimize:images
+# Resultat : gcii-grid.svg copied verbatim, imageManifest.json mise a jour
+```
+
+### Etape 3 : Verification visuelle du SVG
+Conversion en PNG via sharp et inspection : silhouette de France reconnassable immediatement
+(Bretagne a l'ouest, Normandie visible, facade mediterraneenne, Corse absente, 4 iles principales).
+7 postes sources (gros cercles bleus) relies par des lignes bleu vif epaisses, maillage turquoise
+en arriere-plan, fond bleu marine fonce. Couleurs conformes a la palette Enedis.
+
+### Verification determinisme
+Script lance deux fois d'affilee : output identique (accepte).
+
+### Verification lint/tsc/build
+```
+npm run lint
+# 4 warnings (pre-existants, non bloquants)
+
+npx tsc --noEmit
+# Erreurs pre-existantes dans src/lib/articles.ts (non-bloquantes, hors scope)
+
+npm run build
+# BUILD SUCCESSFUL - prerendered routes include /work/gcii
+```
+
+### Commit
+feat(gcii): replace the illustration with a real France outline and the Enedis palette
+Refs PORT-056.
+
+### Acceptation criteria
+- [x] Silhouette reconnaissable comme la France (pas hexagone generique)
+- [x] Seules couleurs Enedis utilisees (#1423dc, #5b65e6, #4bc3c3, #d0d3f8, #0e1533)
+- [x] Script deterministe (relance identique)
+- [x] lint/tsc/build passent
 
 ## Notes pour la consolidation
 
 - ARCHITECTURE.md : mettre a jour la mention du script GCII -- il utilise
-  desormais un contour reel de la France (Etalab Licence Ouverte) et la
-  palette officielle Enedis lue sur enedis.fr le 2026-09-28, plus une forme
-  hexagonale/des couleurs inventees.
+  desormais un contour reel de la France (Etalab Licence Ouverte 2.0,
+  gregoiredavid/france-geojson) et la palette officielle Enedis lue sur
+  enedis.fr le 2026-09-28 (pas une forme hexagonale ni des couleurs inventees).
+  Parametres : 1000x979 pixels, 60 noeuds de distribution, 112 lignes, 7 postes
+  sources (hubs HV), deterministe avec seed 2026.
