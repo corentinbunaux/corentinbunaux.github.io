@@ -44,7 +44,8 @@ export type TechLogoId =
   | "windows"
   | "linux"
   | "office"
-  | "git";
+  | "git"
+  | "copilot";
 
 /**
  * When a project ran. Months are `YYYY-MM`.
@@ -138,7 +139,7 @@ export const projects = [
     featured: true,
     entityLogo: null,
     githubRepo: null,
-    techLogos: ["python", "react"],
+    techLogos: ["python", "react", "git", "typescript", "copilot"],
     img: "/img/gcii-grid",
     photos: [],
     period: { status: "ongoing", start: "2025-11" },
