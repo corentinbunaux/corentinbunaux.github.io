@@ -33,8 +33,9 @@ const ORBITS: readonly OrbitDef[] = [
 
 const FIGHTER_FIRST_AT = 20; // s
 const FIGHTER_INTERVAL = 45; // s
-const FIGHTER_PASS_DURATION = 7; // s
-const FIGHTER_RADIUS = 3.2;
+const FIGHTER_PASS_DURATION = 11; // s - slow enough to be read (PORT-066)
+const FIGHTER_RADIUS = 2.4; // closer to the camera than the 3.2 of PORT-054
+const FIGHTER_SCALE = 2; // the ~0.5-unit model read as a dot at display size
 const FIGHTER_START_ANGLE = THREE.MathUtils.degToRad(-20);
 
 /** Point on a circular orbit of `radius`, tilted by `inclination` around the X axis. */
@@ -101,15 +102,41 @@ function buildSatellite(bodyColor: THREE.ColorRepresentation, panelColor: THREE.
 
 const WING_ANGLES_DEG = [45, 135, 225, 315] as const;
 
-/** A generic four-winged starfighter, ~0.5 units long, built from primitives
- * only (no franchise names, logos or colours - a stylised nod, not a copy). */
-function buildFighter(hullColor: THREE.ColorRepresentation, glowColor: THREE.ColorRepresentation) {
+/** A generic four-winged starfighter, ~0.5 units long before `FIGHTER_SCALE`,
+ * built from primitives only (no franchise names, logos or colours - a
+ * stylised nod, not a copy). A tinted cockpit bubble and a small light
+ * cylinder behind it give the eye a "ship" cue at small display size. */
+function buildFighter(
+  hullColor: THREE.ColorRepresentation,
+  glowColor: THREE.ColorRepresentation,
+  canopyColor: THREE.ColorRepresentation,
+  detailColor: THREE.ColorRepresentation,
+) {
   const group = new THREE.Group();
-  // Every part below is built with "forward" along +Y, then remapped to -Z
-  // once (Object3D.lookAt points -Z at its target) via `model.rotation.x`.
+  // Every part below is built with "forward" along +Y and "top" along +Z,
+  // then remapped once so forward is +Z (Object3D.lookAt points a mesh's +Z
+  // at its target) and top stays world-up - see the end of this function.
   const model = new THREE.Group();
   const hullMaterial = new THREE.MeshStandardMaterial({ color: hullColor });
   const glowMaterial = new THREE.MeshBasicMaterial({ color: glowColor });
+
+  // Cockpit bubble: a flattened, stretched sphere on top of the front fuselage.
+  const canopy = new THREE.Mesh(
+    new THREE.SphereGeometry(0.032, 16, 10),
+    new THREE.MeshStandardMaterial({ color: canopyColor, transparent: true, opacity: 0.85 }),
+  );
+  canopy.scale.set(1, 2, 0.8);
+  canopy.position.set(0, 0.07, 0.03);
+  model.add(canopy);
+
+  // Small upright cylinder behind the cockpit (a nod to a droid socket).
+  const droid = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.018, 0.018, 0.035, 12),
+    new THREE.MeshStandardMaterial({ color: detailColor }),
+  );
+  droid.rotation.x = Math.PI / 2; // cylinder axis (Y) -> up (+Z)
+  droid.position.set(0, -0.03, 0.045);
+  model.add(droid);
 
   const fuselage = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.05, 0.32, 8), hullMaterial);
   model.add(fuselage);
@@ -167,7 +194,11 @@ function buildFighter(hullColor: THREE.ColorRepresentation, glowColor: THREE.Col
     model.add(reactor);
   }
 
-  model.rotation.x = -Math.PI / 2;
+  // +Y (forward) -> +Z, then half-turn around forward so +Z (top) -> world +Y.
+  // PORT-054 used rotation.x = -PI/2, which flew the fighter tail first.
+  model.rotation.x = Math.PI / 2;
+  model.rotateY(Math.PI);
+  model.scale.setScalar(FIGHTER_SCALE);
   group.add(model);
   group.visible = false;
   return group;
@@ -238,7 +269,7 @@ const setupScene: ThreeStageSetup = ({ scene, camera, colors }) => {
   );
 
   // Late, occasional starfighter pass (feedback #9's "last resort").
-  const fighter = buildFighter(0x9a9a9a, colors.green);
+  const fighter = buildFighter(0x9a9a9a, colors.green, colors.blue, colors.mainText);
   scene.add(fighter);
   let fighterActive = false;
   let nextFighterStart = FIGHTER_FIRST_AT;
