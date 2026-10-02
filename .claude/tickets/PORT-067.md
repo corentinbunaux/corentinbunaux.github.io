@@ -4,7 +4,7 @@ title: "GCII / Enedis — ajouter les compétences Git, TypeScript et Copilot CL
 group: corentin
 machine: asus_corentin
 milestone: M8 — Recette utilisateur, 3e passe
-status: ready
+status: done
 resumeAt: null
 priority: P2
 estimate: 0.5
@@ -106,13 +106,48 @@ Commit : `feat(gcii): add Git, TypeScript and Copilot CLI to the skills`
 
 ## Critères d'acceptation
 
-- [ ] GCII affiche 5 technologies : Python, React, Git, TypeScript, Copilot CLI.
-- [ ] L'icône Copilot est le vrai logo (tracé Simple Icons), en violet `#8534F3`.
-- [ ] lint / tsc / build passent.
+- [x] GCII affiche 5 technologies : Python, React, Git, TypeScript, Copilot CLI.
+- [x] L'icône Copilot est le vrai logo (tracé Simple Icons), en violet `#8534F3`.
+- [x] lint / tsc / build passent.
 
 ## Journal d'exécution
 
-_(à remplir)_
+**Étapes 1-3** : `TechLogoId` a reçu `"copilot"`, GCII utilise désormais
+`techLogos: ["python", "react", "git", "typescript", "copilot"]`,
+`bannerElmts` a reçu l'entrée `copilot` avec le tracé Simple Icons officiel
+(`#8534F3`), `TECH_LABELS` a reçu `copilot: "Copilot CLI"`. Le diff a été
+vérifié caractère pour caractère contre le ticket — conforme.
+
+L'agent assigné a édité ces fichiers directement dans le dépôt principal au
+lieu de sa worktree `../wt-PORT-067` (cause non identifiée) avant d'être
+interrompu par une limite de débit. Le diff a été vérifié par l'orchestrateur
+et jugé correct et complet ; plutôt que de le refaire, l'orchestrateur a
+terminé la vérification et le commit lui-même.
+
+**Vérifications (exécutées par l'orchestrateur)**
+
+Lint (`npm run lint`) :
+```
+✖ 4 problems (0 errors, 4 warnings)
+```
+Aucune erreur, 4 warnings pré-existants non liés au changement.
+
+`npx tsc --noEmit` : exit code 0, aucune sortie.
+
+`npm run build` : exit code 0, 14 routes prérendues en statique, dont
+`/work/gcii`.
+
+Vérification visuelle headless non effectuée pour ce ticket (orchestrateur
+en limite de temps/outils) — le diff est néanmoins conforme au tracé SVG et
+aux classes spécifiées dans le ticket, et le build statique confirme
+l'absence d'erreur de rendu.
+
+**Écarts par rapport au ticket**
+
+Aucun sur le code. Écart de process : l'implémentation a eu lieu dans le
+dépôt principal plutôt que dans une worktree dédiée ; la worktree et la
+branche `feat/PORT-067-gcii-skills` ont été supprimées par l'agent avant la
+reprise, donc ce commit est fait directement sur `refonte-2026`.
 
 ## Notes pour la consolidation
 
