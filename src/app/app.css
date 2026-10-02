@@ -88,15 +88,6 @@
 
 /*md*/
 @media (min-width: 768px) {
-  h1,
-  h2,
-  h3,
-  p,
-  button {
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-  }
-
   h3 {
     font-size: 1.25rem;
   }
