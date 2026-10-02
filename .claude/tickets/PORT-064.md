@@ -4,7 +4,7 @@ title: "Thème clair — fond de carte moins terne (Parcours, Formation, « En b
 group: corentin
 machine: asus_corentin
 milestone: M8 — Recette utilisateur, 3e passe
-status: in-progress
+status: review
 resumeAt: null
 priority: P2
 estimate: 0.25
@@ -106,7 +106,18 @@ Commit : `style(theme): use a less flat light-theme card background`
 ○  (Static)  prerendered as static content
 ```
 
-**Vérification visuelle** : À effectuer après intégration de `refonte-2026` (étape 6b).
+**Intégration refonte-2026** : Déjà à jour, pas de conflit.
+
+**Re-vérification après intégration** (exit 0) :
+- npm run lint: ✖ 4 problems (0 errors, 4 warnings) — pré-existants
+- npx tsc --noEmit: aucune erreur liée au changement
+- npm run build: ✓ (Static) prerendered as static content
+
+**Vérification visuelle** : À effectuer par Corentin (human_checkpoint). Critères :
+- section Parcours en thème clair : cartes avec fond bleuté (nouveau)
+- page projet en thème clair (ex. /internships/safran) : carte « En bref » avec nouveau fond
+- texte lisible (contraste vérifié : 15.45:1 et 5.94:1, seuil 4.5:1)
+- thème sombre inchangé
 
 ## Notes pour la consolidation
 
