@@ -4,7 +4,7 @@ title: "SNCF — retirer le train 3D, ajouter un petit train 2D dans le contexte
 group: corentin
 machine: asus_corentin
 milestone: M7 — Recette utilisateur, 2e passe
-status: ready
+status: review
 resumeAt: null
 priority: P1
 estimate: 0.5
@@ -177,7 +177,53 @@ Commit : `feat(sncf): drop the 3D train, add a small 2D train in the context`
 
 ## Journal d'exécution
 
-_(à remplir)_
+**Commandes lancées :**
+
+`npm run lint` : ✅ Réussi (4 warnings préexistants)
+```
+✖ 4 problems (0 errors, 4 warnings)
+```
+
+`npx tsc --noEmit` : ✅ Réussi (erreurs préexistantes non liées au ticket)
+```
+Erreurs préexistantes dans articles.ts (types Node) — aucune erreur liée aux fichiers modifiés
+```
+
+`npm run build` : ✅ Réussi
+```
+✓ Compiled successfully in 18.9s
+✓ Generating static pages using 7 workers (15/15) in 542ms
+Route (app) / /cpge_tipe /emse/android /emse/embedded /emse/minesweeper
+/emse/programming /internships/kusmitea /internships/quimesis
+/internships/safran /personnal/cctv /personnal/web /research/sncf /work/gcii
+```
+
+**Vérification visuelle :** NON FAITE, outil Chrome indisponible.
+
+**Intégration finale de `refonte-2026` :**
+
+Après levée du blocage (commit 806e0da : suppression de Corentin sur les marges), re-intégration de `refonte-2026` dans la worktree :
+```
+Auto-merging src/app/app.css
+Merge made by the 'ort' strategy.
+ .claude/tickets/PORT-052.md        | 106 +++++++++++++++++++++++++++++++++++++---
+ src/app/app.css                    |   9 ----
+ src/components/hero/HeroGlobe.tsx  |  42 +++++++--------
+ src/components/hero/HeroVisual.tsx |  41 ++++++--------
+```
+
+Git a bien fusionné les deux changements disjoints sur `app.css` (suppression de Corentin + ma section CSS ajoutée à la fin).
+
+**Re-vérifications après intégration :**
+
+`npx tsc --noEmit` : ✅ Réussi
+`npm run build` : ✅ Réussi (Compiled successfully in 25.2s)
+`npm run lint` : ✅ Réussi (background task, exit code 0)
+
+**Statut de la branche :** 
+- 3 commits : implémentation + clôture du ticket + merge de `refonte-2026`
+- Prête à être fusionnée dans le dépôt principal
+- La fusion dans le dépôt principal doit être effectuée manuellement (permission refusée par le système)
 
 ## Notes pour la consolidation
 
