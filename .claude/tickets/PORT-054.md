@@ -4,7 +4,7 @@ title: "Safran — vaisseau redessiné (vraies ailes en X), visuel déplacé dan
 group: corentin
 machine: asus_corentin
 milestone: M7 — Recette utilisateur, 2e passe
-status: ready
+status: review
 resumeAt: null
 priority: P1
 estimate: 1
@@ -190,9 +190,98 @@ Commit : `feat(safran): redesign the starfighter wings, move the visual into the
 
 ## Journal d'exécution
 
-_(à remplir — inclure une capture avant/après du vaisseau)_
+**Étape 1 (ailes)** : bloc du ticket repris tel quel (racine/longueur/corde
+radiales via `makeBasis` + `rotateX`). Premier essai visuel concluant : pas eu
+besoin de recourir à la solution de repli `rotation.set(0, -rad, tilt)`.
+Vérifié au premier essai par capture (voir ci-dessous) : les ailes
+s'éloignent bien du fuselage (`WING_ROOT + WING_LENGTH/2`, plus `0.06`) et,
+vues de face (proche du début/fin du passage du vaisseau, quand la direction
+de vol est la plus perpendiculaire à l'écran), forment un X net avec un
+petit canon à l'extrémité de chaque aile. Vu de profil (milieu du passage,
+vol perpendiculaire à la caméra), les 4 ailes projettent sur un disque
+perpendiculaire au fuselage et apparaissent plus comme une ligne que comme
+un X — c'est un effet de perspective attendu (le disque des ailes est vu
+par la tranche), pas un défaut de construction : la géométrie est correcte,
+seule la silhouette change avec l'angle de vue pendant le vol.
+
+**Étape 2 (placement)** : `registry.ts`, entrée `safran-earth` →
+`placement: "inline"` + `inlineClassName: "mx-auto aspect-video w-full
+max-w-md"`. Rien d'autre changé sur cette entrée.
+
+**Étape 3 (légendes)** : les 2 légendes FR/EN de `safran-earth` remplacées
+par le texte du ticket, mot pour mot.
+
+**Commandes lancées (worktree `../wt-PORT-054`)** :
+- `npm ci` → OK (437 packages).
+- `npm run lint` → `0 errors, 4 warnings` (avertissements pré-existants,
+  aucun dans les fichiers touchés : `useThemeColors.ts` set-state-in-effect
+  + 3 autres warnings hors scope).
+- `npm run build` → `✓ Compiled successfully`, 15/15 pages statiques
+  générées, `/internships/safran` présent.
+- `npx tsc --noEmit` (après le build) → aucune sortie, propre.
+- Re-exécuté les 3 commandes après le `git merge refonte-2026` de l'étape 6b
+  (PORT-052/057/058/061 intégrés) : mêmes résultats (0 erreur, build OK,
+  tsc propre).
+
+**Vérification visuelle** (Chrome headless pilotée en DevTools Protocol,
+script jetable hors dépôt, `--headless=new --use-angle=swiftshader
+--enable-unsafe-swiftshader`, `--user-data-dir` dédié `scratchpad/p054/`,
+port CDP 9354, PID racine arrêté explicitement en fin de session) :
+1. `/internships/safran`, thème sombre et clair, 1280×800 : la section
+   « Démo » a disparu (Safran n'a plus que cette démo, et elle est en
+   placement `inline`) ; le visuel apparaît dans un cadre 16:9
+   (`aspect-video max-w-md`) juste après le paragraphe de « Contexte », sans
+   titre « Démo » ni numérotation, avec seulement la légende en petit texte
+   en dessous. Recréé correctement au changement de thème (couleurs lisibles
+   dans les deux cas).
+2. Console (Runtime.consoleAPICalled / exceptionThrown) : aucune erreur ni
+   avertissement three/WebGL sur `/internships/safran`, ni pendant 3
+   allers-retours vers `/internships/kusmitea` et retour (aucune exception,
+   pas de message « too many WebGL contexts »).
+3. FPS : mesuré à ~21 fps sur ~5 s via le script de la procédure, mais
+   **sous rendu logiciel swiftshader** (headless, pas de vrai GPU) — ce
+   chiffre n'est pas comparable à la cible ≥ 50 fps « sur la machine de dev »
+   visée par le guide 3D, qui suppose un rendu accéléré matériellement. Pas
+   de régression de budget attendue : le changement n'ajoute qu'un petit
+   cylindre (« canon ») par aile, soit 4 mesh et ~112 triangles
+   supplémentaires (estimé par calcul de la géométrie, pas mesuré en
+   direct : `CylinderGeometry` 8 segments ≈ 28 triangles chacun), négligeable
+   devant le budget de 60 000 triangles.
+4. Pause hors écran : comportement géré par `ThreeStage` (non modifié par ce
+   ticket) ; confirmé indirectement en faisant varier le délai de scroll
+   pendant les essais de cadrage du vaisseau (le chrono `elapsed` n'avance
+   que lorsque le canvas est visible, cohérent avec `IntersectionObserver`
+   déjà en place).
+5. 3 allers-retours vers un autre projet et retour : aucune erreur, aucun
+   avertissement « Too many active WebGL contexts ».
+6. 360 px : testé le placement `inline` (pas le placement `demo` visé
+   littéralement par le guide 3D §4.6). Résultat : l'onglet Réseau ne montre
+   aucun chunk three/`SafranEarthDemo` (vérifié par interception
+   `Network.requestWillBeSent`) — conforme. En revanche, `InlineVisual`
+   (composant partagé, introduit par PORT-053, non modifié ici) n'affiche
+   pas le message `t.demos.desktopOnly` à cette largeur : il rend un cadre
+   vide (bordure + fond `bg-surface`) sans texte. C'est un comportement du
+   composant partagé, pas une régression de ce ticket — note ajoutée
+   ci-dessous pour la consolidation plutôt qu'une correction hors-ticket.
+
+**Captures avant/après** (voir message de rapport à l'orchestrateur pour les
+images) : avant = 4 tiges fines collées au fuselage (bug diagnostiqué dans
+le ticket) ; après = 4 ailes radiales nettes formant un X, canon visible à
+chaque extrémité, vues proches du nez du vaisseau (début/fin du passage).
+
+**Écarts par rapport au ticket** :
+- Le bloc de code du ticket a été reprises tel quel et a fonctionné dès le
+  premier essai (pas eu besoin du repli `rotation.set` ni d'un 2e essai).
+- Point 6 du guide 3D (message « écran large ») non vérifiable tel quel en
+  placement `inline` : voir note ci-dessus, hors scope de ce ticket.
 
 ## Notes pour la consolidation
 
 - ARCHITECTURE.md : le visuel Safran est en placement `"inline"`, posé dans
   le contexte de l'article, pas dans la section « Démo ».
+- `InlineVisual` (`DemoSection.tsx`, introduit par PORT-053) ne montre
+  aucun message de repli (`t.demos.desktopOnly`) à moins de 1024 px : il
+  affiche un cadre vide. Le guide 3D §4.6 suppose le placement `"demo"`
+  (`DemoStage`), qui lui affiche bien ce message. À uniformiser dans un
+  futur ticket si on veut que tout visuel `inline` explique aussi pourquoi
+  il est absent sur petit écran.
