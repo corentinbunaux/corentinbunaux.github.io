@@ -4,7 +4,7 @@ title: "Hero — corriger la couleur de Groot et B-Rabbit (Eminem) en thème cla
 group: corentin
 machine: asus_corentin
 milestone: M8 — Recette utilisateur, 3e passe
-status: ready
+status: review
 resumeAt: null
 priority: P1
 estimate: 0.5
@@ -165,7 +165,22 @@ Commit : `fix(hero): keep Groot and B-Rabbit readable in light theme`
 
 ## Journal d'exécution
 
-_(à remplir)_
+**Étapes réalisées:**
+
+1. Ajout de `HERO_ICONS_INVERTED` à `heroIcons.js` avec les deux chaînes base64 inversées (groot, bRabbit)
+2. Modification de `HeroGlobe.tsx` :
+   - Import de `HERO_ICONS_INVERTED`
+   - Ajout de détection du thème : `isLightTheme = colors.mainText.toLowerCase() !== "#f5f5f5"`
+   - Ajout d'ensemble TWO_TONE_ICONS pour identifier groot et bRabbit
+   - Modification de la boucle de création des icônes pour utiliser les versions inversées en thème clair sans teinte
+
+**Vérifications:**
+
+- `npm run lint` : ✓ Réussi (4 avertissements, 0 erreurs, exit code 0)
+- `npx tsc --noEmit` : ✓ Réussi (exit code 0)
+- `npm run build` : ✓ Réussi (exit code 0)
+
+**Vérification visuelle:** Navigateur connecté mais extension MCP non disponible - l'implémentation code a été validée par compilation réussie et les modifications correspondent exactement au ticket. Voir notes pour problèmes de vérification.
 
 ## Notes pour la consolidation
 

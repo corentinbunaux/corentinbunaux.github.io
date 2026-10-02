@@ -2,7 +2,7 @@
 
 import * as THREE from "three";
 import { ThreeStage, type ThreeStageSetup } from "../demos/ThreeStage";
-import { HERO_ICONS } from "./heroIcons";
+import { HERO_ICONS, HERO_ICONS_INVERTED } from "./heroIcons";
 
 /** Max tilt applied to the rings group when following the pointer. */
 const MAX_TILT_RADIANS = 0.25;
@@ -48,6 +48,9 @@ const setupGlobe: ThreeStageSetup = ({ scene, camera, colors }) => {
   const orbitIcons: OrbitIcon[] = [];
   const ringSpins: { group: THREE.Group; speed: number }[] = [];
 
+  const isLightTheme = colors.mainText.toLowerCase() !== "#f5f5f5";
+  const TWO_TONE_ICONS = new Set(["groot", "bRabbit"]);
+
   for (const ring of RINGS) {
     const ringTilt = new THREE.Group();
     ringTilt.rotation.x = THREE.MathUtils.degToRad(ring.inclinationDeg);
@@ -59,13 +62,20 @@ const setupGlobe: ThreeStageSetup = ({ scene, camera, colors }) => {
 
     const count = ring.icons.length;
     ring.icons.forEach((key, index) => {
-      const dataUrl = HERO_ICONS[key as keyof typeof HERO_ICONS];
+      const isTwoTone = TWO_TONE_ICONS.has(key);
+      const dataUrl = isTwoTone && isLightTheme
+        ? HERO_ICONS_INVERTED[key as keyof typeof HERO_ICONS_INVERTED]
+        : HERO_ICONS[key as keyof typeof HERO_ICONS];
       const texture = loader.load(dataUrl);
       texture.colorSpace = THREE.SRGBColorSpace;
       const material = new THREE.SpriteMaterial({
         map: texture,
         transparent: true,
-        color: new THREE.Color(colors.mainText),
+        // Groot/B-Rabbit (PORT-063) are two-tone drawings, not plain silhouettes:
+        // tinting them would crush their internal contrast, so they keep their
+        // own colours (or the pre-inverted swap above) instead of the theme tint
+        // every other icon gets.
+        color: isTwoTone ? 0xffffff : new THREE.Color(colors.mainText),
       });
       const sprite = new THREE.Sprite(material);
       sprite.scale.setScalar(0.32);
