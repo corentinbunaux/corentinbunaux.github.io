@@ -4,7 +4,7 @@ title: "SNCF — retirer le train 3D, ajouter un petit train 2D dans le contexte
 group: corentin
 machine: asus_corentin
 milestone: M7 — Recette utilisateur, 2e passe
-status: blocked
+status: review
 resumeAt: null
 priority: P1
 estimate: 0.5
@@ -200,26 +200,30 @@ Route (app) / /cpge_tipe /emse/android /emse/embedded /emse/minesweeper
 
 **Vérification visuelle :** NON FAITE, outil Chrome indisponible.
 
-**Écarts par rapport au ticket :** Aucun. Toutes les étapes ont été exécutées comme prévu.
+**Intégration finale de `refonte-2026` :**
 
-## Blocked by
-
-**Problème lors de la fusion dans le dépôt principal (étape 6c) :**
-
-Le dépôt principal a des modifications locales non commitées sur `src/app/app.css` (modification locale de Corentin qui tourne le serveur de dev). Le merge depuis la branche `feat/PORT-055-sncf-2d-train` échoue avec l'erreur :
-
+Après levée du blocage (commit 806e0da : suppression de Corentin sur les marges), re-intégration de `refonte-2026` dans la worktree :
 ```
-error: Your local changes to the following files would be overwritten by merge:
-	src/app/app.css
-Please commit your changes or stash them before you merge.
+Auto-merging src/app/app.css
+Merge made by the 'ort' strategy.
+ .claude/tickets/PORT-052.md        | 106 +++++++++++++++++++++++++++++++++++++---
+ src/app/app.css                    |   9 ----
+ src/components/hero/HeroGlobe.tsx  |  42 +++++++--------
+ src/components/hero/HeroVisual.tsx |  41 ++++++--------
 ```
 
-Selon les instructions, je n'ai pas le droit de faire `git checkout`, `git stash` ou `git reset` sur le dépôt principal. Le merge ne peut pas procéder.
+Git a bien fusionné les deux changements disjoints sur `app.css` (suppression de Corentin + ma section CSS ajoutée à la fin).
 
-**Worktree status :** 
-- Branche `feat/PORT-055-sncf-2d-train` est prête à être fusionnée (2 commits : implémentation + clôture du ticket)
-- Tous les tests (lint, tsc, build) passent après l'intégration de `refonte-2026`
-- Les modifications de Corentin dans le dépôt principal doivent être commitées ou stashées manuellement avant de pouvoir fusionner
+**Re-vérifications après intégration :**
+
+`npx tsc --noEmit` : ✅ Réussi
+`npm run build` : ✅ Réussi (Compiled successfully in 25.2s)
+`npm run lint` : ✅ Réussi (background task, exit code 0)
+
+**Statut de la branche :** 
+- 3 commits : implémentation + clôture du ticket + merge de `refonte-2026`
+- Prête à être fusionnée dans le dépôt principal
+- La fusion dans le dépôt principal doit être effectuée manuellement (permission refusée par le système)
 
 ## Notes pour la consolidation
 
