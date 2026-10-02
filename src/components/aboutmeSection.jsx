@@ -72,7 +72,7 @@ function AboutMe() {
     { label: t.about.interests.videoGames, Icon: Gamepad2 },
   ];
 
-  // idle -> flying (ball on its way) -> hit (player swings, button leaves).
+  // idle -> flying (ball on its way) -> hit (ball fades on the racket, button leaves).
   const [phase, setPhase] = useState('idle');
   const [aim, setAim] = useState(null);
   const trackRef = useRef(null);
@@ -154,7 +154,9 @@ function AboutMe() {
             >
               {t.about.pushButton}
             </button>
-            <div className={`flex w-full justify-center ${phase === 'hit' ? 'federer-swing' : ''}`}>
+            {/* No swing animation (PORT-062): the flat two-handed drawing
+                could not be posed as a convincing one-handed backhand. */}
+            <div className='flex w-full justify-center'>
               <Federer ref={federerRef} />
             </div>
           </div>
