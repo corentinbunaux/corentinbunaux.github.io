@@ -23,7 +23,7 @@ export interface DemoEntry {
 const SafranEarthDemo = dynamic(() => import("./SafranEarthDemo").then((m) => m.SafranEarthDemo), { ssr: false });
 const QuimesisFragmentsDemo = dynamic(() => import("./QuimesisFragmentsDemo").then((m) => m.QuimesisFragmentsDemo), { ssr: false });
 const QuimesisJawDemo = dynamic(() => import("./QuimesisJawDemo").then((m) => m.QuimesisJawDemo), { ssr: false });
-const SncfTrainDemo = dynamic(() => import("./SncfTrainDemo").then((m) => m.SncfTrainDemo), { ssr: false });
+const SncfMiniTrainDemo = dynamic(() => import("./SncfMiniTrainDemo").then((m) => m.SncfMiniTrainDemo), { ssr: false });
 const SpaceTimeDemo = dynamic(() => import("./SpaceTimeDemo").then((m) => m.SpaceTimeDemo), { ssr: false });
 const MinesweeperDemo = dynamic(() => import("./MinesweeperDemo").then((m) => m.MinesweeperDemo), { ssr: false });
 const GuardsDemo = dynamic(() => import("./GuardsDemo").then((m) => m.GuardsDemo), { ssr: false });
@@ -67,15 +67,6 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
   ],
 
   "research/sncf": [
-    // PORT-046
-    {
-      id: "sncf-train",
-      kind: "3d",
-      ready: true,
-      placement: "demo",
-      Component: SncfTrainDemo,
-    },
-
     // PORT-042
     {
       id: "sncf-spacetime",
@@ -83,6 +74,15 @@ export const DEMOS: Readonly<Record<string, readonly DemoEntry[]>> = {
       ready: true,
       placement: "demo",
       Component: SpaceTimeDemo,
+    },
+
+    // PORT-055
+    {
+      id: "sncf-mini-train",
+      kind: "2d",
+      ready: true,
+      placement: "inline",
+      Component: SncfMiniTrainDemo,
     },
   ],
 

@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import Federer from './federer';
 import '../app/app.css'
 import { useTranslation } from '../i18n/dictionary';
-import { Code, Crown, Footprints, Gamepad2, Mountain, Waves } from 'lucide-react';
+import { Clapperboard, Code, Crown, Footprints, Gamepad2, Mountain, Waves } from 'lucide-react';
 
 // Final horizontal offset of @keyframes ball_path, in ball widths (3230%).
 const BALL_PATH_END_X = 32.3;
@@ -62,13 +62,14 @@ function AboutMe() {
   const activeInterests = [
     { label: t.about.interests.tennis, Icon: TennisBallIcon },
     { label: t.about.interests.running, Icon: Footprints },
-    { label: t.about.interests.videoGames, Icon: Gamepad2 },
+    { label: t.about.interests.moviesMusic, Icon: Clapperboard },
     { label: t.about.interests.code, Icon: Code },
   ];
   const archivedInterests = [
     { label: t.about.interests.swimming, Icon: Waves },
     { label: t.about.interests.climbing, Icon: Mountain },
     { label: t.about.interests.chess, Icon: Crown },
+    { label: t.about.interests.videoGames, Icon: Gamepad2 },
   ];
 
   // idle -> flying (ball on its way) -> hit (player swings, button leaves).
@@ -105,7 +106,7 @@ function AboutMe() {
   }
 
   return (
-      <div className="container h-5/6">
+      <div className="container h-auto lg:h-5/6">
         <div ref={trackRef} className='absolute w-5/6 h-5/6'>
           {/* The wrapper adds a linear correction to ball_path so the ball
               ends on the racket whatever the viewport width. */}
@@ -119,12 +120,12 @@ function AboutMe() {
             ></div>
           </div>
         </div>
-        <div className='grid grid-cols-1 lg:grid-cols-2 h-full'>
-          <div className='h-1/2 lg:h-full'>
-            <div className='h-1/6 flex justify-center items-center'>
+        <div className='grid grid-cols-1 lg:grid-cols-2 h-auto lg:h-full gap-10 lg:gap-0'>
+          <div className='h-auto lg:h-full'>
+            <div className='h-auto lg:h-1/6 flex justify-center items-center'>
               <h1 className='outlined-text'>{t.about.title}</h1>
             </div>
-            <div className='h-5/6 p-10'>
+            <div className='h-auto lg:h-5/6 p-10'>
               <p>{t.about.tennisIntro}<strong style={{ color: 'var(--my-blue)' }}>{t.about.tennisWord}</strong>{t.about.tennisOutro}</p>
               <br></br>
               <p>{t.about.tournaments}</p>
@@ -146,7 +147,7 @@ function AboutMe() {
               </div>
             </div>
           </div>
-          <div className='h-1/2 lg:h-full flex flex-col items-center justify-center'>
+          <div className='h-auto lg:h-full flex flex-col items-center justify-center'>
             <button
               onClick={pushBall}
               className={`btn_federer mb-10 p-2 rounded-lg hidden xl:block ${phase === 'hit' ? 'btn_federer-done' : ''}`}

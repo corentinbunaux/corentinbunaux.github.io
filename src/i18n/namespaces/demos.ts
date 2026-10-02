@@ -37,10 +37,10 @@ export const demosFr: DemosDict = {
       caption:
         "Faites-la tourner en la faisant glisser, cliquez pour ouvrir ou fermer la mâchoire, survolez une dent pour la mettre en évidence. Modèle simplifié, généré par le code.",
     },
-    "sncf-train": {
-      title: "Un train sur la ligne",
+    "sncf-mini-train": {
+      title: "Sur les rails",
       caption:
-        "Un train parcourt une ligne en boucle : ce sont ces circulations que les graphiques espace-temps représentent.",
+        "Un petit clin d'œil animé : c'est ce genre de circulation que les graphiques espace-temps ci-dessous représentent.",
     },
     "sncf-spacetime": {
       title: "Graphique espace-temps",
@@ -108,10 +108,10 @@ export const demosEn: DemosDict = {
       caption:
         "Drag to rotate, click to open or close the jaw, hover a tooth to highlight it. Simplified model, generated in code.",
     },
-    "sncf-train": {
-      title: "A train on the line",
+    "sncf-mini-train": {
+      title: "On the rails",
       caption:
-        "A train runs along a looping line: these are the movements that space-time diagrams depict.",
+        "A small animated wink: this is the kind of movement the space-time diagram below represents.",
     },
     "sncf-spacetime": {
       title: "Space-time diagram",

@@ -4,7 +4,7 @@ export type DemoId =
   | "safran-earth"
   | "quimesis-fragments"
   | "quimesis-jaw"
-  | "sncf-train"
+  | "sncf-mini-train"
   | "sncf-spacetime"
   | "minesweeper"
   | "guards"

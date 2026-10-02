@@ -4,7 +4,7 @@ title: "Hero — les icônes orbitent l'avatar (plus d'astre), couleur des icôn
 group: corentin
 machine: asus_corentin
 milestone: M7 — Recette utilisateur, 2e passe
-status: ready
+status: review
 resumeAt: null
 priority: P1
 estimate: 1
@@ -174,17 +174,111 @@ Commit : `feat(hero): orbit the icons around the avatar, tint them per theme`
 
 ## Critères d'acceptation
 
-- [ ] Plus d'astre filaire séparé ; l'avatar est visuellement le centre de
+- [x] Plus d'astre filaire séparé ; l'avatar est visuellement le centre de
       l'orbite et occupe la majorité du panneau.
-- [ ] Icônes lisibles en thème clair ET sombre.
-- [ ] Comportement desktop-only et anti-saut de mise en page conservés.
-- [ ] Guide 3D §4, lint / tsc / build.
+- [x] Icônes lisibles en thème clair ET sombre.
+- [x] Comportement desktop-only et anti-saut de mise en page conservés.
+- [x] Guide 3D §4, lint / tsc / build.
 
 ## Journal d'exécution
 
-_(à remplir)_
+**Implémentation**
+
+- `HeroGlobe.tsx` : suppression du bloc `globeGeometry`/`globeMaterial`/
+  `globe` (`WireframeGeometry`/`LineSegments`) et de son
+  `tiltGroup.add(globe)` ; suppression de `GLOBE_RADIUS`/`GLOBE_SPIN_SPEED`
+  et de la rotation associée dans `update()`. `globeCenterCamZ` renommé
+  `orbitCenterCamZ` (le commentaire et le nom référençaient l'astre
+  disparu). Icônes teintées via `color: new THREE.Color(colors.mainText)`
+  sur chaque `SpriteMaterial`, comme prescrit par le ticket.
+- Rayons des anneaux : la valeur `×1.3 à ×1.6` suggérée par le ticket
+  (donnant ~2.3–3.3) a été essayée en premier (×1.5 → 2.63/3.08) mais
+  **rejetée après capture d'écran** : les icônes sortaient nettement du
+  cadre du canevas sur les côtés (clipping visible aux deux captures
+  sombre et claire). Calcul a posteriori : à `fov=40`, distance caméra
+  5.2, le canevas carré n'affiche qu'une demi-largeur d'environ 1.9 unité
+  monde à cette profondeur ; avec l'avatar à 70 % de largeur du panneau
+  (avant : 38 % dans un panneau séparé, sans contrainte de cadrage
+  partagée avec le globe), la fenêtre utile pour les rayons d'anneaux est
+  étroite (grossièrement 1.3–1.9 unité monde), bien en-deçà de la
+  multiplication suggérée. Valeurs retenues après un 2e essai et capture :
+  `1.9` et `2.2` (au lieu de `1.75`/`2.05`) — les icônes encerclent
+  l'avatar sans le recouvrir, avec un unique icône frôlant le bord à
+  l'instant de la capture (comportement déjà présent à l'identique dans
+  l'ancien design pour l'anneau extérieur à 2.05, jugé acceptable).
+- `HeroVisual.tsx` : panneau `aspect-square` unique (plus de
+  `aspect-[4/3]`/`aspect-video`), avatar `w-3/4 lg:w-[70%]` centré,
+  `HeroGlobe` en calque `absolute inset-0 pointer-events-none` derrière
+  l'avatar (ordre DOM : calque 3D avant l'avatar). Le commentaire
+  `justify-between` anti-saut a été retiré : l'avatar n'est plus un enfant
+  flex partagé avec un slot globe, il est seul dans un conteneur
+  `flex items-center justify-center` à taille fixe — il ne bouge plus
+  quel que soit l'état du gate. Les 3 points décoratifs ont été retirés
+  (jugement : ils ne s'intégraient plus au nouveau cadrage centré/circulaire).
+
+**Vérifications (worktree `../wt-PORT-052`)**
+
+```
+npm run lint
+# ✖ 4 problems (0 errors, 4 warnings) — warnings préexistants
+#   (react-hooks/set-state-in-effect dans ThemeContext.tsx et
+#   useThemeColors.ts, non liés à ce ticket)
+
+npm run build
+# ✓ Compiled successfully in 23.5s
+# ✓ Running TypeScript ... Finished TypeScript in 14.8s
+# ✓ Generating static pages using 7 workers (15/15)
+
+npx tsc --noEmit
+# (aucune sortie — 0 erreur)
+```
+
+**Vérification visuelle** : faite via Chrome installé piloté en headless
+(protocole DevTools, WebSocket natif Node 24, script jetable hors dépôt
+dans le scratchpad de session, `--headless=new --use-angle=swiftshader
+--enable-unsafe-swiftshader`, `--user-data-dir` dédié), sur `npm run dev`
+(port 3003, 3000 étant pris). Arrêt de Chrome et du serveur uniquement par
+PID exact (`taskkill //PID <pid> //T //F`, PID de Chrome retrouvé via
+`Get-CimInstance Win32_Process` filtré sur `--remote-debugging-port`).
+
+- 1280×900, thème sombre puis clair : avatar net, grand, centré ; anneau
+  de 15 icônes visible autour de lui, sans le recouvrir. Capture avant/
+  après confirmée : en clair, les icônes (pictos type roi/tour/cavalier
+  d'échecs, ordinateur, patins, Iron Man, Groot, raquette) sont désormais
+  gris foncé/noir et bien lisibles (contre blanc illisible avant), sans
+  changement visible en thème sombre (silhouettes toujours claires).
+- 360 px : panneau réduit à l'avatar seul (capture `hero-360-panel.png`),
+  aucune requête réseau contenant `three` (vérifié par écoute
+  `Network.requestWillBeSent`).
+- Tilt au pointeur : `Input.dispatchMouseEvent` (deux positions), capture
+  avant/après montre un déplacement des icônes cohérent avec l'inclinaison
+  du panneau — toujours actif.
+- FPS : mesure JS de ~2.5 s dans la page, ~65–72 fps (cible ≥ 50 fps ✓).
+- Navigation : 3 cycles `/` → `/internships/safran` → retour (`history.back`)
+  + un cycle défilement bas/haut de page : aucune erreur/avertissement
+  console/WebGL collectée (`Runtime.consoleAPICalled`/`exceptionThrown`
+  écoutés pendant tout le scénario).
+- Budget triangles : non mesuré numériquement via
+  `renderer.info.render.triangles` — les seuls objets de la scène sont des
+  `THREE.Sprite` (pas de géométrie visible autre que des quads), largement
+  sous le budget de 60 000 triangles ; jugé non nécessaire vu l'absence de
+  toute géométrie non triviale dans la scène.
+
+**Écarts par rapport au ticket** :
+- Rayons des anneaux fixés à `1.9`/`2.2` au lieu de la fourchette
+  `×1.3–1.6` suggérée à titre d'exemple (≈2.3–3.3) — le ticket demandait
+  explicitement l'ajustement par capture d'écran, ce qui a été fait ; la
+  fourchette suggérée provoquait un dépassement visible du cadre.
+- Points décoratifs retirés (le ticket laissait ce choix au jugement).
 
 ## Notes pour la consolidation
 
 - ARCHITECTURE.md : le hero n'a plus de globe séparé ; les icônes orbitent
   directement l'avatar (`HeroGlobe.tsx` ne construit plus de sphère).
+- Pour un futur ticket touchant aux rayons d'anneaux de `HeroGlobe.tsx` :
+  la fenêtre utile de rayon (pour rester dans le cadre du canevas tout en
+  dépassant le cercle de l'avatar) est étroite avec la géométrie actuelle
+  (`fov=40`, distance caméra 5.2, avatar à 70 % du panneau) — grossièrement
+  1.4 à 1.9 unité monde. Toute augmentation supplémentaire de la taille de
+  l'avatar nécessiterait de reculer la caméra (`camera.position.set`) en
+  plus d'ajuster les rayons, sous peine de clipping aux bords.
