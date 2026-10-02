@@ -4,7 +4,7 @@ title: "Quimesis — mâchoire procédurale fidèle aux captures réelles de l'a
 group: corentin
 machine: asus_corentin
 milestone: M7 — Recette utilisateur, 2e passe
-status: ready
+status: review
 resumeAt: null
 priority: P2
 estimate: 2
@@ -178,7 +178,137 @@ Commit : `feat(demos): rebuild the Quimesis jaw as one continuous arch, closer t
 
 ## Journal d'exécution
 
-_(à remplir — inclure la comparaison capture-par-capture)_
+Exécuté le 2026-09-28 → 2026-10-02 (session interrompue puis reprise), worktree
+`../wt-PORT-059`, branche `feat/PORT-059-quimesis-real-jaw-look`.
+
+### Ce qui a été fait
+
+`src/components/demos/QuimesisJawDemo.tsx` réécrit (seul fichier de code touché ;
+registre inchangé, `ready: true` déjà en place) :
+
+- Chaque arcade = **une seule `BufferGeometry` indexée** : un tube balayé le long
+  de la parabole de PORT-049 (`z = -0.55·x² + 0.9`), paramétré par abscisse
+  curviligne. À chaque échantillon, un anneau de section (38 sommets, sens
+  trigonométrique dans le plan normale/haut) : socle de gencive (fond plat à bord
+  légèrement irrégulier, paroi vestibulaire évasée, bosse radiculaire sous chaque
+  couronne) + couronne en super-ellipse avec relief occlusal (incisive : bord
+  droit ; canine : une cuspide émoussée ; prémolaire : 2 cuspides ; molaire :
+  4 cuspides + 1 petite + sillon central). Le long de l'arche, la hauteur de
+  couronne suit une super-ellipse par dent → sillon en V à chaque frontière,
+  papille gingivale qui remonte entre les dents. Extrémités : un petit coussinet
+  rétromolaire puis capuchon en éventail. Léger bruit déterministe (aspect scan).
+  `computeVertexNormals()`. Arcade haute = miroir en y avec inversion du sens des
+  triangles.
+- Matériau **unique** pour toute la surface (gencive et dents fondues).
+- Survol : le `Raycaster` touche la surface → `face.a / RING_SIZE` donne la bande
+  d'anneaux → table bande → dent (même découpage que la construction). Un
+  `InstancedMesh` de 18 petites sphères `colors.green` (enfant de l'arcade, suit
+  l'ouverture) dessine la frontière dent/gencive de cette dent (côté
+  vestibulaire, côté lingual, deux extrémités). Une dent à la fois ; curseur
+  `pointer`. Ajout d'un `pointerleave` qui masque les points (retiré dans
+  `dispose()`).
+- Inchangé : `OrbitControls` sans zoom/pan, `autoRotate`, clic court < 5 px →
+  ouverture/fermeture (même pivot, même angle, même durée).
+
+### Écarts par rapport au ticket (assumés, au nom de la ressemblance)
+
+1. **Couleur** : le ticket propose `colors.mainText` en thème sombre ; or ce
+   token vaut `#f5f5f5` (blanc) → on retrouvait des « dents blanches », contraire
+   aux captures. Rose « réaliste » dans les deux thèmes : `#d6aab2` (sombre),
+   `#dcaab3` (clair, rendu mauve désaturé une fois éclairé). Lisible sur les deux
+   surfaces (vérifié par capture).
+2. **Largeurs de dents** : poids par type (incisive 0.78, canine 0.88,
+   prémolaire 0.9, molaire 1.3) au lieu de 14 segments égaux — les molaires des
+   captures sont nettement plus longues que les incisives.
+3. **Échantillonnage** : 16 anneaux par dent (233 anneaux) et 38 sommets par
+   anneau au lieu de ~120 × 16 : les cuspides n'étaient pas représentables avec
+   16 points de section.
+4. **Caméra** : rapprochée (`(0, 1.8, 3.7)`, cible `(0, 0, 0.3)`) pour que
+   l'arche remplisse le cadre.
+5. Survol : points (comme l'appli) plutôt qu'un tore — le ticket laisse le choix.
+
+### Budget triangles (calculé depuis les constantes du code)
+
+233 anneaux × 38 sommets → 232 × 38 × 2 = 17 632 triangles + 2 × 38 de
+capuchons = 17 708 par arcade → **≈ 35 400** pour les deux, + ~1 400 pour les
+18 sphères quand le survol est actif. < 60 000. Non mesuré via
+`renderer.info` (renderer inaccessible depuis la page) : c'est un calcul.
+
+### Vérifications
+
+```
+$ npm run lint   (5 dernières lignes)
+  48 |   return colors;
+  49 | }  react-hooks/set-state-in-effect
+
+✖ 4 problems (0 errors, 4 warnings)
+```
+(4 avertissements préexistants, hors de ce fichier.)
+
+```
+$ npm run build   (5 dernières lignes)
+└ ○ /work/gcii
+
+
+○  (Static)  prerendered as static content
+```
+
+```
+$ npx tsc --noEmit   (lancé après le build)
+npm notice run next-app@0.1.0 npx
+npm notice run tsc --noEmit
+(code de sortie 0, aucune erreur)
+```
+
+Visuel : Chrome installé en headless (`--headless=new --use-angle=swiftshader
+--enable-unsafe-swiftshader`, profil dédié, script CDP jetable hors dépôt) sur
+`npm run dev -- -p 3159` dans la worktree ; Chrome et serveur arrêtés par PID
+exact.
+
+- 1280×800, sombre et clair : scène cadrée dans le 16:9, deux arcades roses
+  continues, rien de coupé.
+- Glisser → rotation (captures après glissement) ; molette au-dessus du canvas →
+  `scrollY` 2263 → 2563 (la page défile, pas de zoom).
+- Survol → curseur `pointer` et un seul anneau de points verts au collet de la
+  dent survolée (testé sur une incisive inférieure et une dent supérieure).
+- Clic court → la mâchoire inférieure s'ouvre (capture à 200 ms : mouvement en
+  cours ; à 1,2 s : ouverte, faces occlusales visibles) puis se referme.
+- Console : aucune erreur ni avertissement three/WebGL.
+- fps : 15–20 en headless **SwiftShader** (rendu logiciel) — non représentatif ;
+  la cible ≥ 50 fps sur vrai GPU n'est **pas vérifiée**.
+- 3 allers-retours Safran ↔ Quimesis : pas d'erreur « Too many active WebGL
+  contexts », 2 canvas, la scène s'affiche. Défilement en haut de page puis
+  retour : la scène est toujours là.
+- 360 px : message « Cette animation 3D s'affiche sur un écran large… » pour les
+  deux démos, 0 canvas, 0 ressource « three » chargée.
+- Thème : vérifié en sombre et en clair par rechargement (pas par bascule à
+  chaud du bouton de thème).
+
+### Comparaison aux 3 captures de référence
+
+- **Quimesis1.png** (gros plan vestibulaire des molaires inférieures, dent
+  sélectionnée blanche + points verts) : même principe de surface unique rose où
+  les couronnes émergent d'une gencive épaisse à paroi vestibulaire haute, sillons
+  nets entre couronnes. Différences : nos couronnes sont plus régulières et moins
+  bombées (pas de contre-dépouille au collet), micro-texture de scan bien plus
+  discrète ; la dent survolée n'est pas blanchie (seuls les points, comme le
+  ticket le demande), points plus petits et en `colors.green` (vert-gris du
+  thème) plutôt que vert saturé.
+- **Quimesis2.png** (arcade inférieure entière vue de 3/4 dessus) : la plus
+  proche. Mâchoire ouverte (clic), on retrouve l'arche en fer à cheval, les
+  incisives en arête, les molaires à plusieurs cuspides avec sillon central, le
+  rebord de gencive qui déborde côté vestibulaire et lingual, le bord inférieur
+  légèrement irrégulier. Différences : la référence n'a qu'une arcade (ici deux,
+  comme PORT-049) ; l'arcade haute vue de dessus montre un socle plat assez
+  massif qui n'existe pas sur les captures.
+- **Quimesis3.png** (gros plan d'une dent sélectionnée, points verts au collet) :
+  l'anneau de points verts au collet de la dent survolée reproduit directement
+  celui de la capture (frontière dent/gencive, tout le tour). Les couronnes de la
+  référence sont plus hautes et séparées par des embrasures plus ouvertes ; les
+  nôtres se touchent davantage au sommet.
+
+Verdict de l'exécutant : ressemblance correcte de loin (forme, couleur unique,
+continuité, cuspides), plus schématique de près. Checkpoint humain requis.
 
 ## Notes pour la consolidation
 
@@ -186,3 +316,11 @@ _(à remplir — inclure la comparaison capture-par-capture)_
   dentaire comme une seule surface paramétrique continue (pas des dents
   séparées), inspirée des captures d'écran réelles de l'application
   Quimesis déjà publiées dans la galerie du projet.
+- Point faible : la section est un « champ de hauteur » par anneau, donc pas de
+  couronnes bombées en contre-dépouille au collet ; le socle de l'arcade haute
+  (vu de dessus) est un bloc plat.
+- Couleur rose « réaliste » `#d6aab2` / `#dcaab3` documentée comme exception au
+  même titre que la Terre ou le teint du tennisman (pas `colors.mainText`, qui
+  est blanc en thème sombre).
+- Idée (non faite) : blanchir la couronne survolée par couleurs de sommets, comme
+  l'appli réelle.
