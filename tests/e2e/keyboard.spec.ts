@@ -23,13 +23,20 @@ test.describe("keyboard accessibility", () => {
 
   test("Tab walks the header in order with a visible focus ring", async ({ page, browserName }) => {
     await open(page, "/");
-    // Safari/WebKit's default: Tab only reaches form controls; links are
-    // skipped unless the user enables "Press Tab to highlight each item"
-    // (Option+Tab does not change that in Playwright's WebKit either —
-    // tried). That is the browser's documented behaviour, not a site bug:
-    // on WebKit, Tab must reach the two header buttons, in order.
-    const webkit = browserName === "webkit";
-    const presses = webkit ? 2 : 7;
+    // Whether WebKit's Tab key reaches links at all turns out to depend on
+    // the OS the WebKit *binary* runs on, not just "is it WebKit": verified
+    // directly on both machines this project actually runs on.
+    // - Linux (CI's ubuntu-latest runner): WebKit does NOT skip links — it
+    //   tabs through the header exactly like Chromium/Firefox.
+    // - Windows (local dev machine): WebKit skips every link, landing
+    //   straight on the two header buttons (then falls through to whatever
+    //   the next focusable element after the header is — the projects
+    //   filter pills — on further presses, which this test never reaches).
+    // Keying this off `process.platform` instead of `browserName === "webkit"`
+    // alone makes the test pass on both environments instead of only the one
+    // it happened to be written against.
+    const webkitSkipsLinks = browserName === "webkit" && process.platform !== "linux";
+    const presses = webkitSkipsLinks ? 2 : 7;
     const seen: Focused[] = [];
     for (let i = 0; i < presses; i++) {
       await page.keyboard.press("Tab");
@@ -38,7 +45,7 @@ test.describe("keyboard accessibility", () => {
     // Name link (data-nav-id "home"), the four nav links (starting with
     // "Profil", also "home"), then language menu and theme toggle.
     const buttons = [expect.stringMatching(/^Changer de langue/), expect.stringMatching(/^Passer au thème/)];
-    expect(seen.map((f) => f.navId ?? f.label)).toEqual(webkit ? buttons : ["home", ...NAV_IDS, ...buttons]);
+    expect(seen.map((f) => f.navId ?? f.label)).toEqual(webkitSkipsLinks ? buttons : ["home", ...NAV_IDS, ...buttons]);
     for (const f of seen) {
       expect(f.focusVisible, `${f.label} matches :focus-visible`).toBe(true);
       expect(f.outline, `${f.label} has a visible outline`).toMatch(/^solid [1-9]/);
