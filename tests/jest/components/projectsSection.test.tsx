@@ -53,6 +53,20 @@ describe("ProjectsSection", () => {
     const card = screen.getAllByRole("link")[0];
     expect(card.querySelectorAll("span[title]")).toHaveLength(projects[0].techLogos.length);
   });
+
+  it("shows a white entity-logo badge per logo on the card, next to the tech pills", () => {
+    renderWithProviders(<ProjectsSection excerpts={{}} />);
+    const gcii = projects[0];
+    expect(gcii.href).toBe("work/gcii");
+    expect(gcii.entityLogos).toEqual(["/logos/gcii", "/logos/enedis"]);
+
+    const card = screen.getAllByRole("link")[0];
+    // The card's own preview image plus one <img> per entity logo.
+    expect(card.querySelectorAll("img")).toHaveLength(1 + gcii.entityLogos.length);
+    const badgeSources = Array.from(card.querySelectorAll("img")).map((img) => img.getAttribute("src"));
+    expect(badgeSources.some((src) => src?.includes("gcii"))).toBe(true);
+    expect(badgeSources.some((src) => src?.includes("enedis"))).toBe(true);
+  });
 });
 
 describe("ProjectsSection with incomplete data", () => {
