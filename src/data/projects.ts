@@ -66,6 +66,16 @@ export type ProjectPeriod =
  */
 export type ProjectCategory = "pro" | "recherche" | "ecole" | "perso";
 
+/** One logo shown for the company/school/client behind a project, with an
+ * explicit accessible name — not always the project's own title. Several
+ * school projects are titled after the project itself ("Android",
+ * "Démineur"...) while their logo is the school (EMSE), and GCII's two
+ * logos (employer + client) obviously can't share one name either. */
+export interface EntityLogo {
+  readonly src: string;
+  readonly name: string;
+}
+
 export interface Project {
   /** Entity or project name, shown on the card and as the page heading. */
   readonly title: LocalizedText;
@@ -77,7 +87,7 @@ export interface Project {
   /** Logos of the company/school/client, empty for personal projects. Most
    * projects have one; GCII has two (the employer and the client it's
    * staffed at, Enedis). */
-  readonly entityLogos: readonly string[];
+  readonly entityLogos: readonly EntityLogo[];
   /** Public repository URL, or `null` when there is none. */
   readonly githubRepo: string | null;
   readonly techLogos: readonly TechLogoId[];
@@ -139,7 +149,10 @@ export const projects = [
     },
     category: "pro",
     featured: true,
-    entityLogos: ["/logos/gcii", "/logos/enedis"],
+    entityLogos: [
+      { src: "/logos/gcii", name: "GCII" },
+      { src: "/logos/enedis", name: "Enedis" },
+    ],
     githubRepo: null,
     techLogos: ["python", "react", "git", "typescript", "copilot"],
     img: "/img/gcii-grid",
@@ -160,7 +173,7 @@ export const projects = [
     href: "internships/safran",
     description: { fr: "Stage de fin d'études", en: "Final-year internship" },
     category: "pro",
-    entityLogos: ["/logos/safran"],
+    entityLogos: [{ src: "/logos/safran", name: "Safran" }],
     githubRepo: null,
     techLogos: ["typescript", "react", "git", "linux"],
     img: "/img/safran",
@@ -180,7 +193,7 @@ export const projects = [
     href: "research/sncf",
     description: { fr: "Projet de recherche", en: "Research project" },
     category: "recherche",
-    entityLogos: ["/logos/sncf"],
+    entityLogos: [{ src: "/logos/sncf", name: "SNCF" }],
     githubRepo: "https://github.com/corentinbunaux/projet-recherche-SNCF",
     techLogos: ["java", "git"],
     img: "/img/sncf",
@@ -209,7 +222,7 @@ export const projects = [
     },
     category: "ecole",
     img: "/img/android",
-    entityLogos: ["/logos/emse"],
+    entityLogos: [{ src: "/logos/emse", name: "École des Mines de Saint-Étienne" }],
     githubRepo: null,
     techLogos: ["kotlin", "typescript", "git"],
     photos: [],
@@ -223,7 +236,7 @@ export const projects = [
     },
     category: "ecole",
     img: "/img/minesweeper",
-    entityLogos: ["/logos/emse"],
+    entityLogos: [{ src: "/logos/emse", name: "École des Mines de Saint-Étienne" }],
     githubRepo: "https://github.com/corentinbunaux/minesweeper",
     techLogos: ["java"],
     photos: [],
@@ -237,7 +250,7 @@ export const projects = [
     },
     category: "pro",
     img: "/img/quimesis",
-    entityLogos: ["/logos/quimesis"],
+    entityLogos: [{ src: "/logos/quimesis", name: "Quimesis" }],
     githubRepo: null,
     techLogos: ["cpp", "react", "git", "linux"],
     photos: ["/img/quimesis-1", "/img/quimesis-2", "/img/quimesis-3"],
@@ -250,7 +263,7 @@ export const projects = [
     description: { fr: "Stage ouvrier", en: "Manual labor internship" },
     category: "pro",
     img: "/img/kusmitea",
-    entityLogos: ["/logos/kusmi-tea"],
+    entityLogos: [{ src: "/logos/kusmi-tea", name: "Kusmi Tea" }],
     githubRepo: null,
     photos: ["/img/kusmi-1"],
     techLogos: [],
@@ -277,7 +290,7 @@ export const projects = [
     },
     category: "ecole",
     img: "/img/programming",
-    entityLogos: ["/logos/emse"],
+    entityLogos: [{ src: "/logos/emse", name: "École des Mines de Saint-Étienne" }],
     githubRepo: "https://github.com/dylan-bernhardt/dactylo-race",
     techLogos: ["python", "cpp", "git"],
     photos: [],
@@ -288,7 +301,7 @@ export const projects = [
     description: { fr: "Projet Robot", en: "Robot project" },
     category: "ecole",
     img: "/img/embedded",
-    entityLogos: ["/logos/emse"],
+    entityLogos: [{ src: "/logos/emse", name: "École des Mines de Saint-Étienne" }],
     githubRepo: null,
     techLogos: [],
     photos: ["/img/embedded-1", "/img/embedded-2"],
@@ -302,7 +315,7 @@ export const projects = [
     },
     category: "ecole",
     img: "/img/tipe",
-    entityLogos: ["/logos/ac-normandie"],
+    entityLogos: [{ src: "/logos/ac-normandie", name: "Académie de Normandie" }],
     githubRepo: null,
     techLogos: ["arduino"],
     photos: ["/img/tipe-1", "/img/tipe-2"],

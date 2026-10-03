@@ -58,7 +58,10 @@ describe("ProjectsSection", () => {
     renderWithProviders(<ProjectsSection excerpts={{}} />);
     const gcii = projects[0];
     expect(gcii.href).toBe("work/gcii");
-    expect(gcii.entityLogos).toEqual(["/logos/gcii", "/logos/enedis"]);
+    expect(gcii.entityLogos).toEqual([
+      { src: "/logos/gcii", name: "GCII" },
+      { src: "/logos/enedis", name: "Enedis" },
+    ]);
 
     const card = screen.getAllByRole("link")[0];
     // The card's own preview image plus one <img> per entity logo.

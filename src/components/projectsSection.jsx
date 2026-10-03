@@ -25,9 +25,9 @@ function useCategoryFilters() {
  * card, next to the tech pills. White background like the project page's
  * "En bref" card, since several brand logos (e.g. Safran's) aren't legible
  * directly on the dark theme's card background. */
-const EntityLogoBadge = ({ src }) => (
+const EntityLogoBadge = ({ logo }) => (
   <span className="flex h-6 items-center rounded bg-white px-1.5">
-    <OptimizedImage src={src} alt="" sizes="3rem" style={{ height: "0.875rem", width: "auto" }} />
+    <OptimizedImage src={logo.src} alt="" sizes="3rem" style={{ height: "0.875rem", width: "auto" }} />
   </span>
 );
 
@@ -82,8 +82,8 @@ const ProjectCard = ({ project, t, excerpt }) => (
       )}
       {(project.entityLogos.length > 0 || project.techLogos.length > 0) && (
         <div className="mt-auto flex flex-wrap items-center gap-1.5 pt-1">
-          {project.entityLogos.map((src) => (
-            <EntityLogoBadge key={src} src={src} />
+          {project.entityLogos.map((logo) => (
+            <EntityLogoBadge key={logo.src} logo={logo} />
           ))}
           {project.techLogos.map((id) => (
             <TechPill key={id} id={id} />

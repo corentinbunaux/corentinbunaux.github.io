@@ -214,9 +214,9 @@ export function ProjectPage({ project: rawProject, article }: ProjectPageProps) 
               <div className="mt-6 flex items-center justify-center gap-4 rounded-lg bg-white p-3">
                 {project.entityLogos.map((logo) => (
                   <OptimizedImage
-                    key={logo}
-                    src={logo}
-                    alt={`${t.projectPage.logoLabel} ${project.title}`}
+                    key={logo.src}
+                    src={logo.src}
+                    alt={`${t.projectPage.logoLabel} ${logo.name}`}
                     sizes="8rem"
                     style={{
                       width: "100%",

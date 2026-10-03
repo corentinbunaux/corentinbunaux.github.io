@@ -69,12 +69,16 @@ describe("ProjectPage", () => {
     expect(within(enBref()).queryByText(fr.projectPage.team)).not.toBeInTheDocument();
     expect(within(enBref()).queryByRole("link")).not.toBeInTheDocument(); // no repo
     // GCII has two entity logos: the employer (GCII) and the client it's
-    // staffed at (Enedis).
-    const logos = within(enBref()).getAllByRole("img", { name: `${fr.projectPage.logoLabel} ${project.title.fr}` });
-    expect(logos).toHaveLength(2);
-    expect(logos.map((img) => img.getAttribute("src"))).toEqual(
-      expect.arrayContaining([expect.stringContaining("gcii"), expect.stringContaining("enedis")]),
-    );
+    // staffed at (Enedis) — each with its own accessible name, not the
+    // shared project title.
+    expect(project.entityLogos).toEqual([
+      { src: "/logos/gcii", name: "GCII" },
+      { src: "/logos/enedis", name: "Enedis" },
+    ]);
+    for (const logo of project.entityLogos) {
+      const img = within(enBref()).getByRole("img", { name: `${fr.projectPage.logoLabel} ${logo.name}` });
+      expect(img).toHaveAttribute("src", expect.stringContaining(logo.src.replace("/logos/", "")));
+    }
   });
 
   it("counts completed durations in months, singular for one", () => {
