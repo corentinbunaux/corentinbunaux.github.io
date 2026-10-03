@@ -58,7 +58,6 @@ describe("ProjectsSection", () => {
 describe("ProjectsSection with incomplete data", () => {
   it("shows a placeholder without an image, and silently skips an unknown logo", () => {
     const unmount = renderIsolated(
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
       () => ({ component: require("./projectsSection").default, props: { excerpts: {} } }),
       {
         // Path relative to src/test-utils/isolated.ts.

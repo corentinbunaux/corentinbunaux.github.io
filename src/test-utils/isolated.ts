@@ -14,12 +14,10 @@ export function renderIsolated(
   let unmount: () => void = () => {};
   jest.isolateModules(() => {
     for (const [path, factory] of Object.entries(mocks)) jest.doMock(path, factory);
-    /* eslint-disable @typescript-eslint/no-require-imports -- isolated registry needs runtime require */
     const React = require("react");
     const { createRoot } = require("react-dom/client");
     const { LanguageProvider } = require("../i18n/LanguageContext");
     const { ThemeProvider } = require("../theme/ThemeContext");
-    /* eslint-enable @typescript-eslint/no-require-imports */
     const { component, props } = load();
     const container = document.createElement("div");
     document.body.appendChild(container);

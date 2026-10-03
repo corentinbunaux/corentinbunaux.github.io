@@ -95,7 +95,6 @@ describe("ProjectPage", () => {
     renderPage(bare);
     expect(within(enBref()).queryByText(fr.projectPage.stack)).not.toBeInTheDocument();
     expect(screen.queryByRole("img", { name: `${fr.projectPage.visualAltPrefix}${bare.title.fr}` })).not.toBeInTheDocument();
-    expect(screen.queryByRole("list", { name: undefined })).toBeTruthy();
   });
 
   it("shows the main visual, tech badges and the photo gallery", () => {

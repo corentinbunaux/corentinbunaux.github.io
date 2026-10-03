@@ -7,7 +7,7 @@ const eslintConfig = [
     // does not match a nested checkout such as a git worktree under
     // `.claude/worktrees/`. `.gitignore` keeps those out of git, but ESLint
     // does not read `.gitignore` by itself.
-    ignores: ["**/.claude/worktrees/**"],
+    ignores: ["**/.claude/worktrees/**", "coverage/**"],
   },
   {
     rules: {

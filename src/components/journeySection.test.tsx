@@ -60,7 +60,6 @@ describe("JourneySection", () => {
 
   it("formats a period spanning two years", () => {
     const unmount = renderIsolated(
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
       () => ({ component: require("./journeySection").default }),
       {
         "../data/projects": () => {

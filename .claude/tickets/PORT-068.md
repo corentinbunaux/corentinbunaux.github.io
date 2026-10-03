@@ -4,7 +4,7 @@ title: "Jest unit tests — couverture ≥95% du code du site"
 group: corentin
 machine: asus_corentin
 milestone: M9 — Mise en production
-status: ready
+status: review
 resumeAt: null
 priority: P1
 estimate: 6
@@ -126,3 +126,91 @@ doivent rien casser côté build).
 Ne fusionne rien, ne touche pas `.github/workflows/`. Rapporte à
 l'orchestrateur : couverture finale obtenue, fichiers exclus et pourquoi,
 nombre de tests, tout problème bloquant.
+
+## Journal d'exécution
+
+**Résultat** (`npm run test` = `jest --coverage`, seuils globaux 95 % dans
+`jest.config.mjs`) : 31 suites, **281 tests**, tous verts.
+
+| Couverture | Statements | Branches | Functions | Lines |
+|---|---|---|---|---|
+| **Global** | **99,79 %** | **97,51 %** | **100 %** | **100 %** |
+| Logique pure (`lib`, `data`, `i18n`, `theme`, `*Logic.ts`) | 100 % (sauf `guardsLogic.ts` 98,1 / 94,7 br.) | | | |
+| `app/**` (14 routes + layout) | 100 % | 100 % (sauf `app/page.tsx` 50 % br.) | 100 % | 100 % |
+| `components` (React DOM) | 99,49 % | 97,31 % | 100 % | 100 % |
+| `components/demos` (2D + three.js) | 99,8 % | 97,57 % | 100 % | 100 % |
+| `components/hero`, `components/journey` | 100 % | 100 % | 100 % | 100 % |
+
+`npm run lint` : 0 erreur, 4 warnings préexistants (`set-state-in-effect`,
+déjà présents sur `refonte-2026`). `npx tsc --noEmit` : propre. `npm run build` : 15/15 pages.
+
+### Choix d'implémentation
+
+- `next/jest` (SWC) + `jest-environment-jsdom`, setup dans `jest.setup.ts`.
+  Helpers de test dans `src/test-utils/` (exclus de la couverture) : fakes
+  contrôlables de `matchMedia`, `ResizeObserver`, `IntersectionObserver`,
+  `requestAnimationFrame` (horloge manuelle) et pointer capture
+  (`browser.ts`) ; `renderWithProviders` avec les vrais tokens de `app.css`
+  (`render.tsx`) ; `renderIsolated` pour les modules qui lisent les données
+  au chargement (`isolated.ts`).
+- **three.js : mock partiel, pas creux.** `__mocks__/three.ts` ne remplace
+  QUE `WebGLRenderer` (faux renderer avec un vrai `<canvas>`, enregistre
+  `render/dispose/forceContextLoss`). Tout le reste est le vrai three.js :
+  les `setup()` construisent leur vrai graphe de scène et les tests vérifient
+  le comportement (cycle du bras d'exo, passage du chasseur à 20 s puis
+  45 s, robot qui balaie/approche/recule, retour en L sans diagonale, survol
+  d'une dent par vrai raycast, ouverture de la mâchoire au clic, etc.) en
+  plus du montage/démontage/dispose et du remontage sur changement de thème.
+- three est ESM-only (r186 : `build/three.cjs` n'est plus qu'un shim qui
+  `require()` le module ESM), donc `jest.config.mjs` laisse passer `three`
+  dans le transform SWC (patch de l'ignore-pattern de next/jest).
+- `eslint.config.mjs` : ajout de `coverage/**` aux ignores (le rapport HTML
+  généré contient des JS avec des `eslint-disable` inutilisés).
+
+### Exclusions / lignes non couvertes (justifiées)
+
+- `src/lib/articles.ts` : `/* istanbul ignore if */` sur le garde
+  « empty "## " heading » — **inatteignable** : la ligne est `trimEnd()`-ée
+  avant le test `startsWith("## ")`, donc un titre vide tombe toujours dans
+  la branche « only "## " headings are supported ». Garde conservé, test
+  adapté. (Candidat pour un ticket de nettoyage.)
+- Branches non couvertes laissées telles quelles (pas d'ignore) car
+  inatteignables en jsdom ou par construction :
+  `if (!container) return` (ThreeStage l.49, QuimesisAccent l.31 — la ref
+  est toujours posée dans l'effet) ; `if (!running) return` de
+  QuimesisAccent (la frame est annulée au démontage) ; `intersectPlane`
+  faux dans EmbeddedReturnDemo (la caméra plonge à 63°, tout rayon touche le
+  sol) ; `UNROUTED_HREFS` vide (ProjectPage l.70) ; `if (!best)` de
+  `optimalGuards` ; `?? ""` de `app/page.tsx` (le parser garantit au moins
+  un paragraphe par section) ; le `?? -1` défensif de QuimesisJawDemo (l.544) ; le `hasPointerCapture` faux d'EmbeddedReturnDemo (l.267).
+
+### Constats hors périmètre (non corrigés, à ticketer)
+
+- `Banner.jsx` l.67 : `window.innerWidth >= "1024px"` compare un nombre à
+  une chaîne → toujours faux, la 3ᵉ section du carrousel n'est jamais
+  rendue. Par ailleurs le composant `Banner` par défaut n'est plus importé
+  nulle part (seul `bannerElmts` sert).
+- `EmbeddedSweepDemo` : après un retour au balayage, le
+  robot peut re-détecter l'obstacle immédiatement (le cap reprend la
+  sinusoïde du temps écoulé) — comportement réel, pas un bug bloquant.
+
+### Ce qui n'a pas marché (et pourquoi)
+
+- `jest.requireActual("three")` → `Must use import to load ES Module:
+  node_modules/three/build/three.module.js` ; charger `three.cjs` par chemin
+  absolu échouait pareil (c'est un shim vers l'ESM). Résolu en transformant
+  `three` via SWC (le premier patch `"/node_modules/(?!three/)"` ne suffisait
+  pas car next/jest ajoute un second pattern qui ignore tout node_modules :
+  il a fallu insérer `three` dans SON lookahead).
+- `jest.requireMock("three")` renvoyait une autre instance que celle
+  importée par les composants (registre de mocks séparé) → instances du faux
+  renderer vides. Résolu en lisant la classe sur le module importé.
+- `jest.isolateModules` + `require("@testing-library/react")` à l'intérieur :
+  « Hooks cannot be defined inside tests » ; sans RTL isolé : « Cannot read
+  properties of null (reading 'useState') » (deux React). Résolu par
+  `renderIsolated` (react + react-dom/client + providers requis dans le même
+  registre isolé).
+- `fireEvent.animationEnd(..., { animationName })` et
+  `fireEvent.pointerDown(..., { pointerType })` perdent ces champs en jsdom ;
+  `onPointerLeave` de React écoute `pointerout`, pas `pointerleave`. Résolu
+  par des événements construits à la main.
