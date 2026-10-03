@@ -1,3 +1,0 @@
-[submodule ".claude-base"]
-	path = .claude-base
-	url = git@github.com:corentinbunaux/claude-base.git

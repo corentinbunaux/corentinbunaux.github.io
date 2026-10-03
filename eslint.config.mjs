@@ -4,10 +4,10 @@ const eslintConfig = [
   ...nextCoreWebVitals,
   {
     // eslint-config-next's own ignores are root-relative (`.next/**`), which
-    // does not match a nested checkout such as a git worktree under
-    // `.claude/worktrees/`. `.gitignore` keeps those out of git, but ESLint
-    // does not read `.gitignore` by itself.
-    ignores: ["**/.claude/worktrees/**", "coverage/**"],
+    // does not match nested build/report output directories elsewhere.
+    // `.gitignore` keeps those out of git, but ESLint does not read
+    // `.gitignore` by itself.
+    ignores: ["coverage/**", "playwright-report/**", "test-results/**"],
   },
   {
     rules: {
