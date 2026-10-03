@@ -7,6 +7,7 @@ import JourneySection from "./journeySection";
 import AboutMe from "./aboutmeSection";
 import ProjectsSection from "./projectsSection";
 import Footer from "./footer";
+import { replaceLocation } from "../lib/navigation";
 
 export type ProjectExcerpts = Readonly<Record<string, { fr: string; en: string }>>;
 
@@ -35,7 +36,7 @@ export function HomeShell({ excerpts }: { excerpts: ProjectExcerpts }) {
     // Only a reload *of the home page itself*: after reloading a project
     // page, a client-side visit to "/#portfolio" must keep its hash.
     if (entry?.type !== "reload" || new URL(entry.name).pathname !== "/") return;
-    window.location.replace("/");
+    replaceLocation("/");
   }, []);
 
   return (

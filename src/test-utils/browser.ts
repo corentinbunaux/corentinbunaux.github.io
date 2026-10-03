@@ -43,6 +43,20 @@ export const media = {
   },
 };
 
+let navTimingType: string = "navigate";
+let navTimingPathname = "/";
+
+/** Controls what `performance.getEntriesByType("navigation")` reports —
+ * HomeShell's reload detection (PORT-069) reads this instead of the
+ * deprecated `performance.navigation.type`, which jsdom doesn't implement
+ * either. */
+export const navTiming = {
+  set(type: "navigate" | "reload" | "back_forward" | "prerender", pathname = "/") {
+    navTimingType = type;
+    navTimingPathname = pathname;
+  },
+};
+
 export const DESKTOP_QUERY = "(min-width: 1024px)";
 export const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 export const LIGHT_QUERY = "(prefers-color-scheme: light)";
@@ -127,6 +141,13 @@ export const frames = {
 
 export function installBrowserFakes() {
   media.reset();
+
+  navTimingType = "navigate";
+  navTimingPathname = "/";
+  performance.getEntriesByType = ((type: string) => {
+    if (type !== "navigation") return [];
+    return [{ type: navTimingType, name: `http://localhost${navTimingPathname}` }];
+  }) as unknown as typeof performance.getEntriesByType;
   Object.defineProperty(window, "matchMedia", {
     configurable: true,
     writable: true,

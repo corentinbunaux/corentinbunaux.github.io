@@ -1,19 +1,19 @@
 import { screen } from "@testing-library/react";
 import type { ComponentType } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { redirect } from "next/navigation";
 import { projects } from "../data/projects";
 import { loadArticle } from "../lib/articles";
 import { dictionary } from "../i18n/dictionary";
 import { THEME_INIT_SCRIPT } from "../theme/themeScript";
 import { NAV_SECTION_IDS } from "../components/SiteHeader";
-import { setDesktop } from "../test-utils/browser";
+import { setDesktop, navTiming } from "../test-utils/browser";
 import { renderWithProviders } from "../test-utils/render";
 import { renderIsolated } from "../test-utils/isolated";
+import { replaceLocation } from "../lib/navigation";
 import RootLayout, { metadata } from "./layout";
 import Home from "./page";
 
-jest.mock("next/navigation", () => ({ redirect: jest.fn() }));
+jest.mock("../lib/navigation", () => ({ replaceLocation: jest.fn() }));
 
 const PAGES: Record<string, () => { default: ComponentType }> = {
   "work/gcii": () => require("./work/gcii/page"),
@@ -29,10 +29,6 @@ const PAGES: Record<string, () => { default: ComponentType }> = {
   "emse/embedded": () => require("./emse/embedded/page"),
   cpge_tipe: () => require("./cpge_tipe/page"),
 };
-
-function setNavigationType(type: number) {
-  Object.defineProperty(performance, "navigation", { configurable: true, value: { type } });
-}
 
 beforeEach(() => setDesktop(false));
 
@@ -60,24 +56,30 @@ describe("project routes", () => {
 
 describe("home page", () => {
   it("renders every section with the first paragraph of each article as excerpt", () => {
-    setNavigationType(0);
+    navTiming.set("navigate");
     const { container } = renderWithProviders(<Home />);
     for (const id of NAV_SECTION_IDS) expect(container.querySelector(`section#${id}`)).not.toBeNull();
     expect(container.querySelector("section#footer footer")).not.toBeNull();
     const gcii = loadArticle("work/gcii");
     expect(screen.getByText(gcii.fr[0].paragraphs[0])).toBeInTheDocument();
-    expect(redirect).not.toHaveBeenCalled();
+    expect(replaceLocation).not.toHaveBeenCalled();
   });
 
-  it("goes back to the top on a reload", () => {
-    setNavigationType(1);
-    renderWithProviders(<Home />, { language: "en" });
-    expect(redirect).toHaveBeenCalledWith("/");
-    expect(screen.getByRole("navigation", { name: dictionary.en.header.mainNavLabel })).toBeInTheDocument();
+  it("replaces the URL on a reload of the home page", () => {
+    // Fresh module registry (PORT-069): HomeShell's `reloadHandled` flag is
+    // module-scoped and sticks at `true` for the process's lifetime, so a
+    // shared `Home` import here would always see it already flipped by the
+    // first test above. `jest.mock` above still applies inside the isolated
+    // registry (it intercepts module resolution, not a specific instance).
+    navTiming.set("reload", "/");
+    const unmount = renderIsolated(() => ({ component: require("./page").default }), {});
+    expect(replaceLocation).toHaveBeenCalledWith("/");
+    expect(screen.getByRole("navigation", { name: dictionary.fr.header.mainNavLabel })).toBeInTheDocument();
+    unmount();
   });
 
   it("falls back to empty excerpts for an article without sections", () => {
-    setNavigationType(0);
+    navTiming.set("navigate");
     const unmount = renderIsolated(() => ({ component: require("./page").default }), {
       "../lib/articles": () => ({ loadArticle: () => ({ fr: [], en: [] }) }),
     });
