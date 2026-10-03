@@ -96,11 +96,15 @@ export const test = base.extend<{ pageErrors: string[] }>({
       page.on("pageerror", (error) => {
         // WebKit only: when a document is replaced (HomeShell's reload
         // handler calls location.replace("/")), WebKit rejects the router's
-        // in-flight RSC prefetches with "… due to access control checks"
-        // and reports them as uncaught; Chromium aborts them silently. An
-        // aborted prefetch of a page being left is harmless — but only that
-        // exact shape is ignored.
-        if (/_rsc=\S+ due to access control checks\.$/.test(error.message)) return;
+        // in-flight prefetches — RSC payload requests (with a `?_rsc=`
+        // query string) and plain route prefetches alike — with "<url> due
+        // to access control checks." and reports them as uncaught; Chromium
+        // aborts them silently. Narrowed to `_rsc=` at first, which missed
+        // the plain-route shape (seen for real on CI: "/cpge_tipe due to
+        // access control checks."); this site is single-origin static
+        // export with no other source of a WebKit access-control rejection,
+        // so matching the ending alone is still specific to this artifact.
+        if (/due to access control checks\.$/.test(error.message)) return;
         errors.push(`pageerror: ${error.message}`);
       });
       page.on("console", (message) => {

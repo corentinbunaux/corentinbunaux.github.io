@@ -144,8 +144,13 @@ test.describe("global navigation", () => {
       expect(titleByPath.has(href!), `next link ${href} is a known project route`).toBe(true);
       if (visited.includes(href!)) break; // the chain wraps around
       await nextLink.click();
-      await expect(page).toHaveURL(new RegExp(`${href}$`));
-      await expect(page.getByRole("heading", { level: 1 })).toHaveText(titleByPath.get(href!)!);
+      // This chain's own page transitions are occasionally slower than the
+      // global 7s expect timeout under CI's parallel load (observed on
+      // mobile-safari; the suite's own retry has always recovered it so
+      // far) — a longer per-assertion timeout here, not a global change,
+      // since the other 249 assertions in this suite have never needed it.
+      await expect(page).toHaveURL(new RegExp(`${href}$`), { timeout: 15_000 });
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(titleByPath.get(href!)!, { timeout: 15_000 });
       visited.push(href!);
     }
     expect(visited.sort()).toEqual([...titleByPath.keys()].sort());
