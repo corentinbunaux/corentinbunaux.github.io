@@ -38,6 +38,13 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // `<html lang>` is rendered as "fr" by layout.tsx (static export, no
+  // server-side user state): keep it in sync with the displayed language so
+  // screen readers pronounce English content in English.
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
+
   const setLanguage = (next: Language) => {
     setLanguageState(next);
     try {

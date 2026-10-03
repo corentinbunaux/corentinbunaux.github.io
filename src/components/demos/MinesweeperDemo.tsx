@@ -172,7 +172,15 @@ export function MinesweeperDemo() {
               onPointerDown={(event) => startLongPress(index, event.pointerType)}
               onPointerUp={cancelLongPress}
               onPointerLeave={cancelLongPress}
-              className={`flex h-8 w-8 select-none items-center justify-center text-sm font-bold sm:h-9 sm:w-9 border-t border-l border-b border-r ${
+              // Mobile overflow fix (found by PORT-069's E2E): column 9 stuck
+              // out of the grid by 4-8px at 360-390px wide. Two causes:
+              // - app.css gives every <button> `margin: 0 0.5rem` under 768px,
+              //   shifting each cell 8px right inside its track -> `m-0`;
+              // - fixed 2rem cells don't fit a 360px screen. Below `sm`, a
+              //   cell is at most 2rem but shrinks so 9 always fit: 86px =
+              //   page gutters (2x16) + frame padding (2x16) + frame border
+              //   (2) + grid padding (4) + 8 gaps (16).
+              className={`m-0 flex h-[min(2rem,calc((100vw_-_86px)/9))] w-[min(2rem,calc((100vw_-_86px)/9))] select-none items-center justify-center text-sm font-bold sm:h-9 sm:w-9 border-t border-l border-b border-r ${
                 cell.revealed
                   ? cell.mine
                     ? index === explodedIndex
