@@ -43,6 +43,13 @@ export function useThemeColors(): ThemeColors | null {
   const { theme } = useTheme();
   const [colors, setColors] = useState<ThemeColors | null>(null);
   useEffect(() => {
+    // `readThemeColors()` reads getComputedStyle, which needs a DOM that
+    // doesn't exist during the static export's server-only render, so this
+    // can't be a lazy useState initializer (would return null forever) or a
+    // value computed during render (no `document` to read there either on
+    // first render) — it has to be a real effect, deliberately re-run on
+    // every theme change, not a one-time derived-state anti-pattern.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setColors(readThemeColors());
   }, [theme]);
   return colors;

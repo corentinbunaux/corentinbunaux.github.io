@@ -55,6 +55,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
+    // Intentional one-tick correction after the SSR-safe "dark" default
+    // above, not a derived-state anti-pattern — see this function's own
+    // doc comment for why a lazy initializer here caused a real hydration
+    // mismatch in production.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTheme(document.documentElement.dataset.theme === "light" ? "light" : "dark");
 
     const media = window.matchMedia(LIGHT_QUERY);

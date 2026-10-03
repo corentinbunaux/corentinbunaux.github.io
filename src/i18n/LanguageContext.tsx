@@ -29,6 +29,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     try {
       const stored = window.localStorage.getItem(STORAGE_KEY);
       if (isLanguage(stored)) {
+        // Intentional one-tick correction after the SSR-safe default above,
+        // not a derived-state anti-pattern — see the comment on `language`.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setLanguageState(stored);
       }
     } catch {
