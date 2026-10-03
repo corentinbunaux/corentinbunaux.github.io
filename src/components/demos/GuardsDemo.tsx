@@ -76,7 +76,12 @@ export function GuardsDemo() {
               aria-selected={kind === "wall" ? undefined : hasGuard}
               disabled={kind === "wall"}
               onClick={() => toggle(index)}
-              className={`flex h-7 w-7 items-center justify-center sm:h-9 sm:w-9 ${className}`}
+              // Mobile overflow fix (PORT-069 E2E): column 10 stuck out of the
+              // grid at 360-390px. `m-0` cancels app.css's `button { margin:
+              // 0 0.5rem }` under 768px; below `sm` a cell shrinks so 10 fit:
+              // 88px = gutters (32) + frame padding (32) + border (2) + grid
+              // padding (4) + 9 gaps (18).
+              className={`m-0 flex h-[min(1.75rem,calc((100vw_-_88px)/10))] w-[min(1.75rem,calc((100vw_-_88px)/10))] items-center justify-center sm:h-9 sm:w-9 ${className}`}
             >
               {hasGuard && <Eye aria-hidden="true" className="h-4 w-4" />}
               {!hasGuard && kind === "target" && <Target aria-hidden="true" className="h-4 w-4" />}
