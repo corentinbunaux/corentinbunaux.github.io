@@ -1,0 +1,219 @@
+import Link from "next/link";
+import "../app/app.css";
+import {
+  projects,
+  localizeProject,
+  type Project,
+  type ProjectPeriod,
+} from "../data/projects";
+import { education, localizeEducation, type EducationEntry } from "../data/education";
+import { useTranslation } from "../i18n/dictionary";
+import { useLanguage } from "../i18n/LanguageContext";
+import type { Dictionary } from "../i18n/dictionary";
+import { TrackIcon, type TrackKind } from "./journey/TrackIcon";
+
+/**
+ * A project that has a confirmed `period`. `projects` models "dates not
+ * confirmed yet" by omitting the field (see `Project.period` in
+ * `src/data/projects.ts`), so this timeline only ever shows entries the data
+ * layer has actually dated — nothing here is guessed.
+ */
+type JourneyProject = Project & { readonly period: ProjectPeriod };
+
+function hasPeriod(project: Project): project is JourneyProject {
+  return project.period !== undefined;
+}
+
+// Newest first: the most recent position is what a recruiter looks for first
+// (Corentin's feedback, 2026-09-26). Sorting on the `YYYY-MM` string works
+// because lexical order matches chronological order for that format.
+// `projects` is typed via `satisfies readonly Project[]`, which keeps each
+// element's literal type instead of widening to `Project`. That defeats
+// `Array.prototype.filter`'s type-predicate overload (it requires the
+// narrowed type to be a subtype of the array's own element type, and
+// `JourneyProject` is not a subtype of a narrower literal element type) —
+// so the intermediate cast below widens to `Project` first, purely to let
+// `hasPeriod` narrow correctly.
+const allProjects: readonly Project[] = projects;
+
+const journeyEntries: readonly JourneyProject[] = allProjects
+  .filter(hasPeriod)
+  .slice()
+  .sort((a, b) => b.period.start.localeCompare(a.period.start));
+
+function formatMonthYear(yearMonth: string, months: readonly string[]): string {
+  const [year, month] = yearMonth.split("-").map(Number);
+  return `${months[month - 1]} ${year}`;
+}
+
+function formatPeriod(period: ProjectPeriod, t: Dictionary): string {
+  const months = t.common.months;
+  if (period.status === "ongoing") {
+    return `${formatMonthYear(period.start, months)} → ${t.journey.ongoingLabel}`;
+  }
+
+  const [startYear, startMonth] = period.start.split("-").map(Number);
+  const [endYear, endMonth] = period.end.split("-").map(Number);
+
+  if (startYear === endYear && startMonth === endMonth) {
+    return formatMonthYear(period.start, months);
+  }
+  if (startYear === endYear) {
+    return `${months[startMonth - 1]} – ${months[endMonth - 1]} ${endYear}`;
+  }
+  return `${formatMonthYear(period.start, months)} – ${formatMonthYear(period.end, months)}`;
+}
+
+/** The dot + connector line shared by every timeline row; only the dot's
+ * colour varies (ongoing project = green, everything else = neutral). */
+function TimelineDot({ isLast, colorClassName = "bg-second-text" }: { isLast: boolean; colorClassName?: string }) {
+  return (
+    <div className="flex flex-col items-center">
+      <span className={`mt-1.5 h-3 w-3 shrink-0 rounded-full ${colorClassName}`} aria-hidden="true" />
+      {!isLast && <span className="w-px flex-1 bg-second" aria-hidden="true" />}
+    </div>
+  );
+}
+
+function JourneyEntryRow({
+  entry,
+  isLast,
+  t,
+  language,
+}: {
+  entry: JourneyProject;
+  isLast: boolean;
+  t: Dictionary;
+  language: "fr" | "en";
+}) {
+  const isOngoing = entry.period.status === "ongoing";
+  const localized = localizeProject(entry, language);
+  const subtitle = entry.location
+    ? `${localized.description} · ${entry.location}`
+    : localized.description;
+
+  return (
+    <li className="flex gap-4">
+      <TimelineDot isLast={isLast} colorClassName={isOngoing ? "bg-my-green" : "bg-second-text"} />
+      <Link
+        href={`/${entry.href}`}
+        className="block flex-1 rounded-md pb-6 focus-visible:outline-none"
+      >
+        <h3 className="text-lg font-semibold text-main-text hover:underline">
+          {localized.title}
+          {isOngoing && (
+            <span className="ml-2 rounded-full bg-my-green/20 px-2 py-0.5 text-xs font-normal text-my-green">
+              {t.journey.currentBadge}
+            </span>
+          )}
+        </h3>
+        <p className="text-second-text">{subtitle}</p>
+        <p className="text-sm text-second-text">{formatPeriod(entry.period, t)}</p>
+      </Link>
+    </li>
+  );
+}
+
+function formatYears({ start, end }: EducationEntry["years"]): string {
+  return start === end ? String(start) : `${start} – ${end}`;
+}
+
+function EducationRow({
+  entry,
+  isLast,
+  language,
+}: {
+  entry: EducationEntry;
+  isLast: boolean;
+  language: "fr" | "en";
+}) {
+  const localized = localizeEducation(entry, language);
+  const body = (
+    <>
+      <h3 className="text-lg font-semibold text-main-text">{localized.title}</h3>
+      {localized.detail && <p className="text-second-text">{localized.detail}</p>}
+      <p className="text-second-text">
+        {entry.institution} · {entry.location}
+      </p>
+      <p className="text-sm text-second-text">{formatYears(entry.years)}</p>
+    </>
+  );
+
+  return (
+    <li className="flex gap-4">
+      <TimelineDot isLast={isLast} />
+      {entry.href ? (
+        <Link
+          href={`/${entry.href}`}
+          className="block flex-1 rounded-md pb-6 hover:[&_h3]:underline focus-visible:outline-none"
+        >
+          {body}
+        </Link>
+      ) : (
+        <div className="flex-1 pb-6">{body}</div>
+      )}
+    </li>
+  );
+}
+
+function Track({
+  kind,
+  headingId,
+  title,
+  children,
+}: {
+  kind: TrackKind;
+  headingId: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section
+      aria-labelledby={headingId}
+      className="rounded-lg border border-second bg-surface-raised p-6 md:p-8"
+    >
+      <div className="mb-6 flex items-center gap-3">
+        <TrackIcon kind={kind} />
+        <h2 id={headingId} className="text-xl font-semibold text-main-text">
+          {title}
+        </h2>
+      </div>
+      <ol className="flex flex-col">{children}</ol>
+    </section>
+  );
+}
+
+function JourneySection() {
+  const t = useTranslation();
+  const { language } = useLanguage();
+  return (
+    <div className="container mx-auto px-[var(--section-padding-x)] py-[var(--section-padding-y)]">
+      <h1 className="outlined-text">{t.journey.title}</h1>
+      <div className="mt-8 grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
+        <Track kind="experience" headingId="journey-experience" title={t.journey.experienceTrack}>
+          {journeyEntries.map((entry, index) => (
+            <JourneyEntryRow
+              key={entry.href}
+              entry={entry}
+              isLast={index === journeyEntries.length - 1}
+              t={t}
+              language={language}
+            />
+          ))}
+        </Track>
+        <Track kind="education" headingId="journey-education" title={t.journey.educationTrack}>
+          {education.map((entry, index) => (
+            <EducationRow
+              key={entry.id}
+              entry={entry}
+              isLast={index === education.length - 1}
+              language={language}
+            />
+          ))}
+        </Track>
+      </div>
+    </div>
+  );
+}
+
+export default JourneySection;

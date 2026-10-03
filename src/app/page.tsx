@@ -1,66 +1,21 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import Homepage from "../components/homepage";
-import Navbar from "../components/navbar";
-import ProfileSection from "../components/profileSection";
+import { projects } from "../data/projects";
+import { loadArticle } from "../lib/articles";
+import { HomeShell } from "../components/HomeShell";
 import "./app.css";
-import AboutMe from "../components/aboutmeSection";
-import ProjectsSection from "../components/projectsSection";
-import Footer from "../components/footer";
-import React from "react";
 
 export default function Home() {
-  const [allTops, setAllTops] = useState({
-    homepageTop: 0,
-    profileTop: 0,
-    portfolioTop: 0,
-    aboutTop: 0,
-  });
-
-  useEffect(() => {
-    const updateTops = () => {
-      setAllTops({
-        homepageTop: document.getElementById("home").offsetTop,
-        profileTop: document.getElementById("profile").offsetTop,
-        portfolioTop: document.getElementById("portfolio").offsetTop,
-        aboutTop: document.getElementById("about").offsetTop,
-      });
-    };
-
-    updateTops();
-
-    window.addEventListener("resize", updateTops);
-
-    return () => {
-      window.removeEventListener("resize", updateTops);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (performance.navigation.type === 1) {
-      window.location.href = "/";
-    }
-  }, []);
-
-  return (
-    <>
-      <Navbar allTops={allTops} />
-      <section id="home">
-        <Homepage />
-      </section>
-      <section id="profile">
-        <ProfileSection portfolioTop={allTops.portfolioTop} />
-      </section>
-      <section id="portfolio">
-        <ProjectsSection />
-      </section>
-      <section id="about" className="flex justify-center items-center">
-        <AboutMe />
-      </section>
-      <section id="footer">
-        <Footer />
-      </section>
-    </>
+  const excerpts = Object.fromEntries(
+    projects.map((project) => {
+      const article = loadArticle(project.href);
+      return [
+        project.href,
+        {
+          fr: article.fr[0]?.paragraphs[0] ?? "",
+          en: article.en[0]?.paragraphs[0] ?? "",
+        },
+      ];
+    }),
   );
+
+  return <HomeShell excerpts={excerpts} />;
 }

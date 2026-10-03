@@ -1,6 +1,17 @@
-import React from 'react';
-import Project from "../../../components/project";
+import { projects } from "../../../data/projects";
+import { ProjectPage } from "../../../components/ProjectPage";
+import { loadArticle } from "../../../lib/articles";
+
+const project = projects.find((p) => p.href === "personnal/cctv");
+
+if (!project) {
+  throw new Error(
+    'Project "personnal/cctv" not found in src/data/projects.ts.'
+  );
+}
+
+const article = loadArticle(project.href);
 
 export default function Page() {
-    return <Project />;
+  return <ProjectPage project={project} article={article} />;
 }

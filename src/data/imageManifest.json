@@ -1,0 +1,124 @@
+{
+  "/img/embedded-1": {
+    "width": 364,
+    "height": 640
+  },
+  "/img/embedded-2": {
+    "width": 1458,
+    "height": 1072
+  },
+  "/img/kusmi-1": {
+    "width": 640,
+    "height": 480
+  },
+  "/img/quimesis-1": {
+    "width": 1276,
+    "height": 674
+  },
+  "/img/quimesis-2": {
+    "width": 939,
+    "height": 488
+  },
+  "/img/quimesis-3": {
+    "width": 885,
+    "height": 461
+  },
+  "/img/android": {
+    "width": 1256,
+    "height": 826
+  },
+  "/img/avatar": {
+    "width": 1024,
+    "height": 1024
+  },
+  "/img/cctv": {
+    "width": 640,
+    "height": 359
+  },
+  "/img/earth-blue-marble": {
+    "width": 1600,
+    "height": 800
+  },
+  "/img/embedded": {
+    "width": 1600,
+    "height": 1068
+  },
+  "/img/gcii-grid": {
+    "svg": true,
+    "width": 1000,
+    "height": 979
+  },
+  "/img/kusmitea": {
+    "width": 1600,
+    "height": 1067
+  },
+  "/img/minesweeper": {
+    "width": 450,
+    "height": 259
+  },
+  "/img/programming": {
+    "width": 1600,
+    "height": 1067
+  },
+  "/img/quimesis": {
+    "width": 1600,
+    "height": 1067
+  },
+  "/img/safran": {
+    "width": 640,
+    "height": 360
+  },
+  "/img/sncf": {
+    "width": 1200,
+    "height": 900
+  },
+  "/img/tipe": {
+    "width": 1600,
+    "height": 1067
+  },
+  "/img/tipe-1": {
+    "width": 645,
+    "height": 481
+  },
+  "/img/tipe-2": {
+    "width": 645,
+    "height": 481
+  },
+  "/img/web": {
+    "width": 1600,
+    "height": 1200
+  },
+  "/logos/ac-normandie": {
+    "svg": true,
+    "width": 730,
+    "height": 477
+  },
+  "/logos/emse": {
+    "width": 300,
+    "height": 248
+  },
+  "/logos/enedis": {
+    "width": 1600,
+    "height": 341
+  },
+  "/logos/gcii": {
+    "width": 1338,
+    "height": 1002
+  },
+  "/logos/kusmi-tea": {
+    "width": 650,
+    "height": 365
+  },
+  "/logos/quimesis": {
+    "width": 900,
+    "height": 303
+  },
+  "/logos/safran": {
+    "width": 1600,
+    "height": 549
+  },
+  "/logos/sncf": {
+    "width": 1600,
+    "height": 842
+  }
+}

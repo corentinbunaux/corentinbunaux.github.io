@@ -1,108 +1,10 @@
-import React, { useEffect, useState } from "react";
 import "../app/app.css";
 
-const Banner = () => {
-  const [width, setWidth] = useState("420vw");
-  const [right, setRight] = useState("0%");
-  const [speed, setSpeed] = useState(5000);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-    const handleResize = () => {
-      // sm
-      if (window.innerWidth < 768) {
-        setWidth("300vw");
-        setRight("0%");
-        setSpeed(20000);
-      }
-
-      // md
-      else if (window.innerWidth < 1024) {
-        setWidth("450vw");
-        setRight("0%");
-        setSpeed(15000);
-      }
-      // lg
-      else {
-        setWidth("470vw");
-        setRight("10%");
-        setSpeed(20000);
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    handleResize();
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
-    const bannerSections = document.querySelectorAll(".banner-section");
-    bannerSections.forEach((section) => {
-      if (isHovered) {
-        section.classList.add("paused");
-      } else {
-        section.classList.remove("paused");
-      }
-    });
-  }, [isHovered]);
-
-  return (
-    <div className="relative h-1/3" style={{ width: width }}>
-      <div className="absolute flex w-full h-full" style={{ right: right }}>
-        <div
-          className="banner-section sm:w-1/2 lg:w-1/3"
-          style={{ "--speed": `${speed}ms` }}
-        >
-          <CarouselElmts isHovered={isHovered} setIsHovered={setIsHovered} />
-        </div>
-        <div
-          className="banner-section sm:w-1/2 lg:w-1/3"
-          style={{ "--speed": `${speed}ms` }}
-        >
-          <CarouselElmts isHovered={isHovered} setIsHovered={setIsHovered} />
-        </div>
-        {isClient && window.innerWidth >= "1024px" && (
-          <div
-            className="banner-section lg:w-1/3"
-            style={{ "--speed": `${speed}ms` }}
-          >
-            <CarouselElmts isHovered={isHovered} setIsHovered={setIsHovered} />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-export default Banner;
-
-function CarouselElmts(props) {
-  return (
-    <div className="h-full w-full flex justify-around items-center">
-      {bannerElmts.map((content, index) => (
-        <div
-          key={index}
-          className="aspect-square h-1/2 md:h-1/2 flex justify-center items-center"
-          data-content={content.content}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox={bannerElmts[index].viewBox}
-            id={bannerElmts[index].id}
-            className="h-full w-full cursor-pointer"
-            onMouseEnter={() => props.setIsHovered(true)}
-            onMouseLeave={() => props.setIsHovered(false)}
-          >
-            {bannerElmts[index].svgContent}
-          </svg>
-        </div>
-      ))}
-    </div>
-  );
-}
-
+/** Icon source for TechBadge/TechPill (projectsSection.jsx, TechBadge.tsx).
+ * The scrolling ticker this file used to render (a <Banner/> component built
+ * on this same list) is no longer rendered anywhere on the site — removed
+ * entirely rather than left dead (PORT-068's review found it had a live bug:
+ * `window.innerWidth >= "1024px"` compared a number to a string). */
 export const bannerElmts = [
   {
     id: "html",
@@ -230,11 +132,11 @@ export const bannerElmts = [
     viewBox: "0 0 32 32",
     svgContent: (
       <>
-        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
         <g
           id="SVGRepo_tracerCarrier"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         ></g>
         <g id="SVGRepo_iconCarrier">
           {" "}
@@ -261,11 +163,11 @@ export const bannerElmts = [
               gradientUnits="userSpaceOnUse"
             >
               {" "}
-              <stop offset="0.097" stop-color="#0095D5"></stop>{" "}
-              <stop offset="0.301" stop-color="#238AD9"></stop>{" "}
-              <stop offset="0.621" stop-color="#557BDE"></stop>{" "}
-              <stop offset="0.864" stop-color="#7472E2"></stop>{" "}
-              <stop offset="1" stop-color="#806EE3"></stop>{" "}
+              <stop offset="0.097" stopColor="#0095D5"></stop>{" "}
+              <stop offset="0.301" stopColor="#238AD9"></stop>{" "}
+              <stop offset="0.621" stopColor="#557BDE"></stop>{" "}
+              <stop offset="0.864" stopColor="#7472E2"></stop>{" "}
+              <stop offset="1" stopColor="#806EE3"></stop>{" "}
             </linearGradient>{" "}
             <linearGradient
               id="paint1_linear_87_8183"
@@ -276,10 +178,10 @@ export const bannerElmts = [
               gradientUnits="userSpaceOnUse"
             >
               {" "}
-              <stop offset="0.118" stop-color="#0095D5"></stop>{" "}
-              <stop offset="0.418" stop-color="#3C83DC"></stop>{" "}
-              <stop offset="0.696" stop-color="#6D74E1"></stop>{" "}
-              <stop offset="0.833" stop-color="#806EE3"></stop>{" "}
+              <stop offset="0.118" stopColor="#0095D5"></stop>{" "}
+              <stop offset="0.418" stopColor="#3C83DC"></stop>{" "}
+              <stop offset="0.696" stopColor="#6D74E1"></stop>{" "}
+              <stop offset="0.833" stopColor="#806EE3"></stop>{" "}
             </linearGradient>{" "}
             <linearGradient
               id="paint2_linear_87_8183"
@@ -290,12 +192,12 @@ export const bannerElmts = [
               gradientUnits="userSpaceOnUse"
             >
               {" "}
-              <stop offset="0.107" stop-color="#C757BC"></stop>{" "}
-              <stop offset="0.214" stop-color="#D0609A"></stop>{" "}
-              <stop offset="0.425" stop-color="#E1725C"></stop>{" "}
-              <stop offset="0.605" stop-color="#EE7E2F"></stop>{" "}
-              <stop offset="0.743" stop-color="#F58613"></stop>{" "}
-              <stop offset="0.823" stop-color="#F88909"></stop>{" "}
+              <stop offset="0.107" stopColor="#C757BC"></stop>{" "}
+              <stop offset="0.214" stopColor="#D0609A"></stop>{" "}
+              <stop offset="0.425" stopColor="#E1725C"></stop>{" "}
+              <stop offset="0.605" stopColor="#EE7E2F"></stop>{" "}
+              <stop offset="0.743" stopColor="#F58613"></stop>{" "}
+              <stop offset="0.823" stopColor="#F88909"></stop>{" "}
             </linearGradient>{" "}
           </defs>{" "}
         </g>
@@ -343,11 +245,11 @@ export const bannerElmts = [
     viewBox: "-45 0 346 346",
     svgContent: (
       <>
-        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
         <g
           id="SVGRepo_tracerCarrier"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         ></g>
         <g id="SVGRepo_iconCarrier">
           <g>
@@ -427,11 +329,11 @@ export const bannerElmts = [
     viewBox: "0 -41 256 256",
     svgContent: (
       <>
-        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
         <g
           id="SVGRepo_tracerCarrier"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         ></g>
         <g id="SVGRepo_iconCarrier">
           <g fill="#00979C">
@@ -544,6 +446,17 @@ export const bannerElmts = [
           d="M42.2,22.1L25.9,5.8C25.4,5.3,24.7,5,24,5c0,0,0,0,0,0c-0.7,0-1.4,0.3-1.9,0.8l-3.5,3.5l4.1,4.1c0.4-0.2,0.8-0.3,1.3-0.3c1.7,0,3,1.3,3,3c0,0.5-0.1,0.9-0.3,1.3l4,4c0.4-0.2,0.8-0.3,1.3-0.3c1.7,0,3,1.3,3,3s-1.3,3-3,3c-1.7,0-3-1.3-3-3c0-0.5,0.1-0.9,0.3-1.3l-4-4c-0.1,0-0.2,0.1-0.3,0.1v10.4c1.2,0.4,2,1.5,2,2.8c0,1.7-1.3,3-3,3s-3-1.3-3-3c0-1.3,0.8-2.4,2-2.8V18.8c-1.2-0.4-2-1.5-2-2.8c0-0.5,0.1-0.9,0.3-1.3l-4.1-4.1L5.8,22.1C5.3,22.6,5,23.3,5,24c0,0.7,0.3,1.4,0.8,1.9l16.3,16.3c0,0,0,0,0,0c0.5,0.5,1.2,0.8,1.9,0.8s1.4-0.3,1.9-0.8l16.3-16.3c0.5-0.5,0.8-1.2,0.8-1.9C43,23.3,42.7,22.6,42.2,22.1z"
         ></path>
       </>
+    ),
+  },
+  {
+    id: "copilot",
+    content: "GitHub Copilot",
+    viewBox: "0 0 24 24",
+    svgContent: (
+      <path
+        fill="#8534F3"
+        d="M23.922 16.997C23.061 18.492 18.063 22.02 12 22.02 5.937 22.02.939 18.492.078 16.997A.641.641 0 0 1 0 16.741v-2.869a.883.883 0 0 1 .053-.22c.372-.935 1.347-2.292 2.605-2.656.167-.429.414-1.055.644-1.517a10.098 10.098 0 0 1-.052-1.086c0-1.331.282-2.499 1.132-3.368.397-.406.89-.717 1.474-.952C7.255 2.937 9.248 1.98 11.978 1.98c2.731 0 4.767.957 6.166 2.093.584.235 1.077.546 1.474.952.85.869 1.132 2.037 1.132 3.368 0 .368-.014.733-.052 1.086.23.462.477 1.088.644 1.517 1.258.364 2.233 1.721 2.605 2.656a.841.841 0 0 1 .053.22v2.869a.641.641 0 0 1-.078.256Zm-11.75-5.992h-.344a4.359 4.359 0 0 1-.355.508c-.77.947-1.918 1.492-3.508 1.492-1.725 0-2.989-.359-3.782-1.259a2.137 2.137 0 0 1-.085-.104L4 11.746v6.585c1.435.779 4.514 2.179 8 2.179 3.486 0 6.565-1.4 8-2.179v-6.585l-.098-.104s-.033.045-.085.104c-.793.9-2.057 1.259-3.782 1.259-1.59 0-2.738-.545-3.508-1.492a4.359 4.359 0 0 1-.355-.508Zm2.328 3.25c.549 0 1 .451 1 1v2c0 .549-.451 1-1 1-.549 0-1-.451-1-1v-2c0-.549.451-1 1-1Zm-5 0c.549 0 1 .451 1 1v2c0 .549-.451 1-1 1-.549 0-1-.451-1-1v-2c0-.549.451-1 1-1Zm3.313-6.185c.136 1.057.403 1.913.878 2.497.442.544 1.134.938 2.344.938 1.573 0 2.292-.337 2.657-.751.384-.435.558-1.15.558-2.361 0-1.14-.243-1.847-.705-2.319-.477-.488-1.319-.862-2.824-1.025-1.487-.161-2.192.138-2.533.529-.269.307-.437.808-.438 1.578v.021c0 .265.021.562.063.893Zm-1.626 0c.042-.331.063-.628.063-.894v-.02c-.001-.77-.169-1.271-.438-1.578-.341-.391-1.046-.69-2.533-.529-1.505.163-2.347.537-2.824 1.025-.462.472-.705 1.179-.705 2.319 0 1.211.175 1.926.558 2.361.365.414 1.084.751 2.657.751 1.21 0 1.902-.394 2.344-.938.475-.584.742-1.44.878-2.497Z"
+      />
     ),
   },
 ];

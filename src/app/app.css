@@ -3,12 +3,71 @@
 @tailwind utilities;
 
 :root {
+  color-scheme: dark;
+
+  /* Base surfaces, from the darkest page background upwards. */
   --main: #1a1a1a;
   --secondary: #333333;
+  --surface: #202020;
+  --surface-raised: #2a2a2a;
+  --border: #2f2f2f;
+
+  /* Accents. */
   --my-green: #81a3a7;
   --my-blue: #a7bcc7;
+
+  /* Text. Contrast ratios against --main / --surface / --surface-raised:
+     --main-text   15.96 / 14.94 / 13.16
+     --second-text  6.11 /  5.72 /  5.03  (WCAG AA needs 4.5 for body text)
+     The previous --second-text was #666666: 3.03 / 2.84 / 2.50, all failing. */
   --main-text: #f5f5f5;
-  --second-text: #666666;
+  --second-text: #999999;
+
+  /* Focus. 8.84:1 on --main, 7.28:1 on --surface-raised — well past the 3:1
+     WCAG AA needs for a non-text indicator. Consumed by PORT-006 (navbar). */
+  --focus: #a7bcc7;
+  --focus-width: 3px;
+  --focus-offset: 3px;
+
+  /* Vertical rhythm. Sections are sized by their content plus this padding,
+     never by a fixed vh height. */
+  --section-padding-y: 4rem;
+  --section-padding-x: 1rem;
+  --card-min-height: 11rem;
+  /* Height of the fixed SiteHeader (PORT-028): two rows on mobile (brand +
+     controls, then nav links), one row from md up. Used for scroll-margin
+     and for the sticky "En bref" offset. */
+  --header-height: 6.5rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --section-padding-y: 6rem;
+    --section-padding-x: 2rem;
+    --card-min-height: 13rem;
+    --header-height: 4rem;
+  }
+}
+
+/* Light theme (PORT-026). Same token names, so every utility and rule follows.
+   Contrast ratios against --main / --surface / --surface-raised:
+     --main-text   16.23 / 17.40 / 15.10
+     --second-text  6.23 /  6.69 /  5.80
+     --my-green     5.13 /  5.50 /  4.77  (also usable as text)
+     --my-blue      6.35 /  6.81 /  5.91
+   --main on --my-green (PUSH button, badges): 5.13. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --main: #f7f7f5;
+  --secondary: #e2e2dd;
+  --surface: #ffffff;
+  --surface-raised: #eef2f4;
+  --border: #d6d6d0;
+  --my-green: #4a6f74;
+  --my-blue: #3f5f70;
+  --main-text: #1a1a1a;
+  --second-text: #5c5c5c;
+  --focus: #3f5f70;
 }
 
 /* smartphones */
@@ -25,124 +84,98 @@
   h3 {
     font-size: 1.25rem;
   }
-
-  @media (max-height: 750px) {
-    #home {
-      height: 90vh;
-    }
-
-    #profile {
-      height: 140vh;
-    }
-
-    #about {
-      height: 170vh;
-    }
-
-    #portfolio {
-      height: 500vh;
-    }
-  }
-
-  @media (min-height: 750px) {
-    #home {
-      height: 100vh;
-    }
-
-    #profile {
-      height: 145vh;
-    }
-
-    #about {
-      height: 130vh;
-    }
-
-    #portfolio {
-      height: 500vh;
-    }
-  }
 }
 
 /*md*/
 @media (min-width: 768px) {
-  h1,
-  h2,
-  h3,
-  p,
-  button {
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-  }
-
   h3 {
     font-size: 1.25rem;
-  }
-
-  #home,
-  #about {
-    height: 100vh;
-  }
-
-  #profile {
-    height: 160vh;
-  }
-
-  #portfolio {
-    height: 180vh;
   }
 }
 
 /*lg*/
 @media (min-width: 1024px) {
-  #home,
-  #about {
-    height: 100vh;
-  }
-
-  #profile {
-    height: 100vh;
-  }
-
-  #portfolio {
-    height: 150vh;
-  }
-
   h3 {
     font-size: 3rem;
   }
 }
 
-/* Masquer la barre de défilement latérale*/
-::-webkit-scrollbar {
-  width: 0rem;
+/* Section sizing.
+
+   These four sections used to carry a fixed `height` in `vh`, redeclared at
+   every width AND height breakpoint (#portfolio reached 500vh on mobile).
+   Anything but a 16:9 viewport either clipped the content or left a large
+   empty band below it. They are now sized by their own content plus a padding
+   token.
+
+   #home is the one exception: every child of homepage.jsx is absolutely
+   positioned, so the section has no in-flow content to be sized by and would
+   collapse to zero. It keeps a viewport *minimum* — `min-height`, not
+   `height`, so content can still grow past the fold instead of being cut. */
+#profile,
+#portfolio,
+#about {
+  box-sizing: border-box;
+  padding-block: var(--section-padding-y);
+  padding-inline: var(--section-padding-x);
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+#home {
+  box-sizing: border-box;
+  min-height: 100svh;
 }
 
-::-webkit-scrollbar-thumb {
-  background: transparent;
+/* Children of those sections use percentage heights (h-full, h-5/6, h-2/3)
+   that resolved against the old fixed heights. With an auto-height parent a
+   percentage height computes to auto, which is what we want — but the project
+   cards then shrink to the height of their own text, so they get a floor. */
+#portfolio .fulldiv,
+#portfolio .fulldiv > div:not(.project-card-img) {
+  min-height: var(--card-min-height);
 }
 
 html {
-  scrollbar-width: none;
-  overflow-x: hidden;
+  overflow-x: clip;
+  scroll-behavior: smooth;
+
+  /* The scrollbar used to be hidden outright (scrollbar-width: none plus a
+     zero-width ::-webkit-scrollbar), which removes the only cue that a page
+     five screens tall has more below. It is styled to the palette instead. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--secondary) var(--main);
+}
+
+::-webkit-scrollbar {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--main);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary);
+  border: 3px solid var(--main);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border);
 }
 
 body {
-  scrollbar-width: none;
   background-color: var(--main);
   color: var(--main-text);
-  overflow-x: hidden;
+  overflow-x: clip;
+}
 
-  user-select: none;
-  -webkit-user-select: none;
-  /* Safari */
-  -moz-user-select: none;
-  /* Firefox */
-  -ms-user-select: none;
-  /* Internet Explorer/Edge */
+/* Visible focus for every interactive element. PORT-006 builds the navbar's
+   keyboard affordances on these tokens. */
+:focus-visible {
+  outline: var(--focus-width) solid var(--focus);
+  outline-offset: var(--focus-offset);
+  border-radius: 2px;
 }
 
 .project-page-container,
@@ -166,12 +199,12 @@ h3 {
   font-size: 1.25rem;
   color: var(--main-text);
   z-index: 1;
-  text-align: justify;
+  text-align: left;
 }
 
 p {
   font-size: 1.2rem;
-  text-align: justify;
+  text-align: left;
   color: var(--second-text);
   z-index: 1;
 }
@@ -727,7 +760,9 @@ p {
   transition: all 0.2s ease;
   z-index: 4;
   transform: rotate(30deg);
-  color: var(--main-text);
+  /* --main-text on --my-green was 2.49:1, an AA failure on a real button.
+     --main on the same green is 6.41:1. */
+  color: var(--main);
   background-color: var(--my-green);
 }
 
@@ -840,5 +875,73 @@ p {
 
   100% {
     transform: scale(0) rotate(180deg);
+  }
+}
+
+/* Linear correction added on top of ball_path (same duration and easing)
+   so the ball ends on the racket. --ball-aim-x/y are measured in
+   aboutmeSection.jsx when PUSH is clicked. */
+@keyframes ball_aim {
+  from {
+    transform: translate(0, 0);
+  }
+
+  to {
+    transform: translate(var(--ball-aim-x), var(--ball-aim-y));
+  }
+}
+
+.ball-aim {
+  animation: ball_aim 1s ease-out both;
+}
+
+/* Struck ball: rests on the racket briefly, then fades out. The player
+   stays still (PORT-062 removed the arm swing). */
+.ball.ball-struck {
+  opacity: 0;
+  transition: opacity 0.2s ease-out 0.35s;
+}
+
+.btn_federer-done {
+  animation: endBtnFederer_pt1 0.3s ease-in-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ball,
+  .ball-aim,
+  .btn_federer-done {
+    animation: none;
+  }
+
+  .btn_federer-done {
+    visibility: hidden;
+  }
+}
+
+/* Native anchor navigation (PORT-025/028): land section titles below the
+   fixed header instead of underneath it. */
+section[id] {
+  scroll-margin-top: var(--header-height);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* PORT-055: the SNCF mini-train strip loops left to right, off-screen to
+   off-screen, so it never appears to "teleport" mid-frame. */
+@keyframes sncf_mini_train {
+  from { left: -6rem; }
+  to { left: 100%; }
+}
+.sncf-mini-train {
+  animation: sncf_mini_train 14s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sncf-mini-train {
+    animation: none;
+    left: 40%;
   }
 }
