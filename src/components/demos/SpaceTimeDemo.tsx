@@ -95,7 +95,10 @@ export function SpaceTimeDemo() {
         {[0, 20, 40, 60, 80, 100, 120].map((minutes) => (
           <g key={minutes}>
             <line x1={x(minutes)} x2={x(minutes)} y1={TOP} y2={H - BOTTOM} stroke="var(--border)" strokeWidth={1} strokeDasharray="2 4" />
-            <text x={x(minutes)} y={H - BOTTOM + 18} textAnchor="middle" fontSize={12} fill="var(--second-text)">
+            {/* The last tick sits on the chart's right edge: centring its
+                label pushed "120 min" past the viewBox, where the <svg>
+                clipped it (PORT-069 E2E). Right-align that one instead. */}
+            <text x={x(minutes)} y={H - BOTTOM + 18} textAnchor={minutes === DURATION_MIN ? "end" : "middle"} fontSize={12} fill="var(--second-text)">
               {minutes} {t.demos.spaceTime.timeAxis}
             </text>
           </g>
