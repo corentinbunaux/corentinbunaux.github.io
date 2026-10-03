@@ -1,4 +1,4 @@
-import type { LocalizedText } from "../i18n/types";
+import type { Language, LocalizedText } from "../i18n/types";
 
 /** Whole years. A single-year milestone (the baccalauréat) has start === end. */
 export interface EducationYears {
@@ -16,6 +16,23 @@ export interface EducationEntry {
   readonly detail?: LocalizedText;
   /** Route without a leading slash, when the entry has a page (e.g. the TIPE). */
   readonly href?: string;
+}
+
+/** `EducationEntry`, with every `LocalizedText` field resolved to a plain
+ * string for one language — mirrors `localizeProject()` in `src/data/projects.ts`
+ * so both bilingual data sources are resolved the same way. */
+export type LocalizedEducationEntry = Omit<EducationEntry, "title" | "detail"> & {
+  readonly title: string;
+  readonly detail?: string;
+};
+
+/** Resolves every bilingual field of `entry` to the given `language`. */
+export function localizeEducation(entry: EducationEntry, language: Language): LocalizedEducationEntry {
+  return {
+    ...entry,
+    title: entry.title[language],
+    detail: entry.detail ? entry.detail[language] : undefined,
+  };
 }
 
 export const education: readonly EducationEntry[] = [

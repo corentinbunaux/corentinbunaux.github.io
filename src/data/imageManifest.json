@@ -44,7 +44,9 @@
     "height": 1068
   },
   "/img/gcii-grid": {
-    "svg": true
+    "svg": true,
+    "width": 1000,
+    "height": 979
   },
   "/img/kusmitea": {
     "width": 1600,
@@ -87,7 +89,9 @@
     "height": 1200
   },
   "/logos/ac-normandie": {
-    "svg": true
+    "svg": true,
+    "width": 730,
+    "height": 477
   },
   "/logos/emse": {
     "width": 300,

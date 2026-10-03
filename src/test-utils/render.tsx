@@ -7,34 +7,36 @@
  * LanguageProvider after mount) and `<html data-theme>` (set by the inline
  * theme script before hydration, mirrored by ThemeProvider after mount).
  */
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { render, type RenderOptions } from "@testing-library/react";
 import type { ReactElement } from "react";
 import { LanguageProvider } from "../i18n/LanguageContext";
 import { ThemeProvider } from "../theme/ThemeContext";
 import type { Language } from "../i18n/types";
 
-/** Real values from src/app/app.css (dark :root and [data-theme="light"]). */
-export const DARK_TOKENS: Record<string, string> = {
-  "--main": "#1a1a1a",
-  "--surface": "#202020",
-  "--surface-raised": "#2a2a2a",
-  "--border": "#2f2f2f",
-  "--main-text": "#f5f5f5",
-  "--second-text": "#999999",
-  "--my-green": "#81a3a7",
-  "--my-blue": "#a7bcc7",
-};
+/** Parsed straight from app.css instead of duplicated by hand, so a colour
+ * changed there can't silently go stale here (PORT-068 review). Only
+ * hex-colour custom properties are kept — spacing/sizing tokens aren't read
+ * by any test. Assumes the flat, single-level `:root { --x: #hex; }` shape
+ * app.css's token blocks actually have (no nested rules inside them). */
+function parseThemeTokens(css: string, blockPattern: RegExp): Record<string, string> {
+  const block = blockPattern.exec(css)?.[1] ?? "";
+  const tokens: Record<string, string> = {};
+  for (const [, name, value] of block.matchAll(/(--[\w-]+):\s*(#[0-9a-fA-F]+);/g)) {
+    tokens[name] = value;
+  }
+  return tokens;
+}
 
-export const LIGHT_TOKENS: Record<string, string> = {
-  "--main": "#f7f7f5",
-  "--surface": "#ffffff",
-  "--surface-raised": "#eef2f4",
-  "--border": "#d6d6d0",
-  "--main-text": "#1a1a1a",
-  "--second-text": "#5c5c5c",
-  "--my-green": "#4a6f74",
-  "--my-blue": "#3f5f70",
-};
+const APP_CSS = readFileSync(path.join(process.cwd(), "src/app/app.css"), "utf8");
+
+export const DARK_TOKENS: Record<string, string> = parseThemeTokens(APP_CSS, /:root\s*\{([^}]*)\}/);
+
+export const LIGHT_TOKENS: Record<string, string> = parseThemeTokens(
+  APP_CSS,
+  /:root\[data-theme="light"\]\s*\{([^}]*)\}/,
+);
 
 /** Defines the design tokens on <html>, as app.css does in the browser. */
 export function installThemeTokens(tokens: Record<string, string>) {

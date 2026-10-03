@@ -6,7 +6,7 @@ import {
   type Project,
   type ProjectPeriod,
 } from "../data/projects";
-import { education, type EducationEntry } from "../data/education";
+import { education, localizeEducation, type EducationEntry } from "../data/education";
 import { useTranslation } from "../i18n/dictionary";
 import { useLanguage } from "../i18n/LanguageContext";
 import type { Dictionary } from "../i18n/dictionary";
@@ -64,6 +64,17 @@ function formatPeriod(period: ProjectPeriod, t: Dictionary): string {
   return `${formatMonthYear(period.start, months)} – ${formatMonthYear(period.end, months)}`;
 }
 
+/** The dot + connector line shared by every timeline row; only the dot's
+ * colour varies (ongoing project = green, everything else = neutral). */
+function TimelineDot({ isLast, colorClassName = "bg-second-text" }: { isLast: boolean; colorClassName?: string }) {
+  return (
+    <div className="flex flex-col items-center">
+      <span className={`mt-1.5 h-3 w-3 shrink-0 rounded-full ${colorClassName}`} aria-hidden="true" />
+      {!isLast && <span className="w-px flex-1 bg-second" aria-hidden="true" />}
+    </div>
+  );
+}
+
 function JourneyEntryRow({
   entry,
   isLast,
@@ -83,17 +94,7 @@ function JourneyEntryRow({
 
   return (
     <li className="flex gap-4">
-      <div className="flex flex-col items-center">
-        <span
-          className={`mt-1.5 h-3 w-3 shrink-0 rounded-full ${
-            isOngoing ? "bg-my-green" : "bg-second-text"
-          }`}
-          aria-hidden="true"
-        />
-        {!isLast && (
-          <span className="w-px flex-1 bg-second" aria-hidden="true" />
-        )}
-      </div>
+      <TimelineDot isLast={isLast} colorClassName={isOngoing ? "bg-my-green" : "bg-second-text"} />
       <Link
         href={`/${entry.href}`}
         className="block flex-1 rounded-md pb-6 focus-visible:outline-none"
@@ -126,12 +127,11 @@ function EducationRow({
   isLast: boolean;
   language: "fr" | "en";
 }) {
+  const localized = localizeEducation(entry, language);
   const body = (
     <>
-      <h3 className="text-lg font-semibold text-main-text">
-        {entry.title[language]}
-      </h3>
-      {entry.detail && <p className="text-second-text">{entry.detail[language]}</p>}
+      <h3 className="text-lg font-semibold text-main-text">{localized.title}</h3>
+      {localized.detail && <p className="text-second-text">{localized.detail}</p>}
       <p className="text-second-text">
         {entry.institution} · {entry.location}
       </p>
@@ -141,10 +141,7 @@ function EducationRow({
 
   return (
     <li className="flex gap-4">
-      <div className="flex flex-col items-center">
-        <span className="mt-1.5 h-3 w-3 shrink-0 rounded-full bg-second-text" aria-hidden="true" />
-        {!isLast && <span className="w-px flex-1 bg-second" aria-hidden="true" />}
-      </div>
+      <TimelineDot isLast={isLast} />
       {entry.href ? (
         <Link
           href={`/${entry.href}`}

@@ -62,16 +62,34 @@ function clip(points: readonly Point[], now: number): { path: [number, number][]
 function useSweep(): number {
   const [now, setNow] = useState(DURATION_MIN);
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let frame = 0;
-    const start = performance.now();
-    const tick = (time: number) => {
-      const cycle = (time - start) % (SWEEP_MS + HOLD_MS);
-      setNow(Math.min(cycle / SWEEP_MS, 1) * DURATION_MIN);
+
+    const stop = () => {
+      cancelAnimationFrame(frame);
+      frame = 0;
+    };
+    const start = () => {
+      const startTime = performance.now();
+      const tick = (time: number) => {
+        const cycle = (time - startTime) % (SWEEP_MS + HOLD_MS);
+        setNow(Math.min(cycle / SWEEP_MS, 1) * DURATION_MIN);
+        frame = requestAnimationFrame(tick);
+      };
       frame = requestAnimationFrame(tick);
     };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
+
+    // Live, not a one-shot read at mount (PORT-068 review): a visitor who
+    // turns on reduced-motion mid-session should stop this loop immediately,
+    // the same way useDesktopMotionGate already reacts to a live change.
+    const evaluate = () => (reducedMotion.matches ? stop() : start());
+    evaluate();
+    reducedMotion.addEventListener("change", evaluate);
+
+    return () => {
+      reducedMotion.removeEventListener("change", evaluate);
+      stop();
+    };
   }, []);
   return now;
 }

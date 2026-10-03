@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { Language } from "./types";
 
 const STORAGE_KEY = "corentinbunaux.language";
@@ -45,7 +45,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     document.documentElement.lang = language;
   }, [language]);
 
-  const setLanguage = (next: Language) => {
+  const setLanguage = useCallback((next: Language) => {
     setLanguageState(next);
     try {
       window.localStorage.setItem(STORAGE_KEY, next);
@@ -53,13 +53,15 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       // Same as above: persistence is best-effort, the in-memory state
       // change above still applies for the rest of the session.
     }
-  };
+  }, []);
 
-  return (
-    <LanguageContext.Provider value={{ language, setLanguage }}>
-      {children}
-    </LanguageContext.Provider>
-  );
+  // Stable identity like ThemeContext's value: useTranslation()/useLanguage()
+  // are consumed in ~18 files, so a fresh object every render would hand all
+  // of them a new context value (and anything with setLanguage in a
+  // dependency array a new callback) on any unrelated provider re-render.
+  const value = useMemo(() => ({ language, setLanguage }), [language, setLanguage]);
+
+  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 }
 
 export function useLanguage(): LanguageContextValue {

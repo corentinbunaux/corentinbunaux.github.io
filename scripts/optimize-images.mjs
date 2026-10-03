@@ -73,7 +73,11 @@ async function main() {
 
       if (ext === ".svg") {
         await copyFile(path.join(srcDir, file), path.join(outDir, `${name}.svg`));
-        manifest[key] = { svg: true };
+        // Intrinsic size, so <OptimizedImage> can set width/height on the
+        // <img> like the raster branch does and avoid layout shift while the
+        // SVG downloads.
+        const { width, height } = await sharp(path.join(srcDir, file)).metadata();
+        manifest[key] = { svg: true, width, height };
         console.log(`  ${file} -> ${name}.svg (copied verbatim)`);
         continue;
       }

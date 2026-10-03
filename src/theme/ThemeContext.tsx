@@ -41,7 +41,16 @@ function applyTheme(theme: Theme) {
  * hydration. This provider mirrors that value into React state after mount
  * (the server cannot know it), follows live system changes while the visitor
  * has not chosen explicitly, and persists an explicit choice.
- */
+ *
+ * Initial state is always "dark" (matching the static export's server-only
+ * render, which has no `document`) and corrected one effect tick later —
+ * never computed from `document` at init time. A PORT-068 review attempt to
+ * read the real theme synchronously here, to avoid that one-frame flash,
+ * caused a production hydration mismatch (React error #418, caught by
+ * Playwright's console-error fixture): the server-rendered HTML always
+ * assumes "dark", so a client-side initial render that computes a different
+ * value immediately disagrees with it. LanguageContext.tsx accepts the same
+ * trade-off for the same reason — see its comment. */
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>("dark");
 
