@@ -73,6 +73,9 @@ test.describe("language", () => {
   test("switching to English translates the page, persists across reload and navigation", async ({
     page,
   }) => {
+    // Four page loads, two of them with three.js scenes that WebKit renders
+    // in software here: took > 30s once under a full parallel 5-project run.
+    test.slow();
     await open(page, "/");
     await chooseLanguage(page, "English");
     await expect(navLink(page, "portfolio")).toHaveText("Projects");

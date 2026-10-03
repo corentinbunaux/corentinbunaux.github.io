@@ -23,24 +23,22 @@ test.describe("keyboard accessibility", () => {
 
   test("Tab walks the header in order with a visible focus ring", async ({ page, browserName }) => {
     await open(page, "/");
-    // Safari/WebKit's default: Tab only reaches form controls, links need
-    // Option+Tab (or the "Press Tab to highlight each item" setting). That is
-    // the browser's documented behaviour, not a site bug — use the chord a
-    // Safari keyboard user actually presses.
-    const tab = browserName === "webkit" ? "Alt+Tab" : "Tab";
+    // Safari/WebKit's default: Tab only reaches form controls; links are
+    // skipped unless the user enables "Press Tab to highlight each item"
+    // (Option+Tab does not change that in Playwright's WebKit either —
+    // tried). That is the browser's documented behaviour, not a site bug:
+    // on WebKit, Tab must reach the two header buttons, in order.
+    const webkit = browserName === "webkit";
+    const presses = webkit ? 2 : 7;
     const seen: Focused[] = [];
-    for (let i = 0; i < 7; i++) {
-      await page.keyboard.press(tab);
+    for (let i = 0; i < presses; i++) {
+      await page.keyboard.press("Tab");
       seen.push(await focused(page));
     }
     // Name link (data-nav-id "home"), the four nav links (starting with
     // "Profil", also "home"), then language menu and theme toggle.
-    expect(seen.map((f) => f.navId ?? f.label)).toEqual([
-      "home",
-      ...NAV_IDS,
-      expect.stringMatching(/^Changer de langue/),
-      expect.stringMatching(/^Passer au thème/),
-    ]);
+    const buttons = [expect.stringMatching(/^Changer de langue/), expect.stringMatching(/^Passer au thème/)];
+    expect(seen.map((f) => f.navId ?? f.label)).toEqual(webkit ? buttons : ["home", ...NAV_IDS, ...buttons]);
     for (const f of seen) {
       expect(f.focusVisible, `${f.label} matches :focus-visible`).toBe(true);
       expect(f.outline, `${f.label} has a visible outline`).toMatch(/^solid [1-9]/);
