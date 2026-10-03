@@ -39,7 +39,9 @@ under `src/app/*`. No backend, no database, no CMS.
 | `src/i18n/` | `LanguageContext.tsx`, `dictionary.ts` (assembles `src/i18n/namespaces/*.ts` into one `Dictionary`), `types.ts` | PORT-024 split the former single `dictionary.ts` into one file per namespace (`header`, `hero`, `journey`, `about`, `profile`, `projectPage`, `demos`, `minesweeper`, `guards`, `typing`, `predict`, `navbar`, `footer`, `common`, `projects`) so tickets stop conflicting on one shared file |
 | `scripts/optimize-images.mjs`, `scripts/generate-gcii-illustration.mjs` | Generate `public/img`/`public/logos` (AVIF+WebP) from `assets/images-src/`, and the fictional GCII/Enedis SVG illustration respectively | `npm run optimize:images`; the GCII visual is entirely generated (no real Enedis data — confidentiality) |
 | `assets/images-src/`, `public/img/`, `public/logos/` | Image masters / generated web-ready assets | Never edited by hand |
-| `tests/` | Does not exist — no test suite is configured | |
+| `src/**/*.test.{ts,tsx}`, `jest.config.mjs`, `jest.setup.ts`, `src/test-utils/` | Jest unit tests, colocated next to the file they cover (`next/jest` + React Testing Library) | PORT-068. `npm run test` (= `jest --coverage`); 95% global threshold enforced in `jest.config.mjs`. three.js demos are tested against a real scene graph with only `WebGLRenderer` mocked (`__mocks__/three.ts`) |
+| `e2e/`, `playwright.config.ts` | Playwright E2E specs: navigation, theme/language, mobile, keyboard, demos, errors/links | PORT-069. `npm run test:e2e`; serves the real static export (`next build` → `out/`) via a native Node `http`/`fs` server (`e2e/static-server.mjs`), no new runtime dependency. 5 projects: `chromium-desktop`, `webkit-desktop` (Safari stand-in — Playwright can't drive real Safari), `edge-desktop` (falls back to bundled Chromium with Edge's device profile when the `msedge` channel isn't installed), `mobile-chrome` (Pixel 7 @360px), `mobile-safari` (iPhone 14 @390px) |
+| `src/lib/navigation.ts` | `replaceLocation()`, a one-line wrapper around `window.location.replace` | Exists purely as a test seam — jsdom's `Location.prototype.replace` is a non-configurable, non-writable own property and cannot be mocked/spied on directly (verified) |
 
 ## Data flow
 
@@ -73,6 +75,8 @@ derived live via `IntersectionObserver` (`SiteHeader.tsx`), not by measuring
 | 2026-09-27 | Verifying 3D demos and cross-theme/mobile behaviour without a connected interactive browser: launch headless Chrome (`--headless=new --use-angle=swiftshader --enable-unsafe-swiftshader`, a dedicated `--user-data-dir`) and drive it over the raw DevTools protocol via Node's native `WebSocket`, in a disposable script kept outside the repo | No browser extension was connected to several M6 sessions; this avoids adding a test/automation dependency | Skipping visual verification and asserting it was done anyway (would violate "no silent fallback") |
 | 2026-10-02 | Safran's stylized fighter (`SafranEarthDemo.tsx`) switched from a 4-wing "X" silhouette to a single-pair delta wing, tilted toward the camera (`FIGHTER_BANK`) | PORT-066: enlarging/slowing the X-shape (PORT-054) still read as a cross or pinwheel at the demo's actual on-screen size (446×250px); a delta wing is far more legible as a generic spacecraft silhouette at that scale. A since-PORT-054 bug where the fighter flew backwards (`Object3D.lookAt` orients a mesh's +Z, not -Z, toward the target) was fixed in the same pass | A bigger/slower X-wing (tried first as "temps 1", rejected on full-frame screenshots); a recognizable franchise ship |
 | 2026-10-02 | `TechLogoId` gained `"copilot"` (GitHub Copilot's official Simple Icons glyph, brand colour `#8534F3` as a literal, not a theme token — like the project's other multicolour logos in `Banner.jsx`) | PORT-067: GCII/Enedis needed a Git/TypeScript/Copilot CLI skill badge; there is no separate "Copilot CLI" mark, so the generic Copilot glyph stands for it | Drawing a custom CLI icon |
+| 2026-10-03 | Unit tests via Jest (`next/jest`) + React Testing Library, colocated `*.test.{ts,tsx}`, 95% global coverage threshold; three.js demos tested against a real scene graph with only `WebGLRenderer` mocked | PORT-068: Corentin wanted the code frozen behind a real test suite before shipping. Mocking only the renderer (not all of three.js) lets demo logic (collision/raycast/state machines) run for real, closer to what a visitor sees, than mocking the whole library would | Mocking all of `three`; `ts-jest`/`babel-jest` (unneeded — `next/jest` already wires SWC) |
+| 2026-10-03 | E2E via Playwright across 5 projects (Chrome/Safari-via-WebKit/Edge desktop + 2 mobile device profiles), served from the real static export via a native Node server | PORT-069: "test the classic environments" (Corentin) plus the actual deployed artifact, not `next dev`. Testing found and fixed 4 real bugs: a reload-redirect infinite loop, `<html lang>` not following the selected language, mobile grid overflow on two demos, a clipped chart axis label — see the ticket's journal | Adding the `serve` package for the static server (a 5-line native `http`/`fs` script was enough) |
 
 ## Invariants
 
@@ -116,8 +120,13 @@ derived live via `IntersectionObserver` (`SiteHeader.tsx`), not by measuring
 
 ## Known weak points
 
-- No test suite (`npm test` is not defined) — regressions are caught by
-  manual/visual checks and the `ci.yml` build/lint/typecheck gate.
+- `Banner.jsx`'s default-exported component is dead code (nothing imports it
+  — only its `bannerElmts` icon map is used, by `TechBadge.tsx` and
+  `projectsSection.jsx`) and has a real bug: `window.innerWidth >= "1024px"`
+  compares a number to a string, so its third carousel section never
+  rendered even when it was mounted somewhere. Found by PORT-068's test
+  suite; not fixed there (out of scope) — remove the dead component or fix
+  the comparison in its own pass.
 - **Heading hierarchy is still invalid site-wide** (PORT-023, `status: draft`,
   not part of M6): sections use `h1` for their title and `h3` as a
   body-text style class, skipping `h2`. Untouched by M6 — needs its own pass.

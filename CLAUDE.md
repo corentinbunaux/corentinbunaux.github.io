@@ -7,7 +7,7 @@ visitors browsing his profile.
 
 - **Budget group**: `corentin` — see `/budget`
 - **Stack**: TypeScript/JavaScript, Next.js 16 (React 19, Turbopack), Tailwind CSS
-- **Run**: `npm run dev` · **Test**: none configured · **Lint**: `npm run lint && npx tsc --noEmit`
+- **Run**: `npm run dev` · **Test**: `npm run test` (Jest, 95% coverage threshold), `npm run test:e2e` (Playwright, 5 browser/device projects) · **Lint**: `npm run lint && npx tsc --noEmit`
 
 ## Read before anything else
 
