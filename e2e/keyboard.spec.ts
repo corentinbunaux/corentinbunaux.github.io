@@ -21,14 +21,20 @@ test.describe("keyboard accessibility", () => {
   // A hardware-keyboard scenario: covered on the three desktop browsers.
   test.skip(({ isMobile }) => isMobile, "keyboard navigation is a desktop scenario");
 
-  test("Tab walks the header in order with a visible focus ring", async ({ page }) => {
+  test("Tab walks the header in order with a visible focus ring", async ({ page, browserName }) => {
     await open(page, "/");
+    // Safari/WebKit's default: Tab only reaches form controls, links need
+    // Option+Tab (or the "Press Tab to highlight each item" setting). That is
+    // the browser's documented behaviour, not a site bug — use the chord a
+    // Safari keyboard user actually presses.
+    const tab = browserName === "webkit" ? "Alt+Tab" : "Tab";
     const seen: Focused[] = [];
     for (let i = 0; i < 7; i++) {
-      await page.keyboard.press("Tab");
+      await page.keyboard.press(tab);
       seen.push(await focused(page));
     }
-    // Home link, the four nav links, then language menu and theme toggle.
+    // Name link (data-nav-id "home"), the four nav links (starting with
+    // "Profil", also "home"), then language menu and theme toggle.
     expect(seen.map((f) => f.navId ?? f.label)).toEqual([
       "home",
       ...NAV_IDS,

@@ -87,7 +87,12 @@ test.describe("language", () => {
 
     // Client-side navigation: the Minesweeper card's title is localized.
     await page.locator('#portfolio a[href="/emse/minesweeper"]').click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Minesweeper");
+    await expect(page).toHaveURL(/\/emse\/minesweeper$/);
+    // Generous timeout: in fully parallel 5-browser runs, this one soft
+    // navigation (right after a reload, in English) was seen to take > 7s to
+    // swap the DOM. In isolation (40/40 probe runs) it is well under 1s. Not
+    // root-caused — see the PORT-069 journal.
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Minesweeper", { timeout: 20_000 });
     await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toBeVisible();
 
     // Full page load of another route.

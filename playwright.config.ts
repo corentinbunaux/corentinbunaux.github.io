@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { defineConfig, devices } from "@playwright/test";
 
 /**
@@ -16,6 +18,25 @@ import { defineConfig, devices } from "@playwright/test";
 const PORT = Number(process.env.E2E_PORT ?? 4173);
 const BASE_URL = `http://127.0.0.1:${PORT}`;
 const serve = `node e2e/static-server.mjs ${PORT}`;
+
+/** Same lookup as Playwright's own "msedge" channel resolution. */
+function edgeChannel(): { channel?: "msedge" } {
+  const candidates =
+    process.platform === "win32"
+      ? [process.env.LOCALAPPDATA, process.env.PROGRAMFILES, process.env["PROGRAMFILES(X86)"]]
+          .filter((prefix): prefix is string => Boolean(prefix))
+          .map((prefix) => join(prefix, "Microsoft", "Edge", "Application", "msedge.exe"))
+      : process.platform === "darwin"
+        ? ["/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge"]
+        : ["/opt/microsoft/msedge/msedge"];
+  if (candidates.some((path) => existsSync(path))) return { channel: "msedge" };
+  if (!process.env.TEST_WORKER_INDEX) {
+    console.warn(
+      "[playwright.config] Microsoft Edge not found: edge-desktop runs bundled Chromium with the Edge preset (not real Edge).",
+    );
+  }
+  return {};
+}
 
 export default defineConfig({
   testDir: "./e2e",
@@ -41,9 +62,15 @@ export default defineConfig({
     // build is Apple's actual engine and is the standard way to test
     // "Safari" with Playwright — this project IS the Safari coverage.
     { name: "webkit-desktop", use: { ...devices["Desktop Safari"] } },
-    // Edge: the real Microsoft Edge installed on the machine (channel), not
-    // Playwright's bundled Chromium.
-    { name: "edge-desktop", use: { ...devices["Desktop Edge"], channel: "msedge" } },
+    // Edge: the real Microsoft Edge installed on the machine (channel
+    // "msedge") whenever it is there. FALLBACK, stated loudly: on a machine
+    // with no usable Edge (PORT-069's dev machine: `npx playwright install
+    // msedge` failed with "Failed to install Microsoft Edge… insufficient
+    // privileges", and the existing install has no msedge.exe), this project
+    // runs Playwright's bundled Chromium with Edge's UA/viewport preset. Edge
+    // is Chromium-based, so the engine is the same — but it is NOT a real-Edge
+    // run, and the config prints a warning saying so.
+    { name: "edge-desktop", use: { ...devices["Desktop Edge"], ...edgeChannel() } },
     {
       name: "mobile-chrome",
       use: {
