@@ -210,18 +210,21 @@ export function ProjectPage({ project: rawProject, article }: ProjectPageProps) 
               )}
             </dl>
 
-            {project.entityLogo && (
-              <div className="mt-6 flex items-center justify-center rounded-lg bg-white p-3">
-                <OptimizedImage
-                  src={project.entityLogo}
-                  alt={`${t.projectPage.logoLabel} ${project.title}`}
-                  sizes="8rem"
-                  style={{
-                    width: "100%",
-                    height: "auto",
-                    maxWidth: "8rem",
-                  }}
-                />
+            {project.entityLogos.length > 0 && (
+              <div className="mt-6 flex items-center justify-center gap-4 rounded-lg bg-white p-3">
+                {project.entityLogos.map((logo) => (
+                  <OptimizedImage
+                    key={logo}
+                    src={logo}
+                    alt={`${t.projectPage.logoLabel} ${project.title}`}
+                    sizes="8rem"
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      maxWidth: project.entityLogos.length > 1 ? "6rem" : "8rem",
+                    }}
+                  />
+                ))}
               </div>
             )}
 

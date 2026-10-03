@@ -74,8 +74,10 @@ export interface Project {
   /** One-line subtitle shown under the title. */
   readonly description: LocalizedText;
   readonly category: ProjectCategory;
-  /** Logo of the company or school, or `null` for personal projects. */
-  readonly entityLogo: string | null;
+  /** Logos of the company/school/client, empty for personal projects. Most
+   * projects have one; GCII has two (the employer and the client it's
+   * staffed at, Enedis). */
+  readonly entityLogos: readonly string[];
   /** Public repository URL, or `null` when there is none. */
   readonly githubRepo: string | null;
   readonly techLogos: readonly TechLogoId[];
@@ -137,7 +139,7 @@ export const projects = [
     },
     category: "pro",
     featured: true,
-    entityLogo: null,
+    entityLogos: ["/logos/gcii", "/logos/enedis"],
     githubRepo: null,
     techLogos: ["python", "react", "git", "typescript", "copilot"],
     img: "/img/gcii-grid",
@@ -158,7 +160,7 @@ export const projects = [
     href: "internships/safran",
     description: { fr: "Stage de fin d'études", en: "Final-year internship" },
     category: "pro",
-    entityLogo: "/logos/safran",
+    entityLogos: ["/logos/safran"],
     githubRepo: null,
     techLogos: ["typescript", "react", "git", "linux"],
     img: "/img/safran",
@@ -178,7 +180,7 @@ export const projects = [
     href: "research/sncf",
     description: { fr: "Projet de recherche", en: "Research project" },
     category: "recherche",
-    entityLogo: "/logos/sncf",
+    entityLogos: ["/logos/sncf"],
     githubRepo: "https://github.com/corentinbunaux/projet-recherche-SNCF",
     techLogos: ["java", "git"],
     img: "/img/sncf",
@@ -192,7 +194,7 @@ export const projects = [
       en: "Video surveillance project",
     },
     category: "perso",
-    entityLogo: null,
+    entityLogos: [],
     githubRepo: null,
     techLogos: ["arduino", "python", "react"],
     img: "/img/cctv",
@@ -207,7 +209,7 @@ export const projects = [
     },
     category: "ecole",
     img: "/img/android",
-    entityLogo: "/logos/emse",
+    entityLogos: ["/logos/emse"],
     githubRepo: null,
     techLogos: ["kotlin", "typescript", "git"],
     photos: [],
@@ -221,7 +223,7 @@ export const projects = [
     },
     category: "ecole",
     img: "/img/minesweeper",
-    entityLogo: "/logos/emse",
+    entityLogos: ["/logos/emse"],
     githubRepo: "https://github.com/corentinbunaux/minesweeper",
     techLogos: ["java"],
     photos: [],
@@ -235,7 +237,7 @@ export const projects = [
     },
     category: "pro",
     img: "/img/quimesis",
-    entityLogo: "/logos/quimesis",
+    entityLogos: ["/logos/quimesis"],
     githubRepo: null,
     techLogos: ["cpp", "react", "git", "linux"],
     photos: ["/img/quimesis-1", "/img/quimesis-2", "/img/quimesis-3"],
@@ -248,7 +250,7 @@ export const projects = [
     description: { fr: "Stage ouvrier", en: "Manual labor internship" },
     category: "pro",
     img: "/img/kusmitea",
-    entityLogo: "/logos/kusmi-tea",
+    entityLogos: ["/logos/kusmi-tea"],
     githubRepo: null,
     photos: ["/img/kusmi-1"],
     techLogos: [],
@@ -261,7 +263,7 @@ export const projects = [
     description: { fr: "Site web portfolio", en: "Portfolio website" },
     category: "perso",
     img: "/img/web",
-    entityLogo: null,
+    entityLogos: [],
     githubRepo: null,
     techLogos: ["html", "css", "javascript", "react"],
     photos: [],
@@ -275,7 +277,7 @@ export const projects = [
     },
     category: "ecole",
     img: "/img/programming",
-    entityLogo: "/logos/emse",
+    entityLogos: ["/logos/emse"],
     githubRepo: "https://github.com/dylan-bernhardt/dactylo-race",
     techLogos: ["python", "cpp", "git"],
     photos: [],
@@ -286,7 +288,7 @@ export const projects = [
     description: { fr: "Projet Robot", en: "Robot project" },
     category: "ecole",
     img: "/img/embedded",
-    entityLogo: "/logos/emse",
+    entityLogos: ["/logos/emse"],
     githubRepo: null,
     techLogos: [],
     photos: ["/img/embedded-1", "/img/embedded-2"],
@@ -300,7 +302,7 @@ export const projects = [
     },
     category: "ecole",
     img: "/img/tipe",
-    entityLogo: "/logos/ac-normandie",
+    entityLogos: ["/logos/ac-normandie"],
     githubRepo: null,
     techLogos: ["arduino"],
     photos: ["/img/tipe-1", "/img/tipe-2"],
