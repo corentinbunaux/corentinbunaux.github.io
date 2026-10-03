@@ -16,6 +16,9 @@ export function parseArticle(markdown: string, source: string): ArticleSection[]
     const where = `${source}:${index + 1}`;
     if (line.startsWith("## ")) {
       const title = line.slice(3).trim();
+      // Coverage: unreachable today — `line` is trimEnd()-ed, so "## " only
+      // matches when a non-space character follows; kept as a guard (PORT-068).
+      /* istanbul ignore if */
       if (!title) throw new Error(`${where}: empty "## " heading.`);
       sections.push({ title, lines: [] });
       return;
