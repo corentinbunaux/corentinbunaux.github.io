@@ -94,6 +94,10 @@ export class FakeIntersectionObserver {
     const entries = this.observed.map((target) => ({ isIntersecting, target }) as IntersectionObserverEntry);
     this.callback(entries, this as unknown as IntersectionObserver);
   }
+  /** Reports explicit entries, e.g. one section entering and another leaving. */
+  report(entries: { target: Element; isIntersecting: boolean }[]) {
+    this.callback(entries as IntersectionObserverEntry[], this as unknown as IntersectionObserver);
+  }
 }
 
 /** Manual requestAnimationFrame: callbacks queue up until `frames.step()`. */
