@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "optimize:images": "node scripts/optimize-images.mjs",
-    "start": "next start",
+    "start": "npx serve@latest out",
     "lint": "eslint .",
     "test": "jest --coverage",
     "test:e2e": "playwright test"
