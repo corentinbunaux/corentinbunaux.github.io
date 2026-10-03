@@ -5,7 +5,7 @@ import { defineConfig, devices } from "@playwright/test";
 /**
  * E2E suite (PORT-069). Tests the artefact that is actually deployed: the
  * `next build` static export in `out/`, served by a tiny native-Node server
- * (`e2e/static-server.mjs`) that mimics GitHub Pages (extension-less routes
+ * (`tests/e2e/static-server.mjs`) that mimics GitHub Pages (extension-less routes
  * resolve to `<route>.html`, unknown paths get `404.html` with status 404).
  *
  * Port 4173, not 3000: a `next dev` server may already be running on 3000 on
@@ -17,7 +17,7 @@ import { defineConfig, devices } from "@playwright/test";
  */
 const PORT = Number(process.env.E2E_PORT ?? 4173);
 const BASE_URL = `http://127.0.0.1:${PORT}`;
-const serve = `node e2e/static-server.mjs ${PORT}`;
+const serve = `node tests/e2e/static-server.mjs ${PORT}`;
 
 /** Same lookup as Playwright's own "msedge" channel resolution. */
 function edgeChannel(): { channel?: "msedge" } {
@@ -39,7 +39,7 @@ function edgeChannel(): { channel?: "msedge" } {
 }
 
 export default defineConfig({
-  testDir: "./e2e",
+  testDir: "./tests/e2e",
   testMatch: "**/*.spec.ts",
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),

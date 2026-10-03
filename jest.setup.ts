@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { installBrowserFakes } from "./src/test-utils/browser";
+import { installBrowserFakes } from "./tests/jest/test-utils/browser";
 
 beforeEach(() => {
   installBrowserFakes();

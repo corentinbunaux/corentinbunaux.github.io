@@ -11,14 +11,13 @@ const config = {
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
-  testPathIgnorePatterns: ["/node_modules/", "/.next/", "/out/", "/.claude/", "/e2e/"],
+  // Test files live under tests/jest/ (mirroring src/), not colocated with
+  // the code they cover; tests/e2e/ is Playwright's (picked up by its own
+  // config, not Jest's default *.spec.ts matcher).
+  testMatch: ["<rootDir>/tests/jest/**/*.test.{ts,tsx}"],
+  testPathIgnorePatterns: ["/node_modules/", "/.next/", "/out/", "/tests/e2e/"],
   modulePathIgnorePatterns: ["<rootDir>/.next/", "<rootDir>/out/"],
-  collectCoverageFrom: [
-    "src/**/*.{ts,tsx,js,jsx}",
-    "!src/**/*.test.{ts,tsx,js,jsx}",
-    "!src/**/*.d.ts",
-    "!src/test-utils/**",
-  ],
+  collectCoverageFrom: ["src/**/*.{ts,tsx,js,jsx}", "!src/**/*.d.ts"],
   coverageThreshold: {
     global: {
       statements: 95,
