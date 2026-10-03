@@ -120,6 +120,13 @@ derived live via `IntersectionObserver` (`SiteHeader.tsx`), not by measuring
 
 ## Known weak points
 
+- **No photo lightbox/carousel on project pages with multiple photos**
+  (Quimesis, Kusmi Tea, Embedded, TIPE): the pre-REFONTE `project.tsx` had a
+  full-screen modal (prev/next, close, index counter); `ProjectPage.tsx`'s
+  gallery (PORT-013) is a static thumbnail grid only. The drop predates every
+  recette/UAT round and was never flagged by Corentin across M6-M8, so it
+  reads as an accepted simplification rather than an oversight — found by a
+  `/code-review` pass, not re-added without his confirmation.
 - `Banner.jsx`'s default-exported component is dead code (nothing imports it
   — only its `bannerElmts` icon map is used, by `TechBadge.tsx` and
   `projectsSection.jsx`) and has a real bug: `window.innerWidth >= "1024px"`
